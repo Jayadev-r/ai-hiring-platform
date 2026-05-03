@@ -1,0 +1,5 @@
+psycopg2-binary
+faker
+bcrypt
+reportlab
+python-dotenv

@@ -1,0 +1,82 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+jspm_packages/
+web_modules/
+
+# Output directories
+dist/
+dist-ssr/
+build/
+out/
+.next/
+.nuxt/
+
+# Coverage directory
+coverage/
+*.lcov
+.nyc_output/
+
+# Cache directories
+.npm/
+.eslintcache
+.stylelintcache
+.cache/
+.parcel-cache/
+*.tsbuildinfo
+
+# dotenv environment variables files
+.env
+.env.*.local
+.env.local
+.env.test
+.env.production
+.env.development
+!.env.example
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Project Specific
+backend/uploads/
+*.sqlite
+*.sqlite3
+database.sqlite
+
+# Misc
+*.tgz
+.yarn-integrity
+.serverless/

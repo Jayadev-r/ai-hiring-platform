@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+body.admin-portal {
+    /* Colors */
+    --admin-bg: #f8f9fc;
+    --admin-surface: #ffffff;
+    --admin-surface-hover: #f3f4f8;
+    --admin-border: #e5e7ef;
+    --admin-border-strong: #d1d5e0;
+
+    /* Accent - Indigo / Blue */
+    --admin-accent: #4F46E5;
+    --admin-accent-hover: #4338ca;
+    --admin-accent-light: rgba(79, 70, 229, 0.08);
+    --admin-accent-mid: rgba(79, 70, 229, 0.2);
+
+    /* Semantic Colors */
+    --admin-success: #10b981;
+    --admin-success-light: rgba(16, 185, 129, 0.1);
+    --admin-warning: #f59e0b;
+    --admin-warning-light: rgba(245, 158, 11, 0.1);
+    --admin-danger: #ef4444;
+    --admin-danger-light: rgba(239, 68, 68, 0.1);
+
+    /* Role Colors */
+    --admin-role-admin: #7c3aed;
+    --admin-role-recruiter: #2563eb;
+    --admin-role-seeker: #059669;
+
+    /* Text */
+    --admin-text-primary: #111827;
+    --admin-text-secondary: #6b7280;
+    --admin-text-muted: #9ca3af;
+
+    /* Typography */
+    --font-heading: 'Plus Jakarta Sans', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+    background-color: var(--admin-bg);
+    color: var(--admin-text-primary);
+    font-family: var(--font-body);
+}
+
+/* Subtle top border accent line */
+body.admin-portal::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #4F46E5, #7c3aed, #2563eb);
+    z-index: 9999;
+}
+
+/* Card / Panel base */
+.admin-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: var(--admin-border-strong);
+}
+
+/* Scrollbar styling */
+.admin-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--admin-border-strong);
+    border-radius: 4px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--admin-text-muted);
+}
+
+/* Role badges */
+.badge-admin {
+    color: var(--admin-role-admin);
+    background: rgba(124, 58, 237, 0.08);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    border-radius: 5px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    letter-spacing: 0.02em;
+}
+
+.badge-recruiter {
+    color: var(--admin-role-recruiter);
+    background: rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    border-radius: 5px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-body);
+}
+
+.badge-seeker {
+    color: var(--admin-role-seeker);
+    background: rgba(5, 150, 105, 0.08);
+    border: 1px solid rgba(5, 150, 105, 0.2);
+    border-radius: 5px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-body);
+}
+
+.badge-active {
+    color: var(--admin-success);
+    background: var(--admin-success-light);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 5px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-deleted {
+    color: var(--admin-danger);
+    background: var(--admin-danger-light);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 5px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Subtle blink for status indicators */
+@keyframes adminBlink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
+.admin-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--admin-success);
+    animation: adminBlink 2.5s ease-in-out infinite;
+    display: inline-block;
+}
