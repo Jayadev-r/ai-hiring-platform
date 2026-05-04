@@ -142,8 +142,16 @@ router.post('/parse-resume', auth, handleUpload, async (req, res) => {
         const userId = req.user.userId;
         const { autoSave } = req.body; // If true, auto-save to DB
 
+        // Normalize mimetype for mobile browsers that send incorrect types
+        let actualMimeType = req.file.mimetype;
+        if (req.file.originalname?.toLowerCase().endsWith('.pdf')) {
+            actualMimeType = 'application/pdf';
+        } else if (req.file.originalname?.toLowerCase().match(/\.docx?$/)) {
+            actualMimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+        }
+
         // Parse resume using rule-based parser
-        const extractedData = await parseResume(req.file.buffer, req.file.mimetype);
+        const extractedData = await parseResume(req.file.buffer, actualMimeType);
 
         // If autoSave is requested, save to database
         if (autoSave === 'true' || autoSave === true) {
