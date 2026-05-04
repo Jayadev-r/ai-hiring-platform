@@ -372,7 +372,7 @@ router.post('/profile', auth, async (req, res) => {
         await client.query('DELETE FROM candidate_education WHERE candidate_id = $1', [candidateId]);
         if (education && education.length > 0) {
             const eduValues = education.map(e => [
-                candidateId, e.institution, e.degree, e.field_of_study, e.start_date, e.end_date, e.grade_or_cgpa, e.description
+                candidateId, e.institution, e.degree, e.field_of_study, validateDate(e.start_date), validateDate(e.end_date), e.grade_or_cgpa, e.description
             ]);
             // Bulk Insert logic or Loop
             for (const v of eduValues) {
@@ -390,7 +390,7 @@ router.post('/profile', auth, async (req, res) => {
                 await client.query(`
                     INSERT INTO candidate_experience (candidate_id, company_name, job_title, employment_type, location, start_date, end_date, is_current, description)
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-                `, [candidateId, e.company_name, e.job_title, e.employment_type, e.location, e.start_date, e.end_date, e.is_current, e.description]);
+                `, [candidateId, e.company_name, e.job_title, e.employment_type, e.location, validateDate(e.start_date), validateDate(e.end_date), e.is_current, e.description]);
             }
         }
 
@@ -401,7 +401,7 @@ router.post('/profile', auth, async (req, res) => {
                 await client.query(`
                     INSERT INTO candidate_achievements (candidate_id, title, issuer, date, description)
                     VALUES ($1, $2, $3, $4, $5)
-                `, [candidateId, a.title, a.issuer, a.date, a.description]);
+                `, [candidateId, a.title, a.issuer, validateDate(a.date), a.description]);
             }
         }
 
@@ -412,7 +412,7 @@ router.post('/profile', auth, async (req, res) => {
                 await client.query(`
                     INSERT INTO candidate_projects (candidate_id, project_title, project_description, technologies_used, project_link, start_date, end_date)
                     VALUES ($1, $2, $3, $4, $5, $6, $7)
-                `, [candidateId, p.project_title, p.project_description, p.technologies_used, p.project_link, p.start_date, p.end_date]);
+                `, [candidateId, p.project_title, p.project_description, p.technologies_used, p.project_link, validateDate(p.start_date), validateDate(p.end_date)]);
             }
         }
 
