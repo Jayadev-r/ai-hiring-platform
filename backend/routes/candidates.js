@@ -11,8 +11,14 @@ const upload = multer({
     storage: multer.memoryStorage(),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     fileFilter: (req, file, cb) => {
-        const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-        if (allowedTypes.includes(file.mimetype)) {
+        // Mobile browsers sometimes send weird mime types.
+        // Also check originalname extension as a fallback.
+        const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
+        
+        const isPdfExt = file.originalname?.toLowerCase().endsWith('.pdf');
+        const isDocExt = file.originalname?.toLowerCase().endsWith('.docx') || file.originalname?.toLowerCase().endsWith('.doc');
+
+        if (allowedTypes.includes(file.mimetype) || isPdfExt || isDocExt) {
             cb(null, true);
         } else {
             cb(new Error('Only PDF and DOCX files are allowed'));
@@ -114,9 +120,19 @@ const validateYear = (dateStr) => {
     return yearMatch ? parseInt(yearMatch[0]) : null;
 };
 
+// Wrapper to handle Multer errors gracefully
+const handleUpload = (req, res, next) => {
+    upload.single('resume')(req, res, (err) => {
+        if (err) {
+            return res.status(400).json({ success: false, message: err.message });
+        }
+        next();
+    });
+};
+
 // POST /api/candidates/parse-resume
 // Upload resume and extract structured data (with optional auto-save)
-router.post('/parse-resume', auth, upload.single('resume'), async (req, res) => {
+router.post('/parse-resume', auth, handleUpload, async (req, res) => {
     const client = await pool.connect();
     try {
         if (!req.file) {
