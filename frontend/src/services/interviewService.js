@@ -1,22 +1,10 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:3000/api/interviews';
-
-// Get auth token from localStorage
-const getAuthHeader = () => {
-    const token = localStorage.getItem('token');
-    return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import api from '../api/axios';
 
 /**
  * Select a candidate for interview
  */
 export const selectCandidateForInterview = async (jobId, applicationId, candidateId) => {
-    const response = await axios.post(
-        `${API_URL}/select`,
-        { jobId, applicationId, candidateId },
-        { headers: getAuthHeader() }
-    );
+    const response = await api.post('/interviews/select', { jobId, applicationId, candidateId });
     return response.data;
 };
 
@@ -24,11 +12,7 @@ export const selectCandidateForInterview = async (jobId, applicationId, candidat
  * Schedule an interview
  */
 export const scheduleInterview = async (interviewId, scheduleData) => {
-    const response = await axios.put(
-        `${API_URL}/schedule/${interviewId}`,
-        scheduleData,
-        { headers: getAuthHeader() }
-    );
+    const response = await api.put(`/interviews/schedule/${interviewId}`, scheduleData);
     return response.data;
 };
 
@@ -36,11 +20,7 @@ export const scheduleInterview = async (interviewId, scheduleData) => {
  * Send interview invitation email
  */
 export const sendInterviewEmail = async (interviewId) => {
-    const response = await axios.post(
-        `${API_URL}/send-email/${interviewId}`,
-        {},
-        { headers: getAuthHeader() }
-    );
+    const response = await api.post(`/interviews/send-email/${interviewId}`, {});
     return response.data;
 };
 
@@ -48,9 +28,7 @@ export const sendInterviewEmail = async (interviewId) => {
  * Get recruiter's interviews
  */
 export const getRecruiterInterviews = async () => {
-    const response = await axios.get(`${API_URL}/recruiter`, {
-        headers: getAuthHeader()
-    });
+    const response = await api.get('/interviews/recruiter');
     return response.data;
 };
 
@@ -58,9 +36,7 @@ export const getRecruiterInterviews = async () => {
  * Get candidate's interviews
  */
 export const getCandidateInterviews = async () => {
-    const response = await axios.get(`${API_URL}/candidate`, {
-        headers: getAuthHeader()
-    });
+    const response = await api.get('/interviews/candidate');
     return response.data;
 };
 
@@ -68,11 +44,7 @@ export const getCandidateInterviews = async () => {
  * Join interview (get Agora token)
  */
 export const joinInterview = async (channelName) => {
-    const response = await axios.post(
-        `${API_URL}/join`,
-        { channelName },
-        { headers: getAuthHeader() }
-    );
+    const response = await api.post('/interviews/join', { channelName });
     return response.data;
 };
 
@@ -80,9 +52,7 @@ export const joinInterview = async (channelName) => {
  * Cancel interview
  */
 export const cancelInterview = async (interviewId) => {
-    const response = await axios.delete(`${API_URL}/${interviewId}`, {
-        headers: getAuthHeader()
-    });
+    const response = await api.delete(`/interviews/${interviewId}`);
     return response.data;
 };
 

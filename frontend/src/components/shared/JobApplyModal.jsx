@@ -78,15 +78,29 @@ const JobApplyModal = ({ job, isOpen, onClose }) => {
 
     const fetchResumes = async () => {
         try {
-            // Note: Currently backend candidates.js only exposes GET /resume which returns the PDF directly.
-            // If the user has a resume uploaded, we'll mock a resume metadata object to fulfill the UI list requirement.
             const res = await api.get('/candidates/profile');
             if (res.data.success && res.data.data.personal_info?.resume_pdf) {
+                const personalInfo = res.data.data.personal_info;
+
+                // Try to get the candidate_resumes record for a real id
+                let resumeId = 'profile_resume';
+                let resumeName = 'My_Resume.pdf';
+                try {
+                    const resumeListRes = await api.get('/candidates/resumes');
+                    if (resumeListRes.data.success && resumeListRes.data.data?.length > 0) {
+                        const defaultResume = resumeListRes.data.data.find(r => r.is_default) || resumeListRes.data.data[0];
+                        resumeId = defaultResume.id;
+                        resumeName = defaultResume.resume_name || 'My_Resume.pdf';
+                    }
+                } catch (_) {
+                    // candidate_resumes table may not exist — use profile_resume fallback
+                }
+
                 const mockResume = {
-                    id: '1',
-                    resume_name: 'My_Resume.pdf',
+                    id: resumeId,
+                    resume_name: resumeName,
                     is_default: true,
-                    created_at: res.data.data.personal_info.updated_at || new Date().toISOString()
+                    created_at: personalInfo.updated_at || new Date().toISOString()
                 };
                 setResumes([mockResume]);
                 setSelectedResume(mockResume.id);

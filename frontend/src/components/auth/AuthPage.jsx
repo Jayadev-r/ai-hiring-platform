@@ -464,7 +464,10 @@ const AuthPage = () => {
                                 whileHover={{ scale: 1.02, backgroundColor: '#f9fafb' }}
                                 whileTap={{ scale: 0.98 }}
                                 className="w-full flex items-center justify-center gap-3 py-2.5 rounded-xl border border-neutral-200 bg-white text-neutral-700 text-sm font-semibold shadow-sm hover:border-neutral-300 transition-all duration-200"
-                                onClick={() => window.location.href = 'http://localhost:3000/api/auth/google'}
+                                onClick={() => {
+                                    const baseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:3000';
+                                    window.location.href = `${baseUrl}/api/auth/google`;
+                                }}
                             >
                                 <svg
                                     viewBox="0 0 24 24"

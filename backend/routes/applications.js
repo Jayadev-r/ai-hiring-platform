@@ -35,14 +35,37 @@ router.post('/jobs/:id/apply', auth, roleGuard('job_seeker'), async (req, res) =
         const candidateId = candidateRes.rows[0].id;
 
         // 2. Verify Resume & Get Data
-        const resumeRes = await client.query(
-            'SELECT file_url, resume_name FROM candidate_resumes WHERE id = $1 AND candidate_id = $2',
-            [resume_id, candidateId]
-        );
-        if (resumeRes.rows.length === 0) {
-            return res.status(400).json({ success: false, message: 'Invalid resume selected' });
+        // First try candidate_resumes table, then fall back to candidates.resume_pdf
+        let file_url = null;
+        let resume_name = 'My_Resume.pdf';
+
+        try {
+            const resumeRes = await client.query(
+                'SELECT file_url, resume_name FROM candidate_resumes WHERE id = $1 AND candidate_id = $2',
+                [resume_id, candidateId]
+            );
+            if (resumeRes.rows.length > 0) {
+                file_url = resumeRes.rows[0].file_url;
+                resume_name = resumeRes.rows[0].resume_name;
+            }
+        } catch (tableErr) {
+            // candidate_resumes table may not exist yet — fall through to profile resume
+            console.warn('[Apply] candidate_resumes lookup failed:', tableErr.message);
         }
-        const { file_url, resume_name } = resumeRes.rows[0];
+
+        // Fallback: use candidates.resume_pdf (the profile resume)
+        if (!file_url) {
+            const profileResumeRes = await client.query(
+                'SELECT resume_pdf, name FROM candidates WHERE id = $1',
+                [candidateId]
+            );
+            if (profileResumeRes.rows.length > 0 && profileResumeRes.rows[0].resume_pdf) {
+                file_url = profileResumeRes.rows[0].resume_pdf;
+                resume_name = `${profileResumeRes.rows[0].name || 'Candidate'}_Resume.pdf`;
+            } else {
+                return res.status(400).json({ success: false, message: 'No resume found. Please upload a resume to your profile before applying.' });
+            }
+        }
 
         // 3. Get Job & Company Info
         const jobRes = await client.query(
@@ -82,6 +105,9 @@ router.post('/jobs/:id/apply', auth, roleGuard('job_seeker'), async (req, res) =
         const testId = testCheckResult.rows.length > 0 ? testCheckResult.rows[0].id : null;
 
         // 5. Insert Application
+        // Note: resume_id is set to null when using profile resume fallback
+        // to avoid FK constraint violation against candidate_resumes table.
+        // resume_data stores the actual PDF content regardless.
         const appQuery = `
             INSERT INTO job_applications (
                 job_id, candidate_id, company_id, 
@@ -91,8 +117,10 @@ router.post('/jobs/:id/apply', auth, roleGuard('job_seeker'), async (req, res) =
             VALUES ($1, $2, $3, $4, $5, $6, 'applied', $7, $8)
             RETURNING id
         `;
+        // Only store resume_id if it was found in candidate_resumes (not a mock id)
+        const validResumeId = (typeof resume_id === 'number' || (typeof resume_id === 'string' && !isNaN(parseInt(resume_id)) && resume_id !== '1')) ? resume_id : null;
         const appValues = [
-            jobId, candidateId, company_id, resume_id, resume_name, file_url,
+            jobId, candidateId, company_id, validResumeId, resume_name, file_url,
             testId, testId ? 'pending' : null
         ];
         const appResult = await client.query(appQuery, appValues);

@@ -581,7 +581,123 @@ router.delete('/achievements/:id', auth, (req, res) => removeEntry(req, res, 'ca
 router.post('/projects', auth, (req, res) => addEntry(req, res, 'candidate_projects', ['project_title', 'project_description', 'technologies_used', 'project_link', 'start_date', 'end_date']));
 router.delete('/projects/:id', auth, (req, res) => removeEntry(req, res, 'candidate_projects'));
 
-// Keep existing Resume Route
+// GET /api/candidates/resumes
+// List resume records from candidate_resumes table
+router.get('/resumes', auth, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const candidateId = await getCandidateId(userId);
+        if (!candidateId) {
+            return res.json({ success: true, data: [] });
+        }
+
+        const result = await pool.query(
+            'SELECT id, resume_name, is_default, created_at, updated_at FROM candidate_resumes WHERE candidate_id = $1 ORDER BY is_default DESC, created_at DESC',
+            [candidateId]
+        );
+        res.json({ success: true, data: result.rows });
+    } catch (error) {
+        // If table doesn't exist yet, return empty list gracefully
+        if (error.message && (error.message.includes('candidate_resumes') || error.code === '42P01')) {
+            return res.json({ success: true, data: [] });
+        }
+        console.error('[GET /candidates/resumes]', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// POST /api/candidates/resume
+// Upload resume (base64) and save to candidates.resume_pdf
+// Also inserts/upserts into candidate_resumes for apply flow compatibility
+router.post('/resume', auth, async (req, res) => {
+    const client = await pool.connect();
+    try {
+        const userId = req.user.userId;
+        const { resume_name, file_data } = req.body;
+
+        if (!file_data) {
+            return res.status(400).json({ success: false, message: 'No file data provided' });
+        }
+
+        // Extract raw base64 (strip data URI prefix if present)
+        let base64Data = file_data;
+        if (base64Data.includes('base64,')) {
+            base64Data = base64Data.split('base64,')[1];
+        }
+
+        await client.query('BEGIN');
+
+        // 1. Ensure candidate record exists
+        let candidateId;
+        const checkRes = await client.query('SELECT id FROM candidates WHERE user_id = $1', [userId]);
+        if (checkRes.rows.length === 0) {
+            const credRes = await client.query('SELECT email, name FROM credentials WHERE id = $1', [userId]);
+            if (credRes.rows.length === 0) throw new Error('User credentials not found');
+            const { email, name } = credRes.rows[0];
+            const createRes = await client.query(
+                'INSERT INTO candidates (user_id, name, email, created_at, updated_at) VALUES ($1, $2, $3, NOW(), NOW()) RETURNING id',
+                [userId, name || 'Unknown', email]
+            );
+            candidateId = createRes.rows[0].id;
+        } else {
+            candidateId = checkRes.rows[0].id;
+        }
+
+        // 2. Save resume_pdf to candidates table
+        await client.query(
+            'UPDATE candidates SET resume_pdf = $1, updated_at = NOW() WHERE id = $2',
+            [base64Data, candidateId]
+        );
+
+        // 3. Upsert into candidate_resumes so apply flow can find it by id
+        const fileUrl = base64Data; // store base64 as file_url for now
+        const existingResume = await client.query(
+            'SELECT id FROM candidate_resumes WHERE candidate_id = $1 AND is_default = true',
+            [candidateId]
+        );
+
+        let resumeId;
+        if (existingResume.rows.length > 0) {
+            // Update existing default resume
+            const updateRes = await client.query(
+                'UPDATE candidate_resumes SET resume_name = $1, file_url = $2, updated_at = NOW() WHERE id = $3 RETURNING id',
+                [resume_name || 'My_Resume.pdf', fileUrl, existingResume.rows[0].id]
+            );
+            resumeId = updateRes.rows[0].id;
+        } else {
+            // Insert new default resume record
+            const insertRes = await client.query(
+                'INSERT INTO candidate_resumes (candidate_id, resume_name, file_url, is_default, created_at, updated_at) VALUES ($1, $2, $3, true, NOW(), NOW()) RETURNING id',
+                [candidateId, resume_name || 'My_Resume.pdf', fileUrl]
+            );
+            resumeId = insertRes.rows[0].id;
+        }
+
+        await client.query('COMMIT');
+        res.json({ success: true, message: 'Resume uploaded successfully', data: { resume_id: resumeId } });
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        // If candidate_resumes table doesn't exist, fall back to just saving candidates.resume_pdf
+        if (error.message && error.message.includes('candidate_resumes')) {
+            try {
+                const fallback = await pool.query(
+                    'UPDATE candidates SET resume_pdf = $1, updated_at = NOW() WHERE user_id = $2',
+                    [req.body.file_data?.split('base64,')[1] || req.body.file_data, req.user.userId]
+                );
+                return res.json({ success: true, message: 'Resume uploaded (profile only)', data: { resume_id: 'profile_resume' } });
+            } catch (fallbackErr) {
+                return res.status(500).json({ success: false, message: fallbackErr.message });
+            }
+        }
+        console.error('[Resume Upload Error]', error);
+        res.status(500).json({ success: false, message: error.message });
+    } finally {
+        client.release();
+    }
+});
+
+// Keep existing Resume Route (GET)
 router.get('/resume', auth, async (req, res) => {
     try {
         const userId = req.user.userId;

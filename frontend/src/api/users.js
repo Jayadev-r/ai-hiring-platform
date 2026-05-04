@@ -134,10 +134,8 @@ export const uploadResume = async (file, options = {}) => {
 
     const base64 = await toBase64(file);
 
-    // Add syncProfile query param if requested
-    const queryParam = options.syncProfile ? '?syncProfile=true' : '';
-
-    const response = await axios.post(`/candidate/resumes${queryParam}`, {
+    // POST to /candidates/resume — saves to candidates.resume_pdf AND candidate_resumes
+    const response = await axios.post('/candidates/resume', {
         resume_name: file.name,
         file_data: base64
     });

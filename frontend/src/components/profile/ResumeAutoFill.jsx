@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Upload, FileText, Loader, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '../ui';
+import api from '../../api/axios';
 
 /**
  * ResumeAutoFill Component
@@ -52,16 +53,11 @@ const ResumeAutoFill = ({ onExtractComplete }) => {
             formData.append('resume', file);
             formData.append('autoSave', 'true'); // Auto-save to DB
 
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:3000/api/candidates/parse-resume', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                body: formData
+            const response = await api.post('/candidates/parse-resume', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-            const result = await response.json();
+            const result = response.data;
 
             if (result.success) {
                 setStatus('success');
