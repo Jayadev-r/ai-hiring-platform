@@ -64,14 +64,20 @@ const ApplicantDetailsModal = ({ applicant, isOpen, onClose, onUpdateStatus }) =
                             <span className="text-sm text-slate-400">Current Status:</span>
                             <Badge>{status}</Badge>
                         </div>
-                        <div className="flex gap-2">
-                            <Button size="sm" variant="outline" onClick={() => onUpdateStatus(applicant.id, 'Interview')}>
+                        <div className="flex flex-wrap gap-2">
+                            <Button size="sm" variant="primary" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => onUpdateStatus(applicant.id, 'accepted')}>
+                                Hire
+                            </Button>
+                            <Button size="sm" variant="outline" className="border-amber-500 text-amber-500 hover:bg-amber-500/10" onClick={() => onUpdateStatus(applicant.id, 'interview')}>
                                 Interview
                             </Button>
-                            <Button size="sm" variant="primary" onClick={() => onUpdateStatus(applicant.id, 'Offer')}>
-                                Offer
+                            <Button size="sm" variant="outline" className="border-blue-500 text-blue-500 hover:bg-blue-500/10" onClick={() => onUpdateStatus(applicant.id, 'shortlisted_for_test')}>
+                                Test
                             </Button>
-                            <Button size="sm" variant="ghost" className="text-red-500 hover:text-red-600" onClick={() => onUpdateStatus(applicant.id, 'Rejected')}>
+                            <Button size="sm" variant="outline" className="border-violet-500 text-violet-500 hover:bg-violet-500/10" onClick={() => onUpdateStatus(applicant.id, 'shortlisted')}>
+                                Shortlist
+                            </Button>
+                            <Button size="sm" variant="ghost" className="text-rose-500 hover:text-rose-600" onClick={() => onUpdateStatus(applicant.id, 'rejected')}>
                                 Reject
                             </Button>
                         </div>

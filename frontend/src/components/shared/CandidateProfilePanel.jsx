@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, User } from 'lucide-react';
+import { X, User, CheckCircle2, Video, Code, Star, XCircle } from 'lucide-react';
 import { getApplicationProfileSnapshot, getApplicationResume } from '../../api/applications';
 import CandidateProfileContent from './CandidateProfileContent';
 
@@ -8,7 +8,7 @@ import CandidateProfileContent from './CandidateProfileContent';
  * A side-panel component for recruiters to view a candidate's profile snapshot.
  * Fully theme-aware — adapts to active theme via CSS variables.
  */
-const CandidateProfilePanel = ({ applicationId, isOpen, onClose, candidateName = 'Candidate', initialData = null, initialResumeUrl = null }) => {
+const CandidateProfilePanel = ({ applicationId, isOpen, onClose, onUpdateStatus, candidateName = 'Candidate', initialData = null, initialResumeUrl = null }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [profileData, setProfileData] = useState(null);
@@ -174,6 +174,48 @@ const CandidateProfilePanel = ({ applicationId, isOpen, onClose, candidateName =
                         />
                     )}
                 </div>
+
+                {/* Footer Actions */}
+                {!loading && !error && onUpdateStatus && (
+                    <div 
+                        className="flex-none p-4 flex flex-wrap items-center justify-center gap-3"
+                        style={{ 
+                            backgroundColor: 'var(--theme-bg, #f8fafc)',
+                            borderTop: '1px solid var(--theme-border, #e2e8f0)' 
+                        }}
+                    >
+                        <button
+                            onClick={() => { onUpdateStatus(applicationId, 'accepted'); onClose(); }}
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white border border-emerald-100"
+                        >
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Hire
+                        </button>
+                        <button
+                            onClick={() => { onUpdateStatus(applicationId, 'interview'); onClose(); }}
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white border border-amber-100"
+                        >
+                            <Video className="w-3.5 h-3.5" /> Interview
+                        </button>
+                        <button
+                            onClick={() => { onUpdateStatus(applicationId, 'shortlisted_for_test'); onClose(); }}
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white border border-blue-100"
+                        >
+                            <Code className="w-3.5 h-3.5" /> Test
+                        </button>
+                        <button
+                            onClick={() => { onUpdateStatus(applicationId, 'shortlisted'); onClose(); }}
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all bg-violet-50 text-violet-600 hover:bg-violet-600 hover:text-white border border-violet-100"
+                        >
+                            <Star className="w-3.5 h-3.5" /> Shortlist
+                        </button>
+                        <button
+                            onClick={() => { onUpdateStatus(applicationId, 'rejected'); onClose(); }}
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-100"
+                        >
+                            <XCircle className="w-3.5 h-3.5" /> Reject
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -147,6 +147,33 @@ const CodingTestsPage = () => {
         }
     };
 
+    const handlePublishCodingTest = async (testId) => {
+        try {
+            setSaving(true);
+            await codingService.publishCodingTest(testId);
+            addToast('success', 'Coding test published successfully');
+            fetchTests();
+        } catch (error) {
+            addToast('error', error?.response?.data?.message || 'Failed to publish coding test');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleDeleteCodingTest = async (testId) => {
+        if (!window.confirm('Are you sure you want to delete this challenge? This action cannot be undone.')) return;
+        try {
+            setLoading(true);
+            await codingService.deleteCodingTest(testId);
+            addToast('success', 'Algorithm challenge removed');
+            fetchTests();
+        } catch (error) {
+            addToast('error', 'Failed to remove challenge from system');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const resetForm = () => {
         setEditingTestId(null);
         setSelectedJobId('');
@@ -314,14 +341,17 @@ const CodingTestsPage = () => {
                                             <Edit3 className="w-4 h-4" />
                                         </button>
                                         <button
-                                            onClick={() => codingService.publishCodingTest(test.id).then(fetchTests)}
+                                            onClick={() => handlePublishCodingTest(test.id)}
                                             className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest px-4"
                                         >
                                             Launch
                                         </button>
                                     </>
                                 )}
-                                <button className="p-2.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all">
+                                <button 
+                                    onClick={() => handleDeleteCodingTest(test.id)}
+                                    className="p-2.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all"
+                                >
                                     <Trash2 className="w-4 h-4" />
                                 </button>
                             </div>

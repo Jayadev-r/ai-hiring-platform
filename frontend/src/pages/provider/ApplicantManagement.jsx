@@ -274,7 +274,19 @@ const ApplicantManagement = () => {
             const result = await updateApplicationStatus(appId, newStatus);
             if (result.success) {
                 setApplicants(prev => prev.map(a => a.id === appId ? { ...a, status: newStatus } : a));
-                addToast('success', `Applicant moved to ${newStatus}`);
+                
+                // If moved to interview, also create a pending interview record
+                if (newStatus === 'interview') {
+                    try {
+                        await axios.post('/interviews/select', { applicationId: appId });
+                        addToast('success', 'Applicant shortlisted for interview');
+                    } catch (intError) {
+                        console.error("Failed to create interview record", intError);
+                        // We don't fail the whole status update if this fails, but maybe log it
+                    }
+                } else {
+                    addToast('success', `Applicant moved to ${newStatus}`);
+                }
 
                 if (selectedApplicant?.id === appId) {
                     setSelectedApplicant(prev => ({ ...prev, status: newStatus }));
@@ -615,6 +627,7 @@ const ApplicantManagement = () => {
                 onClose={() => setProfilePanelOpen(false)}
                 applicationId={profilePanelAppId}
                 candidateName={profilePanelCandidateName}
+                onUpdateStatus={handleUpdateStatus}
             />
 
             {selectedApplicant && (

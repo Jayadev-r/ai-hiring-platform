@@ -17,6 +17,7 @@ const StatusBadge = ({ status }) => {
             case 'interview':
                 return 'bg-violet-50 text-violet-700 border-violet-200';
             case 'test':
+            case 'shortlisted_for_test':
                 return 'bg-amber-50 text-amber-700 border-amber-200';
             default:
                 return 'bg-slate-50 text-slate-600 border-slate-200';

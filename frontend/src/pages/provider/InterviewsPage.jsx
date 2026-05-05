@@ -23,6 +23,7 @@ import { StatusBadge, TopProgressBar } from '../../components/provider-ui';
 import { useProviderToast } from '../../contexts/ProviderToastContext';
 import api from '../../api/axios';
 import { useAuth } from '../../contexts/AuthContext';
+import ScheduleInterviewModal from '../../components/shared/ScheduleInterviewModal';
 
 /**
  * Smart Interview Portfolio
@@ -37,6 +38,11 @@ const InterviewsPage = () => {
     const [interviews, setInterviews] = useState([]);
     const [activeTab, setActiveTab] = useState('upcoming');
     const [isScheduling, setIsScheduling] = useState(false);
+    
+    // New state for applicants
+    const [applicants, setApplicants] = useState([]);
+    const [loadingApplicants, setLoadingApplicants] = useState(false);
+    const [selectedApplicantForSchedule, setSelectedApplicantForSchedule] = useState(null);
 
     // Filtered lists
     const upcomingInterviews = interviews.filter(i => new Date(i.interview_date) >= new Date());
@@ -80,17 +86,74 @@ const InterviewsPage = () => {
         const id = e.target.value;
         setSelectedJobId(id);
         fetchInterviews(id);
+        if (activeTab === 'applicants') {
+            fetchJobApplicants(id);
+        }
     };
 
-    const startInterview = async (interviewId) => {
+    const fetchJobApplicants = async (jobId) => {
+        if (!jobId) return;
         try {
-            toast.info('Initializing secure meeting environment...');
-            const res = await api.post(`/interviews/${interviewId}/start`);
+            setLoadingApplicants(true);
+            const res = await api.get(`/recruiter/jobs/${jobId}/applications`);
             if (res.data.success) {
-                window.open(`/interview-room/${res.data.room_id}`, '_blank');
+                setApplicants(res.data.data);
             }
         } catch (error) {
-            toast.error('Handshake failed. Check room availability.');
+            console.error('Error fetching applicants:', error);
+            toast.error('Failed to load candidate roster.');
+        } finally {
+            setLoadingApplicants(false);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === 'applicants' && selectedJobId) {
+            fetchJobApplicants(selectedJobId);
+        }
+    }, [activeTab, selectedJobId]);
+
+    const startInterview = (interview) => {
+        if (interview.channel_name) {
+            window.open(`/interview/${interview.channel_name}`, '_blank');
+        } else {
+            toast.error('Interview room not initialized.');
+        }
+    };
+
+    const handleScheduleClick = (applicant) => {
+        setSelectedApplicantForSchedule(applicant);
+        setIsScheduling(true);
+    };
+
+    const handleStartNow = async (applicant) => {
+        try {
+            toast.info('Initializing immediate session...');
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = now.toTimeString().split(' ')[0].substring(0, 5);
+            const endTimeStr = new Date(now.getTime() + 60 * 60 * 1000).toTimeString().split(' ')[0].substring(0, 5);
+
+            const payload = {
+                jobId: selectedJobId,
+                applicationId: applicant.id,
+                candidateId: applicant.candidate_id,
+                interviewDate: dateStr,
+                startTime: timeStr,
+                endTime: endTimeStr
+            };
+
+            const res = await api.post('/interviews/create-and-schedule', payload);
+            if (res.data.success) {
+                toast.success('Session generated.');
+                fetchInterviews(selectedJobId);
+                // Navigate to the room if channel_name is returned
+                if (res.data.data?.channel_name) {
+                    window.open(`/interview/${res.data.data.channel_name}`, '_blank');
+                }
+            }
+        } catch (error) {
+            toast.error('Failed to launch immediate session.');
         }
     };
 
@@ -140,7 +203,7 @@ const InterviewsPage = () => {
                 <div className="space-y-8">
                     <div className="flex items-center justify-between border-b border-provider-slate-100 pb-0 shadow-[inset_0_-1px_0_0_#f1f5f9]">
                         <div className="flex gap-10">
-                            {['upcoming', 'completed', 'all'].map((tab) => (
+                            {['upcoming', 'applicants', 'completed', 'all'].map((tab) => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
@@ -163,77 +226,148 @@ const InterviewsPage = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <div className="mt-8">
                         <AnimatePresence mode="wait">
-                            {interviews.length > 0 ? (
-                                interviews.map((session, idx) => (
-                                    <motion.div
-                                        key={session.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: idx * 0.05 }}
-                                        className="provider-panel group hover:shadow-xl transition-all border-l-4 border-l-provider-blue-600 p-0 overflow-hidden"
-                                    >
-                                        <div className="p-8">
-                                            <div className="flex justify-between items-start mb-6">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-14 h-14 rounded-2xl bg-provider-slate-50 flex items-center justify-center text-xl font-black text-provider-slate-900 border border-provider-slate-100 group-hover:bg-provider-blue-600 group-hover:text-white transition-colors duration-500 shadow-sm">
-                                                        {session.candidate_name?.charAt(0)}
+                            {(activeTab === 'upcoming' || activeTab === 'completed' || activeTab === 'all') && (
+                                <motion.div
+                                    key={activeTab}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                                >
+                                    {(activeTab === 'upcoming' ? upcomingInterviews : activeTab === 'completed' ? pastInterviews : interviews).length > 0 ? (
+                                        (activeTab === 'upcoming' ? upcomingInterviews : activeTab === 'completed' ? pastInterviews : interviews).map((session, idx) => (
+                                            <motion.div
+                                                key={session.id}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: idx * 0.05 }}
+                                                className="provider-panel group hover:shadow-xl transition-all border-l-4 border-l-provider-blue-600 p-0 overflow-hidden"
+                                            >
+                                                <div className="p-8">
+                                                    <div className="flex justify-between items-start mb-6">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-14 h-14 rounded-2xl bg-provider-slate-50 flex items-center justify-center text-xl font-black text-provider-slate-900 border border-provider-slate-100 group-hover:bg-provider-blue-600 group-hover:text-white transition-colors duration-500 shadow-sm">
+                                                                {session.candidate_name?.charAt(0)}
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="font-black text-provider-slate-900 tracking-tight leading-none mb-1">{session.candidate_name}</h4>
+                                                                <div className="text-[10px] font-bold text-provider-slate-400 uppercase tracking-widest">{session.candidate_email}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="p-2 rounded-xl bg-provider-slate-50 text-provider-slate-400 group-hover:text-provider-blue-600 transition-colors">
+                                                            <MoreHorizontal className="w-5 h-5" />
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <h4 className="font-black text-provider-slate-900 tracking-tight leading-none mb-1">{session.candidate_name}</h4>
-                                                        <div className="text-[10px] font-bold text-provider-slate-400 uppercase tracking-widest">{session.candidate_email}</div>
+
+                                                    <div className="space-y-4 mb-8">
+                                                        <div className="flex items-center gap-3 text-xs font-bold text-provider-slate-600 capitalize">
+                                                            <Calendar className="w-4 h-4 text-provider-blue-600" />
+                                                            {new Date(session.interview_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long' })} at {session.start_time}
+                                                        </div>
+                                                        <div className="flex items-center gap-3 text-xs font-bold text-provider-slate-600">
+                                                            <Video className="w-4 h-4 text-provider-blue-600" />
+                                                            Secure Interview Room #102
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-3">
+                                                        <button className="provider-btn-secondary h-12 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                                                            Details <ArrowUpRight className="w-3.5 h-3.5" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => startInterview(session)}
+                                                            className="provider-btn-primary h-12 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-200 flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700"
+                                                        >
+                                                            Start Now <ExternalLink className="w-3.5 h-3.5" />
+                                                        </button>
                                                     </div>
                                                 </div>
-                                                <div className="p-2 rounded-xl bg-provider-slate-50 text-provider-slate-400 group-hover:text-provider-blue-600 transition-colors">
-                                                    <MoreHorizontal className="w-5 h-5" />
-                                                </div>
+                                            </motion.div>
+                                        ))
+                                    ) : (
+                                        <div className="col-span-full py-24 flex flex-col items-center text-center">
+                                            <div className="w-24 h-24 bg-provider-slate-50 rounded-full flex items-center justify-center mb-6">
+                                                <Video className="w-10 h-10 text-provider-slate-200" />
                                             </div>
-
-                                            <div className="space-y-4 mb-8">
-                                                <div className="flex items-center gap-3 text-xs font-bold text-provider-slate-600 capitalize">
-                                                    <Calendar className="w-4 h-4 text-provider-blue-600" />
-                                                    {new Date(session.interview_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long' })} at {session.start_time}
-                                                </div>
-                                                <div className="flex items-center gap-3 text-xs font-bold text-provider-slate-600">
-                                                    <Video className="w-4 h-4 text-provider-blue-600" />
-                                                    Secure Interview Room #102
-                                                </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-2 gap-3">
-                                                <button className="provider-btn-secondary h-12 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
-                                                    Details <ArrowUpRight className="w-3.5 h-3.5" />
-                                                </button>
-                                                <button
-                                                    onClick={() => startInterview(session.id)}
-                                                    className="provider-btn-primary h-12 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-200 flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700"
-                                                >
-                                                    Start Now <ExternalLink className="w-3.5 h-3.5" />
-                                                </button>
-                                            </div>
+                                            <h3 className="text-xl font-black text-provider-slate-900 tracking-tight">No Active Sessions Detected</h3>
+                                            <p className="text-sm text-provider-slate-400 mt-2 max-w-xs">Initialize the scheduling protocol to begin candidate evaluation.</p>
+                                            <button
+                                                onClick={() => setIsScheduling(true)}
+                                                className="mt-8 px-8 py-4 bg-white border border-provider-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-provider-blue-400 transition-all shadow-sm"
+                                            >
+                                                Initialize Protocol
+                                            </button>
                                         </div>
-                                    </motion.div>
-                                ))
-                            ) : (
-                                <div className="col-span-full py-24 flex flex-col items-center text-center">
-                                    <div className="w-24 h-24 bg-provider-slate-50 rounded-full flex items-center justify-center mb-6">
-                                        <Video className="w-10 h-10 text-provider-slate-200" />
-                                    </div>
-                                    <h3 className="text-xl font-black text-provider-slate-900 tracking-tight">No Active Sessions Detected</h3>
-                                    <p className="text-sm text-provider-slate-400 mt-2 max-w-xs">Initialize the scheduling protocol to begin candidate evaluation.</p>
-                                    <button
-                                        onClick={() => setIsScheduling(true)}
-                                        className="mt-8 px-8 py-4 bg-white border border-provider-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-provider-blue-400 transition-all shadow-sm"
-                                    >
-                                        Initialize Protocol
-                                    </button>
-                                </div>
+                                    )}
+                                </motion.div>
+                            )}
+
+                            {activeTab === 'applicants' && (
+                                <motion.div
+                                    key="applicants"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    className="space-y-4"
+                                >
+                                    {loadingApplicants ? (
+                                        <div className="p-12 text-center text-provider-slate-400 font-bold">Synchronizing candidate roster...</div>
+                                    ) : applicants.length > 0 ? (
+                                        <div className="grid grid-cols-1 gap-4">
+                                            {applicants.map((app) => (
+                                                <div key={app.id} className="provider-panel p-6 flex items-center justify-between group hover:border-provider-blue-200 transition-all">
+                                                    <div className="flex items-center gap-6">
+                                                        <div className="w-14 h-14 rounded-2xl bg-provider-slate-100 flex items-center justify-center text-provider-slate-400 font-black text-xl overflow-hidden">
+                                                            {app.avatar ? <img src={app.avatar} className="w-full h-full object-cover" /> : app.candidate_name?.charAt(0)}
+                                                        </div>
+                                                        <div>
+                                                            <div className="flex items-center gap-3">
+                                                                <h3 className="font-black text-provider-slate-900 text-lg">{app.candidate_name}</h3>
+                                                                <StatusBadge status={app.status} />
+                                                            </div>
+                                                            <div className="text-xs font-bold text-provider-slate-400 mt-1">{app.candidate_email} • Match Score: <span className="text-provider-blue-600">{app.match_score}%</span></div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <button 
+                                                            onClick={() => handleStartNow(app)}
+                                                            className="px-6 py-3 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-2"
+                                                        >
+                                                            <Video className="w-4 h-4" /> Start Now
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleScheduleClick(app)}
+                                                            className="px-6 py-3 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-2"
+                                                        >
+                                                            <Calendar className="w-4 h-4" /> Schedule
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="p-20 text-center provider-panel border-dashed">
+                                            <Users className="w-12 h-12 text-provider-slate-300 mx-auto mb-4" />
+                                            <h3 className="text-lg font-black text-provider-slate-900">No applicants yet</h3>
+                                            <p className="text-xs font-bold text-provider-slate-400 mt-2 uppercase tracking-widest">Candidates will appear here once they apply to this position</p>
+                                        </div>
+                                    )}
+                                </motion.div>
                             )}
                         </AnimatePresence>
                     </div>
                 </div>
             </div>
+
+            <ScheduleInterviewModal 
+                isOpen={isScheduling}
+                onClose={() => { setIsScheduling(false); setSelectedApplicantForSchedule(null); }}
+                applicant={selectedApplicantForSchedule}
+                jobId={selectedJobId}
+                onSuccess={() => fetchInterviews(selectedJobId)}
+            />
         </ProviderLayout>
     );
 };

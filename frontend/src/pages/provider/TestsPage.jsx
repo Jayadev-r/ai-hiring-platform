@@ -179,6 +179,19 @@ const TestsPage = () => {
         }
     };
 
+    const handlePublishTest = async (testId) => {
+        try {
+            setSaving(true);
+            await publishTest(testId);
+            addToast('success', 'Assessment published successfully');
+            fetchTests();
+        } catch (error) {
+            addToast('error', error?.response?.data?.message || 'Failed to publish assessment');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const handleViewResults = async (test) => {
         try {
             setLoadingResults(true);
@@ -315,12 +328,20 @@ const TestsPage = () => {
                                                 <BarChart3 className="w-4 h-4" />
                                             </button>
                                         ) : (
-                                            <button
-                                                onClick={() => handleEditTest(test)}
-                                                className="p-2.5 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition-all shadow-sm"
-                                            >
-                                                <Edit3 className="w-4 h-4" />
-                                            </button>
+                                            <>
+                                                <button
+                                                    onClick={() => handleEditTest(test)}
+                                                    className="p-2.5 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition-all shadow-sm"
+                                                >
+                                                    <Edit3 className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handlePublishTest(test.id)}
+                                                    className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm font-black text-[10px] uppercase tracking-widest px-4"
+                                                >
+                                                    Launch
+                                                </button>
+                                            </>
                                         )}
                                         <button
                                             onClick={() => deleteTest(test.id).then(fetchTests)}

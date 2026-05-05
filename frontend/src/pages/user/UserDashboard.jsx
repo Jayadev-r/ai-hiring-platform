@@ -15,6 +15,7 @@ import useAuthUser from '../../hooks/useAuthUser';
 
 import { getDashboardStats } from '../../api/users';
 import { getJobs } from '../../api/jobs';
+import { getUserApplications } from '../../api/applications';
 
 /* ── Metric card config ──────────────────────────────────── */
 const METRICS = [
@@ -32,7 +33,7 @@ const glowColors = {
 };
 
 /* ── Job card ────────────────────────────────────────────── */
-const JobItem = ({ job, onApply }) => {
+const JobItem = ({ job, onApply, isApplied }) => {
     const skills = (job.required_skills || '').split(',').slice(0, 3);
     return (
         <TiltCard className="group h-full">
@@ -64,13 +65,19 @@ const JobItem = ({ job, onApply }) => {
                     )}
                 </div>
 
-                {/* Apply button */}
-                <button
-                    onClick={() => onApply(job)}
-                    className="bg-indigo-600 text-white hover:bg-indigo-700 w-full py-2 rounded-lg text-xs font-semibold tracking-wide transition-colors shadow-sm"
-                >
-                    Apply Now
-                </button>
+                {/* Apply / Applied button */}
+                {isApplied ? (
+                    <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 w-full py-2 rounded-lg text-xs font-semibold tracking-wide text-center">
+                        Applied ✓
+                    </div>
+                ) : (
+                    <button
+                        onClick={() => onApply(job)}
+                        className="bg-indigo-600 text-white hover:bg-indigo-700 w-full py-2 rounded-lg text-xs font-semibold tracking-wide transition-colors shadow-sm"
+                    >
+                        Apply Now
+                    </button>
+                )}
             </GlassCard>
         </TiltCard>
     );
@@ -89,6 +96,14 @@ const UserDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [selectedJob, setSelectedJob] = useState(null);
     const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+    const [userApplications, setUserApplications] = useState([]);
+
+    const fetchApplications = async () => {
+        try {
+            const res = await getUserApplications();
+            if (res.success) setUserApplications(res.applications || []);
+        } catch (e) { console.error(e); }
+    };
 
     useEffect(() => {
         (async () => {
@@ -105,6 +120,7 @@ const UserDashboard = () => {
                 setLoading(false);
             }
         })();
+        fetchApplications();
     }, []);
 
     return (
@@ -197,6 +213,7 @@ const UserDashboard = () => {
                                 >
                                     <JobItem
                                         job={job}
+                                        isApplied={userApplications.some(a => a.job_id === job.job_id)}
                                         onApply={(j) => { setSelectedJob(j); setIsApplyModalOpen(true); }}
                                     />
                                 </motion.div>
@@ -209,7 +226,7 @@ const UserDashboard = () => {
             {/* Apply modal – preserved */}
             <JobApplyModal
                 isOpen={isApplyModalOpen}
-                onClose={() => setIsApplyModalOpen(false)}
+                onClose={() => { setIsApplyModalOpen(false); fetchApplications(); }}
                 job={selectedJob}
             />
         </UserLayout>
