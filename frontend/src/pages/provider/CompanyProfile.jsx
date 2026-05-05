@@ -61,7 +61,7 @@ const CompanyProfile = () => {
             if (response.data.company) {
                 const { name, industry, website_url, location, description, linkedin_url, twitter_url, logo } = response.data.company;
                 setFormData({
-                    name: name || '',
+                    name: name || user?.name || '',
                     industry: industry || '',
                     website_url: website_url || '',
                     location: location || '',
@@ -72,6 +72,8 @@ const CompanyProfile = () => {
                 if (logo) {
                     setLogoPreview(logo);
                 }
+            } else {
+                setFormData(prev => ({ ...prev, name: user?.name || '' }));
             }
         } catch (error) {
             toast.error('Failed to synchronize identity data.');
@@ -252,7 +254,7 @@ const CompanyProfile = () => {
                                                 name="location"
                                                 value={formData.location}
                                                 onChange={handleInputChange}
-                                                className="provider-input w-full pl-10 h-12 font-bold"
+                                                className="provider-input w-full !pl-10 h-12 font-bold"
                                                 placeholder="Bangalore, Hybrid"
                                             />
                                         </div>
@@ -265,7 +267,7 @@ const CompanyProfile = () => {
                                                 name="website_url"
                                                 value={formData.website_url}
                                                 onChange={handleInputChange}
-                                                className="provider-input w-full pl-10 h-12 font-bold"
+                                                className="provider-input w-full !pl-10 h-12 font-bold"
                                                 placeholder="https://hirex.ai"
                                             />
                                         </div>
