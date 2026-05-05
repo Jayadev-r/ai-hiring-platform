@@ -331,6 +331,60 @@ const AuthPage = () => {
 
                             {/* Form */}
                             <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
+                                {/* Intent (register only) */}
+                                <AnimatePresence initial={false}>
+                                    {mode === 'register' && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="overflow-hidden pb-2"
+                                        >
+                                            <label className="block text-xs font-bold text-slate-500 mb-3 uppercase tracking-widest">
+                                                I am joining as
+                                            </label>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                {/* Job Seeker */}
+                                                <label className={`relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                                                    formData.intent === 'job'
+                                                        ? 'border-indigo-500 bg-indigo-50/50 text-indigo-700 shadow-lg shadow-indigo-500/10'
+                                                        : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                                                }`}>
+                                                    <input type="radio" name="intent" value="job" checked={formData.intent === 'job'} onChange={handleChange} className="sr-only" />
+                                                    <div className={`p-2 rounded-xl transition-colors ${formData.intent === 'job' ? 'bg-indigo-100' : 'bg-slate-100'}`}>
+                                                        <Briefcase className={`w-5 h-5 ${formData.intent === 'job' ? 'text-indigo-600' : 'text-slate-400'}`} />
+                                                    </div>
+                                                    <span className="text-sm font-black">Job Seeker</span>
+                                                    {formData.intent === 'job' && (
+                                                        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-2 -right-2 w-6 h-6 bg-indigo-500 rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm">
+                                                            <CheckCircle className="w-3.5 h-3.5" />
+                                                        </motion.div>
+                                                    )}
+                                                </label>
+
+                                                {/* Recruiter */}
+                                                <label className={`relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                                                    formData.intent === 'employee'
+                                                        ? 'border-fuchsia-500 bg-fuchsia-50/50 text-fuchsia-700 shadow-lg shadow-fuchsia-500/10'
+                                                        : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                                                }`}>
+                                                    <input type="radio" name="intent" value="employee" checked={formData.intent === 'employee'} onChange={handleChange} className="sr-only" />
+                                                    <div className={`p-2 rounded-xl transition-colors ${formData.intent === 'employee' ? 'bg-fuchsia-100' : 'bg-slate-100'}`}>
+                                                        <UsersIcon className={`w-5 h-5 ${formData.intent === 'employee' ? 'text-fuchsia-600' : 'text-slate-400'}`} />
+                                                    </div>
+                                                    <span className="text-sm font-black">Recruiter</span>
+                                                    {formData.intent === 'employee' && (
+                                                        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-2 -right-2 w-6 h-6 bg-fuchsia-500 rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm">
+                                                            <CheckCircle className="w-3.5 h-3.5" />
+                                                        </motion.div>
+                                                    )}
+                                                </label>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
                                 {/* Name (register only) */}
                                 <AnimatePresence initial={false}>
                                     {mode === 'register' && (
@@ -342,12 +396,12 @@ const AuthPage = () => {
                                             className="overflow-hidden"
                                         >
                                             <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest">
-                                                Full Name
+                                                {formData.intent === 'employee' ? 'Company Name' : 'Full Name'}
                                             </label>
                                             <input
                                                 name="name"
                                                 type="text"
-                                                placeholder="John Doe"
+                                                placeholder={formData.intent === 'employee' ? 'Acme Corp' : 'John Doe'}
                                                 value={formData.name}
                                                 onChange={handleChange}
                                                 required={mode === 'register'}
@@ -404,60 +458,6 @@ const AuthPage = () => {
                                         </button>
                                     </div>
                                 </div>
-
-                                {/* Intent (register only) */}
-                                <AnimatePresence initial={false}>
-                                    {mode === 'register' && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            transition={{ duration: 0.3 }}
-                                            className="overflow-hidden pt-2"
-                                        >
-                                            <label className="block text-xs font-bold text-slate-500 mb-3 uppercase tracking-widest">
-                                                I am joining as
-                                            </label>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                {/* Job Seeker */}
-                                                <label className={`relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
-                                                    formData.intent === 'job'
-                                                        ? 'border-indigo-500 bg-indigo-50/50 text-indigo-700 shadow-lg shadow-indigo-500/10'
-                                                        : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50'
-                                                }`}>
-                                                    <input type="radio" name="intent" value="job" checked={formData.intent === 'job'} onChange={handleChange} className="sr-only" />
-                                                    <div className={`p-2 rounded-xl transition-colors ${formData.intent === 'job' ? 'bg-indigo-100' : 'bg-slate-100'}`}>
-                                                        <Briefcase className={`w-5 h-5 ${formData.intent === 'job' ? 'text-indigo-600' : 'text-slate-400'}`} />
-                                                    </div>
-                                                    <span className="text-sm font-black">Job Seeker</span>
-                                                    {formData.intent === 'job' && (
-                                                        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-2 -right-2 w-6 h-6 bg-indigo-500 rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm">
-                                                            <CheckCircle className="w-3.5 h-3.5" />
-                                                        </motion.div>
-                                                    )}
-                                                </label>
-
-                                                {/* Recruiter */}
-                                                <label className={`relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
-                                                    formData.intent === 'employee'
-                                                        ? 'border-fuchsia-500 bg-fuchsia-50/50 text-fuchsia-700 shadow-lg shadow-fuchsia-500/10'
-                                                        : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50'
-                                                }`}>
-                                                    <input type="radio" name="intent" value="employee" checked={formData.intent === 'employee'} onChange={handleChange} className="sr-only" />
-                                                    <div className={`p-2 rounded-xl transition-colors ${formData.intent === 'employee' ? 'bg-fuchsia-100' : 'bg-slate-100'}`}>
-                                                        <UsersIcon className={`w-5 h-5 ${formData.intent === 'employee' ? 'text-fuchsia-600' : 'text-slate-400'}`} />
-                                                    </div>
-                                                    <span className="text-sm font-black">Recruiter</span>
-                                                    {formData.intent === 'employee' && (
-                                                        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-2 -right-2 w-6 h-6 bg-fuchsia-500 rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm">
-                                                            <CheckCircle className="w-3.5 h-3.5" />
-                                                        </motion.div>
-                                                    )}
-                                                </label>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
 
                                 {/* Submit Button */}
                                 <motion.button
