@@ -57,38 +57,64 @@ function HeroBg() {
         return () => window.removeEventListener('mousemove', move);
     }, []);
 
-    const dx = (mouse.x - 0.5) * 28;
-    const dy = (mouse.y - 0.5) * 28;
+    const dx = (mouse.x - 0.5) * 40;
+    const dy = (mouse.y - 0.5) * 40;
 
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
             {/* Dot grid */}
             <div
-                className="absolute inset-0 opacity-[0.35]"
+                className="absolute inset-0 opacity-[0.3]"
                 style={{
-                    backgroundImage: 'radial-gradient(circle, #c7d2fe 1px, transparent 1px)',
-                    backgroundSize: '36px 36px',
+                    backgroundImage: 'radial-gradient(circle, #a5b4fc 1px, transparent 1px)',
+                    backgroundSize: '40px 40px',
                     transform: `translate(${dx * 0.2}px, ${dy * 0.2}px)`,
                     transition: 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)',
                 }}
             />
-            {/* Gradient mesh blobs — parallax */}
-            <div
-                className="absolute top-[-15%] left-[-10%] w-[70%] h-[70%] rounded-full opacity-30"
+            {/* Animated Aurora Gradient Orbs */}
+            <motion.div
+                animate={{ 
+                    scale: [1, 1.2, 1], 
+                    rotate: [0, 45, 0],
+                    x: [0, 30, 0],
+                    y: [0, -40, 0]
+                }}
+                transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute top-[-10%] left-[-10%] w-[50%] h-[60%] rounded-full opacity-[0.35]"
                 style={{
-                    background: 'radial-gradient(ellipse at center, #e0e7ff 0%, transparent 70%)',
-                    transform: `translate(${dx * 0.5}px, ${dy * 0.5}px)`,
-                    transition: 'transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94)',
-                    filter: 'blur(48px)',
+                    background: 'radial-gradient(ellipse at center, #818cf8 0%, transparent 60%)',
+                    filter: 'blur(60px)',
+                    mixBlendMode: 'multiply'
                 }}
             />
-            <div
-                className="absolute bottom-0 right-0 w-[60%] h-[50%] rounded-full opacity-25"
+            <motion.div
+                animate={{ 
+                    scale: [1, 1.3, 1], 
+                    rotate: [0, -30, 0],
+                    x: [0, -40, 0],
+                    y: [0, 30, 0]
+                }}
+                transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+                className="absolute bottom-[-10%] right-[-5%] w-[60%] h-[60%] rounded-full opacity-[0.35]"
                 style={{
-                    background: 'radial-gradient(ellipse at center, #ddd6fe 0%, transparent 70%)',
-                    transform: `translate(${-dx * 0.4}px, ${-dy * 0.4}px)`,
-                    transition: 'transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94)',
-                    filter: 'blur(60px)',
+                    background: 'radial-gradient(ellipse at center, #c084fc 0%, transparent 60%)',
+                    filter: 'blur(70px)',
+                    mixBlendMode: 'multiply'
+                }}
+            />
+            <motion.div
+                animate={{ 
+                    scale: [1, 1.1, 1], 
+                    x: [0, 50, 0],
+                    y: [0, 20, 0]
+                }}
+                transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+                className="absolute top-[20%] right-[15%] w-[40%] h-[40%] rounded-full opacity-[0.25]"
+                style={{
+                    background: 'radial-gradient(ellipse at center, #67e8f9 0%, transparent 60%)',
+                    filter: 'blur(50px)',
+                    mixBlendMode: 'multiply'
                 }}
             />
         </div>
