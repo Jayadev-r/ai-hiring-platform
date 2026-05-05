@@ -267,7 +267,7 @@ const Landing = () => {
 
                     <Reveal scale delay={0.2}>
                         <h1 className="text-6xl md:text-8xl lg:text-[7.5rem] font-black font-heading tracking-tighter leading-[0.95] text-slate-900 mb-8 drop-shadow-sm">
-                            The Cinematic
+                            The Intelligent
                             <br />
                             <span className="relative inline-block mt-2">
                                 <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-fuchsia-500 to-rose-500">
@@ -347,7 +347,7 @@ const Landing = () => {
                 <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
                     <Reveal className="text-center mb-24" scale>
                         <h2 className="text-5xl md:text-6xl font-black font-heading text-slate-900 mb-6 tracking-tight">
-                            Cinematic <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-indigo-500">Automation.</span>
+                            Flawless <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-indigo-500">Automation.</span>
                         </h2>
                         <p className="text-slate-500 text-xl max-w-2xl mx-auto font-medium">
                             Five massive leaps forward in hiring technology. Sit back and watch the AI work.
@@ -438,7 +438,7 @@ const Landing = () => {
 
             {/* ── PORTAL ECOSYSTEM ── */}
             <section id="ecosystem" className="py-32 bg-slate-900 relative overflow-hidden text-white">
-                {/* Dark Cinematic background inside the light theme for extreme contrast */}
+                {/* Dark section for extreme contrast */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <motion.div
                         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
@@ -556,7 +556,7 @@ const Landing = () => {
                         </div>
                         <span className="font-heading font-black text-xl text-slate-900">HireX</span>
                     </div>
-                    <p className="text-slate-400 font-medium">© 2026 HireX Cinematic Platform.</p>
+                    <p className="text-slate-400 font-medium">© 2026 HireX Platform.</p>
                 </div>
             </footer>
         </div>
