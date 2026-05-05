@@ -77,7 +77,7 @@ router.post('/jobs/:id/apply', auth, roleGuard('job_seeker'), async (req, res) =
         }
         const { company_id, status, require_education, require_skills } = jobRes.rows[0];
 
-        if (status !== 'Open') {
+        if (status?.toLowerCase() !== 'open') {
             return res.status(400).json({ success: false, message: 'This job is no longer accepting applications' });
         }
 
