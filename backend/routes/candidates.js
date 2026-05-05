@@ -170,13 +170,14 @@ router.post('/parse-resume', auth, handleUpload, async (req, res) => {
                     INSERT INTO candidates (user_id, name, email, created_at, updated_at)
                     VALUES ($1, $2, $3, NOW(), NOW())
                     RETURNING id
-                `, [userId, extractedData.personal_info.name || 'Unknown', email]);
+                `, [userId, extractedData?.personal_info?.name || 'Unknown', email]);
                 candidateId = createRes.rows[0].id;
             } else {
                 candidateId = checkRes.rows[0].id;
             }
 
             // Update personal info and save resume
+            const pInfo = extractedData?.personal_info || {};
             await client.query(`
                 UPDATE candidates SET
                     name = COALESCE($2, name),
@@ -197,20 +198,20 @@ router.post('/parse-resume', auth, handleUpload, async (req, res) => {
                 WHERE id = $1
             `, [
                 candidateId,
-                extractedData.personal_info.name,
-                extractedData.personal_info.phone_number,
-                extractedData.personal_info.location,
-                extractedData.personal_info.github_url,
-                extractedData.personal_info.linkedin_url,
-                extractedData.skills || extractedData.personal_info.skills || [], // Fix: Use top-level skills
-                extractedData.personal_info.profile_description,
-                extractedData.personal_info.portfolio_url,
+                pInfo.name || null,
+                pInfo.phone_number || null,
+                pInfo.location || null,
+                pInfo.github_url || null,
+                pInfo.linkedin_url || null,
+                extractedData?.skills || pInfo.skills || [], // Fix: Use top-level skills
+                pInfo.profile_description || null,
+                pInfo.portfolio_url || null,
                 req.file.buffer.toString('base64'),
-                extractedData.education?.[0]?.degree || null,
-                extractedData.education?.[0]?.school || null,
-                validateYear(extractedData.education?.[0]?.endDate), // Fix: Send integer year
-                extractedData.experience?.[0]?.title || null,
-                extractedData.experience?.[0]?.company || null
+                extractedData?.education?.[0]?.degree || null,
+                extractedData?.education?.[0]?.school || null,
+                validateYear(extractedData?.education?.[0]?.endDate) || null, // Fix: Send integer year
+                extractedData?.experience?.[0]?.title || null,
+                extractedData?.experience?.[0]?.company || null
             ]);
 
             // Sync Education
