@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { motion, AnimatePresence, useSpring } from 'framer-motion';
 import {
     LogIn, UserPlus, Briefcase, Users as UsersIcon,
-    Brain, Eye, EyeOff, Sparkles, ArrowRight
+    Brain, Eye, EyeOff, Sparkles, ArrowRight, CheckCircle
 } from 'lucide-react';
 
 /* ─────────────────────────────────────────────
