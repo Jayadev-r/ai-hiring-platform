@@ -5,17 +5,16 @@ import {
     Brain, Zap, Target, Users, FileText, Search,
     Shield, BarChart3, Sparkles, ChevronRight,
     ArrowRight, CheckCircle, Star, Cpu, Network,
-    GitBranch, ScanLine, TrendingUp, Layers, Bot, Briefcase
+    GitBranch, ScanLine, TrendingUp, Bot, Briefcase
 } from 'lucide-react';
 
 /* ─────────────────────────────────────────────
-   CURSOR GLOW EFFECT
-   A soft radial spotlight that follows the mouse
+   VIBRANT CURSOR GLOW
 ───────────────────────────────────────────── */
 function CursorGlow() {
     const [pos, setPos] = useState({ x: -500, y: -500 });
-    const springX = useSpring(pos.x, { stiffness: 120, damping: 22 });
-    const springY = useSpring(pos.y, { stiffness: 120, damping: 22 });
+    const springX = useSpring(pos.x, { stiffness: 120, damping: 25 });
+    const springY = useSpring(pos.y, { stiffness: 120, damping: 25 });
 
     useEffect(() => {
         const move = (e) => setPos({ x: e.clientX, y: e.clientY });
@@ -24,21 +23,19 @@ function CursorGlow() {
     }, []);
 
     return (
-        <motion.div
-            className="pointer-events-none fixed z-0 inset-0"
-            aria-hidden
-        >
+        <motion.div className="pointer-events-none fixed z-0 inset-0" aria-hidden>
             <motion.div
                 className="absolute"
                 style={{
                     left: springX,
                     top: springY,
                     transform: 'translate(-50%, -50%)',
-                    width: 520,
-                    height: 520,
+                    width: 600,
+                    height: 600,
                     borderRadius: '50%',
-                    background: 'radial-gradient(circle, rgba(79,70,229,0.09) 0%, rgba(99,102,241,0.04) 45%, transparent 70%)',
+                    background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(56,189,248,0.05) 45%, transparent 70%)',
                     pointerEvents: 'none',
+                    mixBlendMode: 'screen'
                 }}
             />
         </motion.div>
@@ -46,74 +43,68 @@ function CursorGlow() {
 }
 
 /* ─────────────────────────────────────────────
-   ANIMATED SVG BACKGROUND GRID
-   Decorative dot-grid that reacts to cursor
+   CINEMATIC VIBRANT BACKGROUND (LIGHT THEME)
 ───────────────────────────────────────────── */
 function HeroBg() {
-    const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
-    useEffect(() => {
-        const move = (e) => setMouse({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight });
-        window.addEventListener('mousemove', move);
-        return () => window.removeEventListener('mousemove', move);
-    }, []);
-
-    const dx = (mouse.x - 0.5) * 40;
-    const dy = (mouse.y - 0.5) * 40;
-
     return (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
-            {/* Dot grid */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none bg-gradient-to-b from-[#f0f4ff] via-[#fdf2f8] to-[#f0fdfa]">
+            {/* Dynamic Mesh Background Grid */}
             <div
-                className="absolute inset-0 opacity-[0.3]"
+                className="absolute inset-0 opacity-20"
                 style={{
-                    backgroundImage: 'radial-gradient(circle, #a5b4fc 1px, transparent 1px)',
-                    backgroundSize: '40px 40px',
-                    transform: `translate(${dx * 0.2}px, ${dy * 0.2}px)`,
-                    transition: 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)',
+                    backgroundImage: `
+                        linear-gradient(to right, #818cf8 1px, transparent 1px),
+                        linear-gradient(to bottom, #818cf8 1px, transparent 1px)
+                    `,
+                    backgroundSize: '80px 80px',
+                    perspective: '1000px',
+                    transform: 'rotateX(60deg) scale(2.5) translateY(-20%)',
+                    transformOrigin: 'top center'
                 }}
             />
-            {/* Animated Aurora Gradient Orbs */}
+
+            {/* Massive Cinematic Light Orbs */}
+            <motion.div
+                animate={{ 
+                    scale: [1, 1.4, 1], 
+                    rotate: [0, 90, 0],
+                    x: ['-20%', '20%', '-20%'],
+                    y: ['-10%', '20%', '-10%']
+                }}
+                transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+                className="absolute top-[-20%] left-[-10%] w-[80%] h-[80%] rounded-full opacity-[0.4]"
+                style={{
+                    background: 'radial-gradient(ellipse at center, #818cf8 0%, #c084fc 40%, transparent 70%)',
+                    filter: 'blur(90px)',
+                    mixBlendMode: 'multiply'
+                }}
+            />
+            <motion.div
+                animate={{ 
+                    scale: [1, 1.5, 1], 
+                    rotate: [0, -90, 0],
+                    x: ['10%', '-30%', '10%'],
+                    y: ['20%', '-20%', '20%']
+                }}
+                transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+                className="absolute bottom-[-10%] right-[-10%] w-[90%] h-[90%] rounded-full opacity-[0.35]"
+                style={{
+                    background: 'radial-gradient(ellipse at center, #38bdf8 0%, #34d399 40%, transparent 70%)',
+                    filter: 'blur(100px)',
+                    mixBlendMode: 'multiply'
+                }}
+            />
             <motion.div
                 animate={{ 
                     scale: [1, 1.2, 1], 
-                    rotate: [0, 45, 0],
-                    x: [0, 30, 0],
-                    y: [0, -40, 0]
+                    x: ['-10%', '40%', '-10%'],
+                    y: ['30%', '-30%', '30%']
                 }}
-                transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute top-[-10%] left-[-10%] w-[50%] h-[60%] rounded-full opacity-[0.35]"
+                transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute top-[30%] left-[20%] w-[60%] h-[60%] rounded-full opacity-[0.3]"
                 style={{
-                    background: 'radial-gradient(ellipse at center, #818cf8 0%, transparent 60%)',
-                    filter: 'blur(60px)',
-                    mixBlendMode: 'multiply'
-                }}
-            />
-            <motion.div
-                animate={{ 
-                    scale: [1, 1.3, 1], 
-                    rotate: [0, -30, 0],
-                    x: [0, -40, 0],
-                    y: [0, 30, 0]
-                }}
-                transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-                className="absolute bottom-[-10%] right-[-5%] w-[60%] h-[60%] rounded-full opacity-[0.35]"
-                style={{
-                    background: 'radial-gradient(ellipse at center, #c084fc 0%, transparent 60%)',
-                    filter: 'blur(70px)',
-                    mixBlendMode: 'multiply'
-                }}
-            />
-            <motion.div
-                animate={{ 
-                    scale: [1, 1.1, 1], 
-                    x: [0, 50, 0],
-                    y: [0, 20, 0]
-                }}
-                transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="absolute top-[20%] right-[15%] w-[40%] h-[40%] rounded-full opacity-[0.25]"
-                style={{
-                    background: 'radial-gradient(ellipse at center, #67e8f9 0%, transparent 60%)',
-                    filter: 'blur(50px)',
+                    background: 'radial-gradient(ellipse at center, #fb7185 0%, #f472b6 50%, transparent 70%)',
+                    filter: 'blur(80px)',
                     mixBlendMode: 'multiply'
                 }}
             />
@@ -122,19 +113,20 @@ function HeroBg() {
 }
 
 /* ─────────────────────────────────────────────
-   SCROLL-REVEAL WRAPPER
+   SCROLL-REVEAL WRAPPER (MORE DRAMATIC)
 ───────────────────────────────────────────── */
-function Reveal({ children, delay = 0, direction = 'up', className = '' }) {
+function Reveal({ children, delay = 0, direction = 'up', className = '', scale = false }) {
     const ref = useRef(null);
-    const inView = useInView(ref, { once: true, margin: '-60px' });
+    const inView = useInView(ref, { once: true, margin: '-100px' });
     const variants = {
         hidden: {
             opacity: 0,
-            y: direction === 'up' ? 48 : direction === 'down' ? -48 : 0,
-            x: direction === 'left' ? 48 : direction === 'right' ? -48 : 0,
-            scale: direction === 'scale' ? 0.93 : 1,
+            y: direction === 'up' ? 80 : direction === 'down' ? -80 : 0,
+            x: direction === 'left' ? 80 : direction === 'right' ? -80 : 0,
+            scale: scale ? 0.85 : 1,
+            rotateX: scale ? 10 : 0
         },
-        visible: { opacity: 1, y: 0, x: 0, scale: 1 },
+        visible: { opacity: 1, y: 0, x: 0, scale: 1, rotateX: 0 },
     };
     return (
         <motion.div
@@ -142,63 +134,11 @@ function Reveal({ children, delay = 0, direction = 'up', className = '' }) {
             variants={variants}
             initial="hidden"
             animate={inView ? 'visible' : 'hidden'}
-            transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
             className={className}
         >
             {children}
         </motion.div>
-    );
-}
-
-/* ─────────────────────────────────────────────
-   HIGHLIGHT UNDERLINE SPAN
-───────────────────────────────────────────── */
-function Highlight({ children, color = 'primary' }) {
-    const colors = {
-        primary: 'from-primary-500 to-primary-400',
-        violet: 'from-violet-500 to-purple-400',
-        cyan: 'from-cyan-500 to-blue-400',
-    };
-    return (
-        <span className="relative inline-block">
-            {children}
-            <motion.span
-                initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className={`absolute -bottom-0.5 left-0 right-0 h-[3px] rounded-full bg-gradient-to-r ${colors[color]} origin-left`}
-            />
-        </span>
-    );
-}
-
-/* ─────────────────────────────────────────────
-   3-D TILT CARD
-───────────────────────────────────────────── */
-function TiltCard({ children, className = '' }) {
-    const ref = useRef(null);
-    const handleMouseMove = (e) => {
-        if (!ref.current) return;
-        const r = ref.current.getBoundingClientRect();
-        const x = (e.clientX - r.left) / r.width - 0.5;
-        const y = (e.clientY - r.top) / r.height - 0.5;
-        ref.current.style.transform = `perspective(700px) rotateX(${-y * 10}deg) rotateY(${x * 10}deg) translateZ(6px)`;
-    };
-    const handleMouseLeave = () => {
-        if (!ref.current) return;
-        ref.current.style.transform = 'perspective(700px) rotateX(0deg) rotateY(0deg) translateZ(0)';
-    };
-    return (
-        <div
-            ref={ref}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            className={`transition-transform duration-200 ease-out ${className}`}
-            style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
-        >
-            {children}
-        </div>
     );
 }
 
@@ -214,11 +154,11 @@ const workflowSteps = [
 ];
 
 const intelligenceFeatures = [
-    { icon: ScanLine, title: 'AI Resume Analysis', desc: 'Deep semantic parsing extracts skills and experience beyond surface keywords.', accent: 'bg-primary-50 text-primary-600', border: 'hover:border-primary-200' },
-    { icon: BarChart3, title: 'Smart Candidate Ranking', desc: 'Proprietary scoring algorithms rank candidates by multi-dimensional fit scores.', accent: 'bg-violet-50 text-violet-600', border: 'hover:border-violet-200' },
-    { icon: GitBranch, title: 'Automated Skill Matching', desc: 'Graph-based skill matching identifies lateral skills across roles.', accent: 'bg-cyan-50 text-cyan-600', border: 'hover:border-cyan-200' },
-    { icon: Search, title: 'AI Talent Discovery', desc: 'Proactively surface passive candidates who match your requirements.', accent: 'bg-rose-50 text-rose-600', border: 'hover:border-rose-200' },
-    { icon: Sparkles, title: 'Intelligent Recommendations', desc: 'Continuously learns from hiring decisions to improve over time.', accent: 'bg-amber-50 text-amber-600', border: 'hover:border-amber-200' },
+    { icon: ScanLine, title: 'AI Resume Analysis', desc: 'Deep semantic parsing extracts skills and experience beyond surface keywords.', accent: 'bg-indigo-100 text-indigo-600', border: 'border-indigo-200 hover:border-indigo-400', shadow: 'hover:shadow-indigo-500/30' },
+    { icon: BarChart3, title: 'Smart Candidate Ranking', desc: 'Proprietary scoring algorithms rank candidates by multi-dimensional fit scores.', accent: 'bg-violet-100 text-violet-600', border: 'border-violet-200 hover:border-violet-400', shadow: 'hover:shadow-violet-500/30' },
+    { icon: GitBranch, title: 'Automated Skill Matching', desc: 'Graph-based skill matching identifies lateral skills across roles.', accent: 'bg-sky-100 text-sky-600', border: 'border-sky-200 hover:border-sky-400', shadow: 'hover:shadow-sky-500/30' },
+    { icon: Search, title: 'AI Talent Discovery', desc: 'Proactively surface passive candidates who match your requirements.', accent: 'bg-rose-100 text-rose-600', border: 'border-rose-200 hover:border-rose-400', shadow: 'hover:shadow-rose-500/30' },
+    { icon: Sparkles, title: 'Intelligent Recommendations', desc: 'Continuously learns from hiring decisions to improve over time.', accent: 'bg-amber-100 text-amber-600', border: 'border-amber-200 hover:border-amber-400', shadow: 'hover:shadow-amber-500/30' },
 ];
 
 const seekerFeatures = ['AI-matched job opportunities', 'Smart resume optimization', 'Auto-apply agent', 'Real-time match scores'];
@@ -236,10 +176,10 @@ const capabilities = [
 ];
 
 const stats = [
-    { value: '10×', label: 'Faster Hiring', color: 'text-primary-600' },
+    { value: '10×', label: 'Faster Hiring', color: 'text-indigo-600' },
     { value: '95%', label: 'Match Accuracy', color: 'text-violet-600' },
-    { value: '< 2s', label: 'AI Analysis Time', color: 'text-cyan-600' },
-    { value: '100%', label: 'Automated', color: 'text-primary-600' },
+    { value: '< 2s', label: 'AI Analysis Time', color: 'text-sky-600' },
+    { value: '100%', label: 'Automated', color: 'text-pink-600' },
 ];
 
 /* ─────────────────────────────────────────────
@@ -254,31 +194,31 @@ function LandingNav() {
     }, []);
     return (
         <motion.nav
-            initial={{ y: -64, opacity: 0 }}
+            initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-400 ${scrolled
-                    ? 'bg-white/80 backdrop-blur-xl border-b border-neutral-200/70 shadow-sm'
-                    : 'bg-transparent'
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
+                    ? 'bg-white/70 backdrop-blur-2xl border-b border-white/20 shadow-lg shadow-indigo-900/5 py-3'
+                    : 'bg-transparent py-5'
                 }`}
         >
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between h-16">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
                 {/* Logo */}
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-600 to-violet-600 flex items-center justify-center shadow-md shadow-primary-500/20">
-                        <Brain className="w-4 h-4 text-white" />
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                        <Brain className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-heading font-bold text-lg text-neutral-900 tracking-tight">
-                        Hire<span className="text-primary-600">X</span>
+                    <span className="font-heading font-black text-2xl text-slate-900 tracking-tight">
+                        Hire<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-fuchsia-500">X</span>
                     </span>
                 </div>
 
                 {/* Nav links */}
-                <div className="hidden md:flex items-center gap-7 text-sm font-medium text-neutral-500">
+                <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-600">
                     {[['#workflow', 'How It Works'], ['#intelligence', 'Intelligence'], ['#ecosystem', 'Portals'], ['#capabilities', 'Capabilities']].map(([href, label]) => (
-                        <a key={href} href={href} className="relative group hover:text-neutral-900 transition-colors">
+                        <a key={href} href={href} className="relative group hover:text-indigo-600 transition-colors tracking-wide">
                             {label}
-                            <span className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-primary-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full" />
+                            <span className="absolute -bottom-1.5 left-0 right-0 h-0.5 bg-indigo-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded-full" />
                         </a>
                     ))}
                 </div>
@@ -286,11 +226,11 @@ function LandingNav() {
                 {/* CTA */}
                 <Link to="/login">
                     <motion.button
-                        whileHover={{ scale: 1.04, boxShadow: '0 8px 24px rgba(79,70,229,0.22)' }}
-                        whileTap={{ scale: 0.97 }}
-                        className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-violet-600 text-white text-sm font-semibold shadow-md shadow-primary-500/20 transition-all"
+                        whileHover={{ scale: 1.05, boxShadow: '0 10px 30px -10px rgba(99,102,241,0.6)' }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-6 py-2.5 rounded-full bg-slate-900 text-white text-sm font-bold shadow-xl transition-all"
                     >
-                        Login <ArrowRight className="w-3.5 h-3.5" />
+                        Login Portal
                     </motion.button>
                 </Link>
             </div>
@@ -302,121 +242,98 @@ function LandingNav() {
    LANDING PAGE
 ───────────────────────────────────────────── */
 const Landing = () => {
-    const heroRef = useRef(null);
-    const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-    const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '18%']);
-    const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+    const containerRef = useRef(null);
+    const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end start'] });
+    const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '40%']);
+    const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+    const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
 
     return (
-        <div className="landing-light min-h-screen bg-white text-neutral-900 overflow-x-hidden">
-            {/* Global cursor glow */}
+        <div ref={containerRef} className="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden font-sans selection:bg-indigo-200 selection:text-indigo-900">
             <CursorGlow />
             <LandingNav />
 
             {/* ── HERO ── */}
-            <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+            <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
                 <HeroBg />
-                {/* Top-edge gradient decoration */}
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary-300 to-transparent" />
 
-                <motion.div style={{ y: heroY, opacity: heroOpacity }} className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-                    {/* Badge */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.85 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.15, duration: 0.5, ease: 'easeOut' }}
-                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-200 bg-primary-50 text-primary-700 text-sm font-semibold mb-8 shadow-sm"
-                    >
-                        <Sparkles className="w-3.5 h-3.5 text-primary-500" />
-                        AI-Powered Hiring Intelligence Platform
-                    </motion.div>
+                <motion.div style={{ y: heroY, opacity: heroOpacity, scale: heroScale }} className="relative z-10 max-w-6xl mx-auto px-6 text-center">
+                    <Reveal scale delay={0.1}>
+                        <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/60 backdrop-blur-md border border-white/40 text-indigo-700 text-sm font-bold mb-10 shadow-xl shadow-indigo-900/5">
+                            <Sparkles className="w-4 h-4 text-indigo-500" />
+                            Next-Generation Hiring Intelligence
+                        </div>
+                    </Reveal>
 
-                    {/* Headline */}
-                    <motion.h1
-                        initial={{ opacity: 0, y: 32 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.28, duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-                        className="text-6xl md:text-7xl lg:text-8xl font-bold font-heading tracking-tight leading-[1.06] text-neutral-900 mb-7"
-                    >
-                        The Future of{' '}
-                        <span className="relative">
-                            <span className="bg-gradient-to-r from-primary-600 via-violet-600 to-primary-500 bg-clip-text text-transparent">
-                                Intelligent Hiring
+                    <Reveal scale delay={0.2}>
+                        <h1 className="text-6xl md:text-8xl lg:text-[7.5rem] font-black font-heading tracking-tighter leading-[0.95] text-slate-900 mb-8 drop-shadow-sm">
+                            The Cinematic
+                            <br />
+                            <span className="relative inline-block mt-2">
+                                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-fuchsia-500 to-rose-500">
+                                    Future of Hiring.
+                                </span>
+                                {/* Massive glowing text shadow */}
+                                <span className="absolute inset-0 blur-3xl bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-rose-500 opacity-30 z-0"></span>
                             </span>
-                            {/* Animated underline */}
-                            <motion.span
-                                initial={{ scaleX: 0, opacity: 0 }}
-                                animate={{ scaleX: 1, opacity: 1 }}
-                                transition={{ delay: 0.85, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                                className="absolute -bottom-2 left-0 right-0 h-1 rounded-full bg-gradient-to-r from-primary-400 to-violet-400 origin-left"
-                            />
-                        </span>
-                    </motion.h1>
+                        </h1>
+                    </Reveal>
 
-                    {/* Subtitle */}
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.48, duration: 0.65 }}
-                        className="text-xl text-neutral-500 max-w-2xl mx-auto mb-12 leading-relaxed"
-                    >
-                        An intelligent hiring platform that deeply analyzes resumes, understands job requirements, and connects the right talent with the right opportunity — automatically.
-                    </motion.p>
+                    <Reveal delay={0.4}>
+                        <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto mb-14 font-medium leading-relaxed">
+                            A wildly powerful, visually stunning platform that deeply analyzes resumes and connects top talent with the right opportunity — automatically.
+                        </p>
+                    </Reveal>
 
-                    {/* CTA buttons */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.65, duration: 0.6 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-4"
-                    >
-                        <Link to="/login">
-                            <motion.button
-                                whileHover={{ scale: 1.06, boxShadow: '0 16px 48px rgba(79,70,229,0.28)' }}
-                                whileTap={{ scale: 0.97 }}
-                                className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-primary-600 to-violet-600 text-white font-semibold text-base shadow-xl shadow-primary-500/20 transition-all"
+                    <Reveal delay={0.6}>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                            <Link to="/login">
+                                <motion.button
+                                    whileHover={{ scale: 1.05, boxShadow: '0 20px 40px -10px rgba(99,102,241,0.5)' }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="flex items-center gap-2 px-10 py-5 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 text-white font-bold text-lg shadow-2xl transition-all"
+                                >
+                                    Login to Platform <ArrowRight className="w-5 h-5" />
+                                </motion.button>
+                            </Link>
+                            <motion.a
+                                href="#workflow"
+                                whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.9)' }}
+                                whileTap={{ scale: 0.95 }}
+                                className="flex items-center gap-2 px-10 py-5 rounded-full bg-white/50 backdrop-blur-md border border-white/50 text-slate-800 font-bold text-lg hover:text-indigo-700 transition-all shadow-xl shadow-slate-900/5"
                             >
-                                Login to Platform <ArrowRight className="w-4 h-4" />
-                            </motion.button>
-                        </Link>
-                        <motion.a
-                            href="#workflow"
-                            whileHover={{ scale: 1.04 }}
-                            whileTap={{ scale: 0.97 }}
-                            className="flex items-center gap-2 px-8 py-4 rounded-2xl border-2 border-neutral-200 bg-white text-neutral-700 font-semibold text-base hover:border-primary-300 hover:text-primary-700 transition-all shadow-sm"
-                        >
-                            Explore Platform <ChevronRight className="w-4 h-4" />
-                        </motion.a>
-                    </motion.div>
+                                Explore Features
+                            </motion.a>
+                        </div>
+                    </Reveal>
+                </motion.div>
 
-                    {/* Scroll hint */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1.2 }}
-                        className="mt-20 flex flex-col items-center gap-2"
-                    >
-                        <motion.div
-                            animate={{ y: [0, 8, 0] }}
-                            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-                            className="w-6 h-9 rounded-full border-2 border-neutral-300 flex items-start justify-center pt-1.5"
-                        >
-                            <div className="w-1 h-2 rounded-full bg-neutral-400" />
-                        </motion.div>
-                        <span className="text-xs text-neutral-400 font-medium">Scroll to explore</span>
-                    </motion.div>
+                {/* Floating Elements (Cinematic effect) */}
+                <motion.div 
+                    animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }} 
+                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                    className="absolute top-[20%] left-[10%] w-24 h-24 rounded-3xl bg-white/40 backdrop-blur-2xl border border-white/50 shadow-2xl flex items-center justify-center rotate-12 pointer-events-none"
+                >
+                    <Brain className="w-10 h-10 text-indigo-500" />
+                </motion.div>
+                <motion.div 
+                    animate={{ y: [0, 30, 0], rotate: [0, -15, 0] }} 
+                    transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                    className="absolute bottom-[20%] right-[10%] w-28 h-28 rounded-full bg-white/40 backdrop-blur-2xl border border-white/50 shadow-2xl flex items-center justify-center -rotate-12 pointer-events-none"
+                >
+                    <Target className="w-12 h-12 text-fuchsia-500" />
                 </motion.div>
             </section>
 
             {/* ── STATS TICKER ── */}
-            <section className="py-12 border-y border-neutral-100 bg-white relative z-10">
-                <div className="max-w-5xl mx-auto px-6">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <section className="py-16 relative z-10 bg-white/60 backdrop-blur-xl border-y border-white/40 shadow-2xl shadow-indigo-900/5">
+                <div className="max-w-6xl mx-auto px-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
                         {stats.map((s, i) => (
-                            <Reveal key={s.label} delay={i * 0.08} direction="scale">
-                                <div className="text-center">
-                                    <div className={`text-4xl md:text-5xl font-bold font-heading mb-1 ${s.color}`}>{s.value}</div>
-                                    <div className="text-sm text-neutral-500 font-medium">{s.label}</div>
+                            <Reveal key={s.label} delay={i * 0.1} scale>
+                                <div className="text-center group">
+                                    <div className={`text-5xl md:text-6xl font-black font-heading mb-2 ${s.color} drop-shadow-md group-hover:scale-110 transition-transform duration-500`}>{s.value}</div>
+                                    <div className="text-base text-slate-500 font-bold uppercase tracking-widest">{s.label}</div>
                                 </div>
                             </Reveal>
                         ))}
@@ -425,52 +342,37 @@ const Landing = () => {
             </section>
 
             {/* ── PLATFORM WORKFLOW ── */}
-            <section id="workflow" className="py-28 bg-neutral-50 relative overflow-hidden">
-                {/* Decorative */}
-                <div className="absolute inset-0"
-                    style={{
-                        backgroundImage: 'radial-gradient(circle, #e0e7ff 1px, transparent 1px)',
-                        backgroundSize: '32px 32px',
-                        opacity: 0.4,
-                    }}
-                />
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary-200 to-transparent" />
-
+            <section id="workflow" className="py-32 relative overflow-hidden bg-[#f8fafc]">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#f1f5f9]" />
                 <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
-                    <Reveal className="text-center mb-20">
-                        <span className="inline-block px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold mb-4 border border-primary-200">
-                            Platform Intelligence
-                        </span>
-                        <h2 className="text-4xl md:text-5xl font-bold font-heading text-neutral-900 mb-4">
-                            How the <Highlight>AI Works</Highlight>
+                    <Reveal className="text-center mb-24" scale>
+                        <h2 className="text-5xl md:text-6xl font-black font-heading text-slate-900 mb-6 tracking-tight">
+                            Cinematic <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-indigo-500">Automation.</span>
                         </h2>
-                        <p className="text-neutral-500 text-lg max-w-xl mx-auto">
-                            Five intelligent steps that turn raw resumes into perfect hires.
+                        <p className="text-slate-500 text-xl max-w-2xl mx-auto font-medium">
+                            Five massive leaps forward in hiring technology. Sit back and watch the AI work.
                         </p>
                     </Reveal>
 
-                    <div className="relative grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                        {/* Connecting line (desktop) */}
-                        <div className="hidden lg:block absolute top-[44px] left-[10%] right-[10%] h-0.5 bg-gradient-to-r from-primary-200 via-violet-200 to-primary-200" />
+                    <div className="relative grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
+                        <div className="hidden lg:block absolute top-[60px] left-[10%] right-[10%] h-1 bg-gradient-to-r from-sky-200 via-indigo-300 to-fuchsia-200 rounded-full" />
 
                         {workflowSteps.map((step, i) => {
                             const Icon = step.icon;
                             return (
-                                <Reveal key={step.num} delay={i * 0.1} direction="up">
+                                <Reveal key={step.num} delay={i * 0.15} direction="up">
                                     <motion.div
-                                        whileHover={{ y: -6, boxShadow: '0 16px 40px rgba(79,70,229,0.12)' }}
-                                        className="relative flex flex-col items-center text-center bg-white rounded-2xl p-6 border border-neutral-200 shadow-sm cursor-default transition-all duration-300 hover:border-primary-200"
+                                        whileHover={{ y: -10, scale: 1.02 }}
+                                        className="relative flex flex-col items-center text-center bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white shadow-2xl shadow-slate-200/50 cursor-default transition-all duration-500"
                                     >
-                                        {/* Step number badge */}
-                                        <div className="absolute -top-3 right-4 w-6 h-6 rounded-full bg-gradient-to-br from-primary-500 to-violet-500 flex items-center justify-center text-white text-[10px] font-bold shadow-md shadow-primary-500/20">
-                                            {i + 1}
+                                        <div className="absolute -top-4 -right-2 w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center text-white text-sm font-black shadow-lg shadow-indigo-500/30 rotate-12">
+                                            {step.num}
                                         </div>
-                                        {/* Icon */}
-                                        <div className="w-14 h-14 rounded-xl bg-primary-50 border border-primary-100 flex items-center justify-center mb-4 group-hover:bg-primary-100 transition-colors">
-                                            <Icon className="w-6 h-6 text-primary-600" />
+                                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 flex items-center justify-center mb-6 shadow-inner">
+                                            <Icon className="w-10 h-10 text-indigo-600" />
                                         </div>
-                                        <h3 className="font-semibold text-neutral-800 text-sm mb-2">{step.title}</h3>
-                                        <p className="text-neutral-400 text-xs leading-relaxed">{step.desc}</p>
+                                        <h3 className="font-black text-slate-800 text-lg mb-3">{step.title}</h3>
+                                        <p className="text-slate-500 text-sm leading-relaxed font-medium">{step.desc}</p>
                                     </motion.div>
                                 </Reveal>
                             );
@@ -480,55 +382,52 @@ const Landing = () => {
             </section>
 
             {/* ── AI INTELLIGENCE CARDS ── */}
-            <section id="intelligence" className="py-28 bg-white relative">
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent" />
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                    <Reveal className="text-center mb-20">
-                        <span className="inline-block px-3 py-1 rounded-full bg-violet-100 text-violet-700 text-xs font-semibold mb-4 border border-violet-200">
-                            AI Capabilities
-                        </span>
-                        <h2 className="text-4xl md:text-5xl font-bold font-heading text-neutral-900 mb-4">
-                            Built on <Highlight color="violet">Deep Intelligence</Highlight>
+            <section id="intelligence" className="py-32 bg-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-fuchsia-50 rounded-full blur-[120px] opacity-60 pointer-events-none -translate-y-1/2 translate-x-1/3" />
+                <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-indigo-50 rounded-full blur-[120px] opacity-60 pointer-events-none translate-y-1/2 -translate-x-1/3" />
+
+                <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+                    <Reveal className="text-center mb-24" scale>
+                        <h2 className="text-5xl md:text-6xl font-black font-heading text-slate-900 mb-6 tracking-tight">
+                            Deep <span className="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-500 to-rose-500">Intelligence.</span>
                         </h2>
-                        <p className="text-neutral-500 text-lg max-w-xl mx-auto">
-                            Every feature powered by state-of-the-art AI designed for hiring.
+                        <p className="text-slate-500 text-xl max-w-2xl mx-auto font-medium">
+                            Not just keyword matching. True semantic understanding built on state-of-the-art models.
                         </p>
                     </Reveal>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {intelligenceFeatures.map((f, i) => {
                             const Icon = f.icon;
                             return (
-                                <Reveal key={f.title} delay={i * 0.07}>
-                                    <TiltCard>
-                                        <div className={`group h-full p-7 rounded-2xl bg-white border border-neutral-200 ${f.border} hover:shadow-xl hover:shadow-neutral-200/60 transition-all duration-300 cursor-default`}>
-                                            <div className={`w-11 h-11 rounded-xl ${f.accent} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
-                                                <Icon className="w-5 h-5" />
-                                            </div>
-                                            <h3 className="font-semibold text-neutral-900 text-base mb-2">{f.title}</h3>
-                                            <p className="text-neutral-500 text-sm leading-relaxed">{f.desc}</p>
+                                <Reveal key={f.title} delay={i * 0.1}>
+                                    <div className={`group h-full p-10 rounded-[2.5rem] bg-white/60 backdrop-blur-2xl border-2 ${f.border} ${f.shadow} hover:-translate-y-2 transition-all duration-500 cursor-default shadow-xl shadow-slate-200/50`}>
+                                        <div className={`w-16 h-16 rounded-2xl ${f.accent} flex items-center justify-center mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner`}>
+                                            <Icon className="w-8 h-8" />
                                         </div>
-                                    </TiltCard>
+                                        <h3 className="font-black text-slate-900 text-2xl mb-4">{f.title}</h3>
+                                        <p className="text-slate-500 text-base leading-relaxed font-medium">{f.desc}</p>
+                                    </div>
                                 </Reveal>
                             );
                         })}
 
                         {/* CTA card */}
-                        <Reveal delay={0.35}>
+                        <Reveal delay={0.5}>
                             <Link to="/login" className="block h-full">
                                 <motion.div
-                                    whileHover={{ scale: 1.02, boxShadow: '0 20px 48px rgba(79,70,229,0.15)' }}
-                                    className="h-full min-h-[180px] p-7 rounded-2xl bg-gradient-to-br from-primary-600 to-violet-600 border-0 flex flex-col justify-between cursor-pointer transition-all duration-300"
+                                    whileHover={{ scale: 1.03, rotate: -2 }}
+                                    className="h-full min-h-[300px] p-10 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600 border-0 flex flex-col justify-between cursor-pointer transition-all duration-500 shadow-2xl shadow-indigo-600/30 overflow-hidden relative"
                                 >
-                                    <div>
-                                        <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center mb-5">
-                                            <Sparkles className="w-5 h-5 text-white" />
+                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+                                    <div className="relative z-10">
+                                        <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-8 border border-white/30">
+                                            <Sparkles className="w-8 h-8 text-white" />
                                         </div>
-                                        <h3 className="font-semibold text-white text-base mb-2">Experience the Platform</h3>
-                                        <p className="text-white/70 text-sm">Login and start hiring smarter today.</p>
+                                        <h3 className="font-black text-white text-3xl mb-3 leading-tight">Experience<br/>The Magic</h3>
                                     </div>
-                                    <div className="flex items-center gap-2 text-white text-sm font-medium mt-4">
-                                        Get Started <ArrowRight className="w-4 h-4" />
+                                    <div className="relative z-10 flex items-center gap-3 text-white text-lg font-bold mt-8 bg-white/10 w-fit px-6 py-3 rounded-full backdrop-blur-md border border-white/20 group">
+                                        Launch Portal <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                                     </div>
                                 </motion.div>
                             </Link>
@@ -538,193 +437,110 @@ const Landing = () => {
             </section>
 
             {/* ── PORTAL ECOSYSTEM ── */}
-            <section id="ecosystem" className="py-28 bg-neutral-50 relative overflow-hidden">
-                {/* Animated background stripe */}
-                <div className="absolute inset-0 overflow-hidden">
+            <section id="ecosystem" className="py-32 bg-slate-900 relative overflow-hidden text-white">
+                {/* Dark Cinematic background inside the light theme for extreme contrast */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <motion.div
-                        animate={{ x: ['-100%', '100%'] }}
-                        transition={{ duration: 14, repeat: Infinity, ease: 'linear' }}
-                        className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-64 opacity-5"
-                        style={{ background: 'linear-gradient(90deg, transparent, #6366f1, transparent)' }}
+                        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+                        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                        className="absolute top-0 right-0 w-[800px] h-[800px] bg-indigo-500 rounded-full blur-[150px] mix-blend-screen"
+                    />
+                    <motion.div
+                        animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
+                        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+                        className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-fuchsia-500 rounded-full blur-[150px] mix-blend-screen"
                     />
                 </div>
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent" />
 
                 <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
-                    <Reveal className="text-center mb-20">
-                        <span className="inline-block px-3 py-1 rounded-full bg-cyan-100 text-cyan-700 text-xs font-semibold mb-4 border border-cyan-200">
-                            Two Portals, One Platform
-                        </span>
-                        <h2 className="text-4xl md:text-5xl font-bold font-heading text-neutral-900 mb-4">
-                            Built for <Highlight color="cyan">Everyone</Highlight>
+                    <Reveal className="text-center mb-24" scale>
+                        <h2 className="text-5xl md:text-7xl font-black font-heading text-white mb-6 tracking-tight">
+                            Two Portals.<br/>One <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">Ecosystem.</span>
                         </h2>
-                        <p className="text-neutral-500 text-lg max-w-xl mx-auto">
-                            Tailored experiences for both sides of the hiring equation.
-                        </p>
                     </Reveal>
 
-                    <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                    <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
                         {/* Job Seeker */}
                         <Reveal delay={0} direction="left">
-                            <TiltCard>
-                                <div className="group relative overflow-hidden rounded-3xl p-8 md:p-10 bg-white border border-neutral-200 hover:border-primary-200 hover:shadow-2xl hover:shadow-primary-100/60 transition-all duration-400 min-h-[380px]">
-                                    {/* BG accent */}
-                                    <div className="absolute inset-0 bg-gradient-to-br from-primary-50/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
-                                    <div className="absolute top-0 right-0 w-40 h-40 rounded-bl-full bg-primary-50/50 -translate-y-8 translate-x-8 group-hover:-translate-y-4 group-hover:translate-x-4 transition-transform duration-500" />
-
-                                    <div className="relative z-10">
-                                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center mb-6 shadow-lg shadow-primary-500/20 group-hover:scale-110 transition-transform duration-300">
-                                            <Briefcase className="w-7 h-7 text-white" />
-                                        </div>
-                                        <span className="inline-block px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold mb-4">For Job Seekers</span>
-                                        <h3 className="text-2xl font-bold font-heading text-neutral-900 mb-3">Find Your Dream Role</h3>
-                                        <p className="text-neutral-500 text-sm mb-6 leading-relaxed">
-                                            Let our AI discover, match, and even apply to roles that fit your profile perfectly.
-                                        </p>
-                                        <ul className="space-y-2.5 mb-8">
-                                            {seekerFeatures.map(f => (
-                                                <li key={f} className="flex items-center gap-2.5 text-neutral-600 text-sm">
-                                                    <CheckCircle className="w-4 h-4 text-primary-500 flex-shrink-0" />
-                                                    {f}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                        <Link to="/login">
-                                            <motion.button
-                                                whileHover={{ scale: 1.04, boxShadow: '0 10px 32px rgba(37,99,235,0.25)' }}
-                                                whileTap={{ scale: 0.97 }}
-                                                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white text-sm font-semibold shadow-md transition-all"
-                                            >
-                                                Start Job Hunting <ArrowRight className="w-4 h-4" />
-                                            </motion.button>
-                                        </Link>
-                                    </div>
+                            <div className="group relative overflow-hidden rounded-[3rem] p-10 md:p-14 bg-white/5 backdrop-blur-3xl border border-white/10 hover:bg-white/10 transition-all duration-500 min-h-[500px]">
+                                <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center mb-8 shadow-2xl shadow-cyan-500/20 group-hover:scale-110 transition-transform duration-500">
+                                    <Briefcase className="w-10 h-10 text-white" />
                                 </div>
-                            </TiltCard>
+                                <h3 className="text-4xl font-black font-heading text-white mb-4">For Seekers</h3>
+                                <p className="text-cyan-100/70 text-lg mb-10 leading-relaxed font-medium">
+                                    Let our AI discover, match, and apply to roles that fit your profile perfectly. Your ultimate career co-pilot.
+                                </p>
+                                <ul className="space-y-4 mb-12">
+                                    {seekerFeatures.map(f => (
+                                        <li key={f} className="flex items-center gap-4 text-white/90 text-base font-bold">
+                                            <div className="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-500/50">
+                                                <CheckCircle className="w-3.5 h-3.5 text-cyan-400" />
+                                            </div>
+                                            {f}
+                                        </li>
+                                    ))}
+                                </ul>
+                                <Link to="/login">
+                                    <button className="w-full py-5 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-slate-900 text-lg font-black transition-colors shadow-[0_0_40px_rgba(34,211,238,0.4)]">
+                                        Enter Seeker Portal
+                                    </button>
+                                </Link>
+                            </div>
                         </Reveal>
 
                         {/* Job Provider */}
-                        <Reveal delay={0.12} direction="right">
-                            <TiltCard>
-                                <div className="group relative overflow-hidden rounded-3xl p-8 md:p-10 bg-white border border-neutral-200 hover:border-violet-200 hover:shadow-2xl hover:shadow-violet-100/60 transition-all duration-400 min-h-[380px]">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-violet-50/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
-                                    <div className="absolute top-0 right-0 w-40 h-40 rounded-bl-full bg-violet-50/50 -translate-y-8 translate-x-8 group-hover:-translate-y-4 group-hover:translate-x-4 transition-transform duration-500" />
-
-                                    <div className="relative z-10">
-                                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center mb-6 shadow-lg shadow-violet-500/20 group-hover:scale-110 transition-transform duration-300">
-                                            <Cpu className="w-7 h-7 text-white" />
-                                        </div>
-                                        <span className="inline-block px-3 py-1 rounded-full bg-violet-100 text-violet-700 text-xs font-semibold mb-4">For Recruiters</span>
-                                        <h3 className="text-2xl font-bold font-heading text-neutral-900 mb-3">Hire with Intelligence</h3>
-                                        <p className="text-neutral-500 text-sm mb-6 leading-relaxed">
-                                            Post jobs, AI ranks applicants, auto-shortlist top candidates, fill roles faster than ever.
-                                        </p>
-                                        <ul className="space-y-2.5 mb-8">
-                                            {providerFeatures.map(f => (
-                                                <li key={f} className="flex items-center gap-2.5 text-neutral-600 text-sm">
-                                                    <CheckCircle className="w-4 h-4 text-violet-500 flex-shrink-0" />
-                                                    {f}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                        <Link to="/login">
-                                            <motion.button
-                                                whileHover={{ scale: 1.04, boxShadow: '0 10px 32px rgba(124,58,237,0.25)' }}
-                                                whileTap={{ scale: 0.97 }}
-                                                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-violet-500 text-white text-sm font-semibold shadow-md transition-all"
-                                            >
-                                                Start Hiring <ArrowRight className="w-4 h-4" />
-                                            </motion.button>
-                                        </Link>
-                                    </div>
+                        <Reveal delay={0.2} direction="right">
+                            <div className="group relative overflow-hidden rounded-[3rem] p-10 md:p-14 bg-white/5 backdrop-blur-3xl border border-white/10 hover:bg-white/10 transition-all duration-500 min-h-[500px]">
+                                <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center mb-8 shadow-2xl shadow-fuchsia-500/20 group-hover:scale-110 transition-transform duration-500">
+                                    <Cpu className="w-10 h-10 text-white" />
                                 </div>
-                            </TiltCard>
+                                <h3 className="text-4xl font-black font-heading text-white mb-4">For Recruiters</h3>
+                                <p className="text-fuchsia-100/70 text-lg mb-10 leading-relaxed font-medium">
+                                    Post jobs, let AI rank applicants, and auto-shortlist top candidates. Hiring on autopilot.
+                                </p>
+                                <ul className="space-y-4 mb-12">
+                                    {providerFeatures.map(f => (
+                                        <li key={f} className="flex items-center gap-4 text-white/90 text-base font-bold">
+                                            <div className="w-6 h-6 rounded-full bg-fuchsia-500/20 flex items-center justify-center border border-fuchsia-500/50">
+                                                <CheckCircle className="w-3.5 h-3.5 text-fuchsia-400" />
+                                            </div>
+                                            {f}
+                                        </li>
+                                    ))}
+                                </ul>
+                                <Link to="/login">
+                                    <button className="w-full py-5 rounded-2xl bg-fuchsia-500 hover:bg-fuchsia-400 text-white text-lg font-black transition-colors shadow-[0_0_40px_rgba(217,70,239,0.4)]">
+                                        Enter Recruiter Portal
+                                    </button>
+                                </Link>
+                            </div>
                         </Reveal>
-                    </div>
-                </div>
-            </section>
-
-            {/* ── PLATFORM CAPABILITIES ── */}
-            <section id="capabilities" className="py-28 bg-white relative">
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent" />
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                    <Reveal className="text-center mb-20">
-                        <span className="inline-block px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 text-xs font-semibold mb-4 border border-neutral-200">Full Platform</span>
-                        <h2 className="text-4xl md:text-5xl font-bold font-heading text-neutral-900 mb-4">
-                            Every Capability <Highlight>You Need</Highlight>
-                        </h2>
-                        <p className="text-neutral-500 text-lg max-w-xl mx-auto">
-                            A complete AI-driven hiring stack, end-to-end.
-                        </p>
-                    </Reveal>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {capabilities.map((cap, i) => {
-                            const Icon = cap.icon;
-                            return (
-                                <Reveal key={cap.title} delay={i * 0.05}>
-                                    <motion.div
-                                        whileHover={{ y: -5, borderColor: '#a5b4fc', boxShadow: '0 10px 30px rgba(99,102,241,0.10)' }}
-                                        className="group p-5 rounded-2xl bg-neutral-50 border border-neutral-200 transition-all duration-300 cursor-default"
-                                    >
-                                        <div className="w-9 h-9 rounded-xl bg-primary-50 border border-primary-100 flex items-center justify-center mb-4 group-hover:bg-primary-100 group-hover:border-primary-200 transition-colors">
-                                            <Icon className="w-4 h-4 text-primary-600" />
-                                        </div>
-                                        <h3 className="text-neutral-900 text-sm font-semibold mb-1.5">{cap.title}</h3>
-                                        <p className="text-neutral-400 text-xs leading-relaxed">{cap.desc}</p>
-                                    </motion.div>
-                                </Reveal>
-                            );
-                        })}
                     </div>
                 </div>
             </section>
 
             {/* ── FINAL CTA ── */}
-            <section className="py-28 relative overflow-hidden bg-neutral-50">
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent" />
-                {/* Big soft gradient blobs */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <motion.div
-                        animate={{ scale: [1, 1.08, 1], rotate: [0, 5, 0] }}
-                        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-                        className="absolute top-[-40%] left-[-20%] w-[70%] h-[140%] rounded-full opacity-20"
-                        style={{ background: 'radial-gradient(ellipse, #c7d2fe, transparent 65%)', filter: 'blur(40px)' }}
-                    />
-                    <motion.div
-                        animate={{ scale: [1, 1.06, 1], rotate: [0, -5, 0] }}
-                        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-                        className="absolute bottom-[-40%] right-[-20%] w-[70%] h-[140%] rounded-full opacity-20"
-                        style={{ background: 'radial-gradient(ellipse, #ddd6fe, transparent 65%)', filter: 'blur(40px)' }}
-                    />
+            <section className="py-40 relative overflow-hidden bg-white">
+                <div className="absolute inset-0">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08)_0,transparent_100%)]" />
                 </div>
 
-                <div className="relative max-w-4xl mx-auto px-6 text-center">
-                    <Reveal>
-                        <span className="inline-block px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold mb-6 border border-primary-200">
-                            <Star className="w-3 h-3 inline mr-1" />
-                            Ready to Transform Hiring?
-                        </span>
-                        <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold font-heading text-neutral-900 mb-6 tracking-tight leading-tight">
-                            Experience{' '}
-                            <span className="bg-gradient-to-r from-primary-600 via-violet-600 to-primary-500 bg-clip-text text-transparent">
-                                Intelligent Hiring
-                            </span>
+                <div className="relative max-w-5xl mx-auto px-6 text-center">
+                    <Reveal scale>
+                        <h2 className="text-6xl md:text-8xl font-black font-heading text-slate-900 mb-8 tracking-tighter">
+                            The Wait <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-fuchsia-500">Is Over.</span>
                         </h2>
-                        <p className="text-neutral-500 text-lg mb-12 max-w-xl mx-auto">
-                            Step into the next generation of hiring — fast, intelligent, and built for the future.
+                        <p className="text-slate-500 text-2xl mb-14 max-w-2xl mx-auto font-medium">
+                            Join the revolution. Stop screening. Start hiring.
                         </p>
                         <Link to="/login">
                             <motion.button
-                                whileHover={{
-                                    scale: 1.07,
-                                    boxShadow: '0 20px 60px rgba(79, 70, 229, 0.30)',
-                                }}
-                                whileTap={{ scale: 0.97 }}
-                                className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-gradient-to-r from-primary-600 to-violet-600 text-white font-bold text-lg shadow-xl shadow-primary-500/25 transition-all group"
+                                whileHover={{ scale: 1.05, boxShadow: '0 20px 60px rgba(79, 70, 229, 0.4)' }}
+                                whileTap={{ scale: 0.95 }}
+                                className="inline-flex items-center gap-4 px-14 py-6 rounded-full bg-slate-900 text-white font-black text-2xl shadow-2xl transition-all group"
                             >
-                                Login to Platform
-                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                Launch HireX
+                                <ArrowRight className="w-7 h-7 group-hover:translate-x-2 transition-transform" />
                             </motion.button>
                         </Link>
                     </Reveal>
@@ -732,23 +548,15 @@ const Landing = () => {
             </section>
 
             {/* ── FOOTER ── */}
-            <footer className="border-t border-neutral-200 bg-white py-10">
-                <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-5">
-                    <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-600 to-violet-600 flex items-center justify-center shadow-sm">
-                            <Brain className="w-3.5 h-3.5 text-white" />
+            <footer className="bg-slate-50 py-12 border-t border-slate-200">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center">
+                            <Brain className="w-4 h-4 text-white" />
                         </div>
-                        <span className="font-heading font-bold text-neutral-900">Hire<span className="text-primary-600">X</span></span>
-                        <span className="text-neutral-300 text-sm ml-3">AI-Powered Hiring Intelligence</span>
+                        <span className="font-heading font-black text-xl text-slate-900">HireX</span>
                     </div>
-                    <nav className="flex items-center gap-6 text-sm text-neutral-400">
-                        {[['#workflow', 'How It Works'], ['#intelligence', 'Intelligence'], ['#ecosystem', 'Portals'], ['/login', 'Login']].map(([href, label]) => (
-                            href.startsWith('#')
-                                ? <a key={href} href={href} className="hover:text-neutral-700 transition-colors">{label}</a>
-                                : <Link key={href} to={href} className="hover:text-neutral-700 transition-colors">{label}</Link>
-                        ))}
-                    </nav>
-                    <p className="text-neutral-300 text-xs">© 2026 HireX. All rights reserved.</p>
+                    <p className="text-slate-400 font-medium">© 2026 HireX Cinematic Platform.</p>
                 </div>
             </footer>
         </div>
