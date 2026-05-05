@@ -35,7 +35,9 @@ import {
     CheckCircle2,
     XCircle,
     ArrowRight,
-    GripVertical
+    GripVertical,
+    Video,
+    Code
 } from 'lucide-react';
 import { ProviderLayout } from '../../components/provider-layout';
 import { StatusBadge, DataTable, SkeletonCard, TopProgressBar, Toast } from '../../components/provider-ui';
@@ -549,10 +551,46 @@ const ApplicantManagement = () => {
                                         </td>
                                         <td className="px-6 py-4">
                                             <StatusBadge status={app.status} />
+                                        </td>
+                                        <td className="px-6 py-4">
                                             <div
-                                                className="provider-panel p-4 flex items-center justify-between mb-3 group provider-row-hover"
-                                            ><button className="p-2 bg-provider-slate-50 text-provider-slate-400 rounded-xl hover:bg-white hover:text-provider-blue-600 transition-colors shadow-sm border border-transparent hover:border-provider-slate-200">
-                                                    <MoreHorizontal className="w-5 h-5" />
+                                                className="flex flex-wrap items-center gap-1.5"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <button
+                                                    title="Hire"
+                                                    onClick={() => handleUpdateStatus(app.id, 'accepted')}
+                                                    className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm border border-emerald-100"
+                                                >
+                                                    <CheckCircle2 className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    title="Interview"
+                                                    onClick={() => handleUpdateStatus(app.id, 'interview')}
+                                                    className="p-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition-all shadow-sm border border-amber-100"
+                                                >
+                                                    <Video className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    title="Test"
+                                                    onClick={() => handleUpdateStatus(app.id, 'shortlisted_for_test')}
+                                                    className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm border border-blue-100"
+                                                >
+                                                    <Code className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    title="Shortlist"
+                                                    onClick={() => handleUpdateStatus(app.id, 'shortlisted')}
+                                                    className="p-1.5 rounded-lg bg-violet-50 text-violet-600 hover:bg-violet-600 hover:text-white transition-all shadow-sm border border-violet-100"
+                                                >
+                                                    <Star className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    title="Reject"
+                                                    onClick={() => handleUpdateStatus(app.id, 'rejected')}
+                                                    className="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-sm border border-rose-100"
+                                                >
+                                                    <XCircle className="w-4 h-4" />
                                                 </button>
                                             </div>
                                         </td>

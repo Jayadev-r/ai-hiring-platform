@@ -40,7 +40,7 @@ const CodingTestsPage = () => {
     const { addToast } = useProviderToast();
 
     // View State
-    const [activeTab, setActiveTab] = useState('list'); // list | create | edit | results
+    const [activeTab, setActiveTab] = useState('list'); // list | create | edit | results | candidates
     const [editingTestId, setEditingTestId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -76,6 +76,26 @@ const CodingTestsPage = () => {
     const [codeModalOpen, setCodeModalOpen] = useState(false);
     const [selectedSubmission, setSelectedSubmission] = useState(null);
     const [loadingSubmission, setLoadingSubmission] = useState(false);
+
+    // Candidates State
+    const [shortlistedCandidates, setShortlistedCandidates] = useState([]);
+    const [loadingCandidates, setLoadingCandidates] = useState(false);
+
+    const fetchShortlistedCandidates = async () => {
+        try {
+            setLoadingCandidates(true);
+            const res = await axios.get('/recruiter/interview-candidates');
+            if (res.data?.success) {
+                // Filter only those shortlisted for test
+                const testCandidates = res.data.data.filter(c => c.status === 'shortlisted_for_test');
+                setShortlistedCandidates(testCandidates);
+            }
+        } catch (error) {
+            addToast('error', 'Failed to fetch shortlisted candidates');
+        } finally {
+            setLoadingCandidates(false);
+        }
+    };
 
     useEffect(() => {
         fetchTests();
@@ -219,13 +239,22 @@ const CodingTestsPage = () => {
                         Coding <span className="text-provider-blue-600">Arena</span>
                     </h1>
                 </div>
-                <button
-                    onClick={() => { setActiveTab('create'); resetForm(); }}
-                    className="provider-btn-primary px-6 flex items-center gap-2"
-                >
-                    <Plus className="w-4 h-4" />
-                    Engineer New Challenge
-                </button>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => { setActiveTab('candidates'); fetchShortlistedCandidates(); }}
+                        className="provider-btn-secondary px-6 flex items-center gap-2"
+                    >
+                        <Users className="w-4 h-4" />
+                        Shortlisted Candidates
+                    </button>
+                    <button
+                        onClick={() => { setActiveTab('create'); resetForm(); }}
+                        className="provider-btn-primary px-6 flex items-center gap-2"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Engineer New Challenge
+                    </button>
+                </div>
             </div>
 
             {loading ? (
@@ -540,6 +569,65 @@ const CodingTestsPage = () => {
         </div>
     );
 
+    const renderCandidates = () => (
+        <div className="space-y-8">
+            <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-6">
+                    <button onClick={() => setActiveTab('list')} className="w-12 h-12 rounded-2xl bg-white border border-provider-slate-200 flex items-center justify-center text-provider-slate-400 hover:text-provider-blue-600 transition-all shadow-sm">
+                        <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <div>
+                        <div className="flex items-center gap-2 text-provider-blue-600 mb-1">
+                            <Users className="w-4 h-4" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Test Candidates</span>
+                        </div>
+                        <h1 className="text-3xl font-black text-provider-slate-900 tracking-tight">Shortlisted <span className="text-provider-blue-600">For Test</span></h1>
+                    </div>
+                </div>
+            </div>
+
+            <div className="provider-panel overflow-hidden border-none shadow-sm">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="bg-provider-slate-50 border-b border-provider-slate-100">
+                                <th className="px-6 py-4 text-[10px] font-black text-provider-slate-400 uppercase tracking-widest">Candidate</th>
+                                <th className="px-6 py-4 text-[10px] font-black text-provider-slate-400 uppercase tracking-widest">Target Role</th>
+                                <th className="px-6 py-4 text-[10px] font-black text-provider-slate-400 uppercase tracking-widest">Experience</th>
+                                <th className="px-6 py-4 text-[10px] font-black text-provider-slate-400 uppercase tracking-widest text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-provider-slate-50">
+                            {loadingCandidates ? (
+                                <tr>
+                                    <td colSpan="4" className="px-6 py-8 text-center text-provider-slate-400 font-bold text-sm">Synchronizing profiles...</td>
+                                </tr>
+                            ) : shortlistedCandidates.length === 0 ? (
+                                <tr>
+                                    <td colSpan="4" className="px-6 py-8 text-center text-provider-slate-400 font-bold text-sm">No candidates currently shortlisted for algorithmic verification.</td>
+                                </tr>
+                            ) : shortlistedCandidates.map((c, idx) => (
+                                <tr key={idx} className="hover:bg-provider-blue-50/30 transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <div className="font-black text-provider-slate-900 text-xs">{c.candidate_name}</div>
+                                        <div className="text-[9px] font-bold text-provider-slate-400">{c.candidate_email}</div>
+                                    </td>
+                                    <td className="px-6 py-4 truncate max-w-[150px] text-xs font-bold text-provider-slate-600">{c.job_title}</td>
+                                    <td className="px-6 py-4 text-xs font-bold text-provider-slate-600">{c.experience || '0'} Years</td>
+                                    <td className="px-6 py-4 text-right">
+                                        <button className="p-2 rounded-lg bg-provider-blue-50 text-provider-blue-600 hover:bg-provider-blue-600 hover:text-white transition-all shadow-sm font-black text-[10px] uppercase tracking-widest px-4">
+                                            Assign Test
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
+
     return (
         <ProviderLayout>
             {(loading || saving || loadingSubmission) && <TopProgressBar />}
@@ -547,6 +635,7 @@ const CodingTestsPage = () => {
                 {activeTab === 'list' && renderList()}
                 {(activeTab === 'create' || activeTab === 'edit') && renderForm()}
                 {activeTab === 'results' && renderResults()}
+                {activeTab === 'candidates' && renderCandidates()}
             </div>
 
             <SubmissionCodeModal
