@@ -3,8 +3,11 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const defaultApiKey = process.env.GROQ_API_KEY;
+if (!defaultApiKey) console.warn("WARNING: GROQ_API_KEY is not set. Groq functions may fail.");
+
 const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey: defaultApiKey || 'dummy-key-to-prevent-startup-crash',
 });
 
 /**
@@ -175,8 +178,11 @@ export const analyzeMatchWithGroq = async (resumeText, jobData) => {
  */
 export const parseResumeWithGroq = async (resumeText) => {
   try {
+    const apiKey = process.env.GROQ_API_KEY_RESUME || process.env.GROQ_API_KEY;
+    if (!apiKey) throw new Error('Missing Groq API Key');
+    
     const groqResume = new Groq({
-      apiKey: process.env.GROQ_API_KEY_RESUME,
+      apiKey: apiKey,
     });
 
     const systemPrompt = "You are an expert recruitment AI. Extract structured information from the provided resume text. Return ONLY valid JSON.";
