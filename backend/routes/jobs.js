@@ -103,8 +103,8 @@ router.get('/', async (req, res) => {
 
         // By default, show only open jobs unless 'all' is requested
         if (status !== 'all') {
-           params.push('Open');
-           conditions.push(`jp.status = $${params.length}`);
+           params.push('open');
+           conditions.push(`LOWER(jp.status) = $${params.length}`);
         }
 
         if (conditions.length > 0) {
@@ -191,7 +191,7 @@ router.post('/', auth, roleGuard('recruiter'), async (req, res) => {
                 salary_min, salary_max, job_description, required_skills, status, company_id,
                 require_education, require_skills, required_education
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, COALESCE($10, 'Open'), $11, $12, $13, $14)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, COALESCE($10, 'open'), $11, $12, $13, $14)
             RETURNING job_id;
         `;
 

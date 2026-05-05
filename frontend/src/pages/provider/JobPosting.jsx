@@ -61,7 +61,8 @@ const JobPosting = () => {
         required_education: '',
         remote: false,
         require_education: false,
-        require_skills: false
+        require_skills: false,
+        status: 'open'
     });
 
     // Dynamic Requirements State
@@ -179,7 +180,8 @@ const JobPosting = () => {
             required_education: job.required_education || '',
             remote: job.location?.toLowerCase() === 'remote',
             require_education: job.require_education || false,
-            require_skills: job.require_skills || false
+            require_skills: job.require_skills || false,
+            status: job.status ? job.status.toLowerCase() : 'open'
         });
 
         try {
@@ -264,6 +266,13 @@ const JobPosting = () => {
             className: 'text-right',
             render: (job) => (
                 <div className="flex justify-end items-center gap-2">
+                    <button
+                        onClick={() => handleStatusChange(job.job_id, job.status?.toLowerCase() === 'open' ? 'closed' : 'open')}
+                        className={`px-2 py-1 text-[10px] font-bold rounded-md transition-colors ${job.status?.toLowerCase() === 'open' ? 'text-amber-600 bg-amber-50 hover:bg-amber-100' : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100'}`}
+                        title={job.status?.toLowerCase() === 'open' ? 'Close Job' : 'Open Job'}
+                    >
+                        {job.status?.toLowerCase() === 'open' ? 'CLOSE' : 'OPEN'}
+                    </button>
                     <button
                         onClick={() => handleEditClick(job)}
                         className="p-1.5 rounded-md hover:bg-slate-100 text-slate-500 transition-colors"
@@ -377,6 +386,17 @@ const JobPosting = () => {
                                             placeholder="Remote, Bangalore, etc."
                                         />
                                     </div>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-semibold text-slate-700">Status</label>
+                                    <select
+                                        value={formData.status}
+                                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                                        className="provider-input w-full"
+                                    >
+                                        <option value="open">Open</option>
+                                        <option value="closed">Closed</option>
+                                    </select>
                                 </div>
                             </div>
 
@@ -586,7 +606,7 @@ const JobPosting = () => {
                                 job_title: '', department: '', job_type: 'Full-time', experience_level: 'Junior',
                                 location: '', salary_min: '', salary_max: '', job_description: '',
                                 required_skills: '', required_education: '', remote: false,
-                                require_education: false, require_skills: false
+                                require_education: false, require_skills: false, status: 'open'
                             });
                             setRequirements([{ requirement_text: '', is_mandatory: true }]);
                             setQuestions([{ question_text: '', question_type: 'text', options: [], is_required: true, expected_answer: '' }]);
@@ -696,6 +716,12 @@ const JobPosting = () => {
                                         Posted {new Date(job.created_at).toLocaleDateString()}
                                     </div>
                                     <div className="flex items-center gap-1">
+                                        <button
+                                            onClick={() => handleStatusChange(job.job_id, job.status?.toLowerCase() === 'open' ? 'closed' : 'open')}
+                                            className={`px-3 py-1 text-[10px] font-bold rounded transition-colors ${job.status?.toLowerCase() === 'open' ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50'}`}
+                                        >
+                                            {job.status?.toLowerCase() === 'open' ? 'CLOSE' : 'OPEN'}
+                                        </button>
                                         <button
                                             onClick={() => handleEditClick(job)}
                                             className="px-3 py-1 text-[10px] font-bold text-blue-600 hover:bg-blue-50 rounded transition-colors"
