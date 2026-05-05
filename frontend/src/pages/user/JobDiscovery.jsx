@@ -25,15 +25,19 @@ const JobCard = ({ job, isApplied, onApply, index }) => {
                     <div className="flex items-start justify-between gap-4">
                         {/* Left */}
                         <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-50 to-blue-50 border border-slate-200 flex items-center justify-center font-heading font-bold text-indigo-600 text-xs shrink-0 shadow-sm">
-                                    {job.company_name?.charAt(0) || 'C'}
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-50 to-fuchsia-50 border border-slate-200 flex items-center justify-center font-heading font-bold text-indigo-600 text-xl shrink-0 shadow-sm overflow-hidden">
+                                    {job.company_logo ? (
+                                        <img src={job.company_logo} alt={job.company_name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        job.company_name?.charAt(0) || 'C'
+                                    )}
                                 </div>
                                 <div className="min-w-0">
-                                    <h3 className="font-heading font-bold text-slate-900 text-sm truncate group-hover:text-indigo-600 transition-colors">
+                                    <h3 className="font-heading font-bold text-slate-900 text-lg truncate group-hover:text-indigo-600 transition-colors">
                                         {job.job_title}
                                     </h3>
-                                    <p className="text-xs text-slate-600 truncate font-medium">{job.company_name}</p>
+                                    <p className="text-sm text-slate-500 font-semibold truncate">{job.company_name}</p>
                                 </div>
                             </div>
 
@@ -45,7 +49,7 @@ const JobCard = ({ job, isApplied, onApply, index }) => {
 
                             {/* Description Snippet */}
                             {job.job_description && (
-                                <p className="text-xs text-slate-600 mb-3 line-clamp-2 leading-relaxed" dangerouslySetInnerHTML={{ __html: job.job_description }} />
+                                <p className="text-sm text-slate-600 mb-4 line-clamp-2 leading-relaxed" dangerouslySetInnerHTML={{ __html: job.job_description }} />
                             )}
 
                             {/* Skill tags */}

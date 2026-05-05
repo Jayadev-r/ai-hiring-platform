@@ -93,31 +93,36 @@ router.get('/india', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const { status } = req.query;
-        let query = 'SELECT * FROM job_postings';
+        let query = 'SELECT jp.*, c.name as company_name, c.logo as company_logo FROM job_postings jp LEFT JOIN companies c ON jp.company_id = c.id';
         const params = [];
         const conditions = [];
 
         // STRICT FILTER: Internal Jobs Only
-        // 1. Exclude 'external' source (Adzuna/Jooble)
-        // 2. Ensure company_id is present (Recruiter jobs)
-        // 3. source IS DISTINCT FROM 'external' handles NULLs correctly (Postgres)
-        conditions.push("source IS DISTINCT FROM 'external'");
-        conditions.push("company_id IS NOT NULL");
+        conditions.push("jp.source IS DISTINCT FROM 'external'");
+        conditions.push("jp.company_id IS NOT NULL");
 
         // By default, show only open jobs unless 'all' is requested
         if (status !== 'all') {
            params.push('Open');
-           conditions.push(`status = $${params.length}`);
+           conditions.push(`jp.status = $${params.length}`);
         }
 
         if (conditions.length > 0) {
             query += ' WHERE ' + conditions.join(' AND ');
         }
 
-        query += ' ORDER BY created_at DESC';
+        query += ' ORDER BY jp.created_at DESC';
 
         const result = await pool.query(query, params);
-        res.json({ success: true, count: result.rows.length, data: result.rows });
+        
+        const jobs = result.rows.map(job => {
+            if (job.company_logo) {
+                job.company_logo = `data:image/jpeg;base64,${job.company_logo.toString('base64')}`;
+            }
+            return job;
+        });
+
+        res.json({ success: true, count: jobs.length, data: jobs });
     } catch (error) {
         console.error('Error fetching jobs:', error);
         res.status(500).json({ success: false, message: 'Server error' });

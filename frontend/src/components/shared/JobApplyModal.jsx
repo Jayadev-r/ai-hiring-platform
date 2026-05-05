@@ -328,18 +328,18 @@ const JobApplyModal = ({ job, isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-            <div className="rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col" style={{ background: 'rgba(10,15,46,0.90)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }}>
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
+            <div className="rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col bg-white shadow-[0_30px_80px_rgba(0,0,0,0.15)] border border-slate-100">
 
                 {/* Header */}
-                <div className="flex justify-between items-center p-6 border-b border-white/[0.08] sticky top-0 z-10" style={{ background: 'rgba(10,15,46,0.95)', backdropFilter: 'blur(20px)' }}>
+                <div className="flex justify-between items-center p-6 border-b border-slate-100 sticky top-0 z-10 bg-white/95 backdrop-blur-md">
                     <div>
-                        <h2 className="font-heading text-xl font-bold text-white">
+                        <h2 className="font-heading text-2xl font-black text-slate-900 tracking-tight">
                             {success ? 'Application Submitted!' : (step === 2 && isEditingProfile ? 'Edit Profile' : `Apply for ${job?.job_title || job?.title}`)}
                         </h2>
-                        <p className="text-sm text-slate-400">{job?.company_name || job?.company}</p>
+                        <p className="text-sm font-bold text-slate-500 mt-1">{job?.company_name || job?.company}</p>
                     </div>
-                    <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/[0.08]">
+                    <button onClick={onClose} className="text-slate-400 hover:text-slate-700 transition-colors p-2 rounded-xl hover:bg-slate-50">
                         <X className="w-6 h-6" />
                     </button>
                 </div>
@@ -358,26 +358,32 @@ const JobApplyModal = ({ job, isOpen, onClose }) => {
                         // STEP 1: Job Details
                         <div className="space-y-6">
                             <div>
-                                <h3 className="font-heading text-lg font-bold text-white mb-2">About the Role</h3>
-                                <p className="text-slate-300 leading-relaxed whitespace-pre-line">{fullJob?.job_description}</p>
+                                <h3 className="font-heading text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+                                    <FileText className="w-5 h-5 text-indigo-500" />
+                                    About the Role
+                                </h3>
+                                <p className="text-slate-600 leading-relaxed whitespace-pre-line text-sm">{fullJob?.job_description}</p>
                             </div>
                             {fullJob?.requirements?.length > 0 && (
-                                <div>
-                                    <h3 className="font-heading text-lg font-bold text-white mb-3">Requirements</h3>
-                                    <ul className="space-y-2">
+                                <div className="pt-4 border-t border-slate-100">
+                                    <h3 className="font-heading text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                        <CheckCircle className="w-5 h-5 text-emerald-500" />
+                                        Requirements
+                                    </h3>
+                                    <ul className="space-y-3">
                                         {fullJob.requirements.map(req => (
-                                            <li key={req.id} className="flex items-start gap-2 text-slate-300">
-                                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
-                                                <span className={req.is_mandatory ? "font-medium text-white" : ""}>
-                                                    {req.requirement_text} {req.is_mandatory && <span className="text-red-400 ml-1">*</span>}
+                                            <li key={req.id} className="flex items-start gap-3 text-slate-600 text-sm">
+                                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
+                                                <span className={req.is_mandatory ? "font-bold text-slate-800" : ""}>
+                                                    {req.requirement_text} {req.is_mandatory && <span className="text-rose-500 ml-1 text-xs font-black uppercase tracking-wider">Required</span>}
                                                 </span>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
                             )}
-                            <div className="flex justify-end pt-4">
-                                <Button onClick={() => setStep(2)}>Review My Profile</Button>
+                            <div className="flex justify-end pt-6 border-t border-slate-100">
+                                <Button onClick={() => setStep(2)} className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">Review My Profile</Button>
                             </div>
                         </div>
                     ) : step === 2 ? (
@@ -385,16 +391,16 @@ const JobApplyModal = ({ job, isOpen, onClose }) => {
                         <div className="space-y-6">
                             {!isEditingProfile ? (
                                 <>
-                                    <div className="flex justify-between items-center p-4 bg-cyan-400/10 border border-cyan-400/30 rounded-xl">
-                                        <p className="text-sm text-cyan-300">
+                                    <div className="flex justify-between items-center p-5 bg-indigo-50 border border-indigo-100 rounded-2xl shadow-sm">
+                                        <p className="text-sm text-indigo-800">
                                             <strong>Review Your Profile</strong> — This information will be shared with the recruiter.
                                         </p>
-                                        <Button size="sm" variant="outline" onClick={() => setIsEditingProfile(true)}>
+                                        <Button size="sm" variant="outline" className="bg-white border-indigo-200 text-indigo-700 hover:bg-indigo-100" onClick={() => setIsEditingProfile(true)}>
                                             Edit Profile
                                         </Button>
                                     </div>
 
-                                    <div className="bg-white/[0.04] rounded-xl border border-white/[0.08]">
+                                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                                         <div className="p-6">
                                             <CandidateProfileContent
                                                 data={{
@@ -408,9 +414,9 @@ const JobApplyModal = ({ job, isOpen, onClose }) => {
                                         </div>
                                     </div>
 
-                                    <div className="flex justify-between pt-4 border-t border-white/[0.08]">
-                                        <Button variant="ghost" onClick={() => setStep(1)}>Back</Button>
-                                        <Button onClick={() => setStep(3)}>Continue</Button>
+                                    <div className="flex justify-between pt-6 border-t border-slate-100">
+                                        <Button variant="ghost" onClick={() => setStep(1)} className="text-slate-500 hover:text-slate-800">Back</Button>
+                                        <Button onClick={() => setStep(3)} className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">Continue</Button>
                                     </div>
                                 </>
                             ) : (
@@ -457,9 +463,9 @@ const JobApplyModal = ({ job, isOpen, onClose }) => {
                                         onReupload={setResumeFile} // Simple replace
                                     />
 
-                                    <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08] sticky bottom-0 p-4 -mx-6 -mb-6 z-10" style={{ background: 'rgba(10,15,46,0.95)' }}>
+                                    <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 sticky bottom-0 p-4 -mx-6 -mb-6 z-10 bg-white/95 backdrop-blur-md">
                                         <Button variant="secondary" onClick={() => { setIsEditingProfile(false); fetchProfile(); }}>Cancel</Button>
-                                        <Button onClick={handleSaveProfile} loading={savingProfile}>Save & Preview</Button>
+                                        <Button onClick={handleSaveProfile} loading={savingProfile} className="bg-indigo-600 text-white">Save & Preview</Button>
                                     </div>
                                 </div>
                             )}
@@ -474,24 +480,24 @@ const JobApplyModal = ({ job, isOpen, onClose }) => {
                             )}
 
                             <div>
-                                <h3 className="font-heading text-lg font-bold text-white mb-4">Select Resume</h3>
+                                <h3 className="font-heading text-lg font-bold text-slate-900 mb-4">Select Resume</h3>
                                 {resumes.length === 0 ? (
-                                    <div className="text-center p-6 border border-dashed border-white/[0.08] rounded-xl">
-                                        <p className="text-slate-500 mb-3">No resumes found.</p>
-                                        <Button size="sm" variant="outline" onClick={() => { setStep(2); setIsEditingProfile(true); }}>Upload in Profile</Button>
+                                    <div className="text-center p-8 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50">
+                                        <p className="text-slate-500 font-medium mb-4">No resumes found.</p>
+                                        <Button size="sm" variant="outline" className="bg-white border-slate-300" onClick={() => { setStep(2); setIsEditingProfile(true); }}>Upload in Profile</Button>
                                     </div>
                                 ) : (
-                                    <div className="grid gap-3">
+                                    <div className="grid gap-4">
                                         {resumes.map(resume => (
                                             <div key={resume.id} onClick={() => setSelectedResume(resume.id)}
-                                                className={`relative p-4 rounded-xl border cursor-pointer transition-all ${selectedResume === resume.id ? 'bg-cyan-400/10 border-cyan-400/50' : 'bg-white/[0.04] border-white/[0.08] hover:border-white/20'}`}>
-                                                <div className="flex items-center gap-3">
-                                                    <FileText className={`w-5 h-5 ${selectedResume === resume.id ? 'text-cyan-400' : 'text-slate-500'}`} />
+                                                className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedResume === resume.id ? 'bg-indigo-50 border-indigo-500 shadow-md shadow-indigo-500/10' : 'bg-white border-slate-200 hover:border-indigo-300 hover:bg-slate-50'}`}>
+                                                <div className="flex items-center gap-4">
+                                                    <FileText className={`w-6 h-6 ${selectedResume === resume.id ? 'text-indigo-600' : 'text-slate-400'}`} />
                                                     <div className="flex-1">
-                                                        <p className="text-sm font-medium text-white">{resume.resume_name}</p>
-                                                        <p className="text-xs text-slate-500">{new Date(resume.created_at).toLocaleDateString()} {resume.is_default && <span className="ml-2 text-cyan-400">(Default)</span>}</p>
+                                                        <p className={`text-sm font-bold ${selectedResume === resume.id ? 'text-indigo-900' : 'text-slate-700'}`}>{resume.resume_name}</p>
+                                                        <p className="text-xs font-semibold text-slate-400 mt-0.5">{new Date(resume.created_at).toLocaleDateString()} {resume.is_default && <span className="ml-2 text-indigo-500 bg-indigo-100 px-2 py-0.5 rounded-md">(Default)</span>}</p>
                                                     </div>
-                                                    {selectedResume === resume.id && <CheckCircle className="w-5 h-5 text-cyan-400" />}
+                                                    {selectedResume === resume.id && <CheckCircle className="w-6 h-6 text-indigo-600" />}
                                                 </div>
                                             </div>
                                         ))}
@@ -511,30 +517,30 @@ const JobApplyModal = ({ job, isOpen, onClose }) => {
                             )}
 
                             {fullJob?.questions?.length > 0 && (
-                                <div>
-                                    <h3 className="font-heading text-lg font-bold text-white mb-4">Screening Questions</h3>
-                                    <div className="space-y-5">
+                                <div className="pt-4 border-t border-slate-100">
+                                    <h3 className="font-heading text-lg font-bold text-slate-900 mb-5">Screening Questions</h3>
+                                    <div className="space-y-6">
                                         {fullJob.questions.map(q => (
                                             <div key={q.id}>
-                                                <label className="block text-sm font-medium text-neutral-700 mb-1.5">{q.question_text} {q.is_required && <span className="text-red-500 ml-1">*</span>}</label>
-                                                {q.question_type === 'text' && <Input value={answers[q.id] || ''} onChange={(e) => handleAnswerChange(q.id, e.target.value)} placeholder="Your answer..." />}
-                                                {q.question_type === 'number' && <Input type="number" value={answers[q.id] || ''} onChange={(e) => handleAnswerChange(q.id, e.target.value)} placeholder="0" />}
+                                                <label className="block text-sm font-bold text-slate-700 mb-2">{q.question_text} {q.is_required && <span className="text-rose-500 ml-1 text-xs uppercase tracking-wider font-black">Required</span>}</label>
+                                                {q.question_type === 'text' && <Input className="bg-white border-slate-200 text-slate-900" value={answers[q.id] || ''} onChange={(e) => handleAnswerChange(q.id, e.target.value)} placeholder="Your answer..." />}
+                                                {q.question_type === 'number' && <Input className="bg-white border-slate-200 text-slate-900" type="number" value={answers[q.id] || ''} onChange={(e) => handleAnswerChange(q.id, e.target.value)} placeholder="0" />}
                                                 {q.question_type === 'boolean' && (
-                                                    <div className="flex gap-4">
-                                                        <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name={`q_${q.id}`} checked={answers[q.id] === 'true'} onChange={() => handleAnswerChange(q.id, 'true')} className="text-primary-600 focus:ring-primary-600" /><span className="text-neutral-700">Yes</span></label>
-                                                        <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name={`q_${q.id}`} checked={answers[q.id] === 'false'} onChange={() => handleAnswerChange(q.id, 'false')} className="text-primary-600 focus:ring-primary-600" /><span className="text-neutral-700">No</span></label>
+                                                    <div className="flex gap-6 mt-2">
+                                                        <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name={`q_${q.id}`} checked={answers[q.id] === 'true'} onChange={() => handleAnswerChange(q.id, 'true')} className="text-indigo-600 focus:ring-indigo-600 w-4 h-4" /><span className="text-slate-700 font-semibold">Yes</span></label>
+                                                        <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name={`q_${q.id}`} checked={answers[q.id] === 'false'} onChange={() => handleAnswerChange(q.id, 'false')} className="text-indigo-600 focus:ring-indigo-600 w-4 h-4" /><span className="text-slate-700 font-semibold">No</span></label>
                                                     </div>
                                                 )}
-                                                {q.question_type === 'dropdown' && <Select options={q.options ? q.options.map(o => ({ value: o, label: o })) : []} value={answers[q.id] || ''} onChange={(e) => handleAnswerChange(q.id, e.target.value)} placeholder="Select an option" />}
+                                                {q.question_type === 'dropdown' && <Select className="bg-white border-slate-200 text-slate-900" options={q.options ? q.options.map(o => ({ value: o, label: o })) : []} value={answers[q.id] || ''} onChange={(e) => handleAnswerChange(q.id, e.target.value)} placeholder="Select an option" />}
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             )}
 
-                            <div className="flex justify-between pt-4 border-t border-white/[0.08]">
-                                <Button variant="ghost" onClick={() => setStep(2)}>Back</Button>
-                                <Button onClick={handleSubmit} disabled={submitting}>{submitting ? 'Submitting...' : 'Submit Application'}</Button>
+                            <div className="flex justify-between pt-6 border-t border-slate-100">
+                                <Button variant="ghost" onClick={() => setStep(2)} className="text-slate-500 hover:text-slate-800">Back</Button>
+                                <Button onClick={handleSubmit} disabled={submitting} className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">{submitting ? 'Submitting...' : 'Submit Application'}</Button>
                             </div>
                         </div>
                     )}
@@ -546,24 +552,24 @@ const JobApplyModal = ({ job, isOpen, onClose }) => {
 
 // Internal Helper for Selection Lists
 const SelectionList = ({ title, items, selected, onChange, renderItem, emptyMsg, linkAction }) => (
-    <div>
-        <h3 className="font-heading text-lg font-bold text-white mb-4">{title}</h3>
+    <div className="pt-4 border-t border-slate-100">
+        <h3 className="font-heading text-lg font-bold text-slate-900 mb-4">{title}</h3>
         {items.length === 0 ? (
-            <div className="text-center p-6 border border-dashed border-white/[0.08] rounded-xl">
-                <p className="text-slate-500 mb-3">{emptyMsg}</p>
-                {linkAction && <Button size="sm" variant="outline" onClick={linkAction}>Update Profile</Button>}
+            <div className="text-center p-8 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50">
+                <p className="text-slate-500 font-medium mb-4">{emptyMsg}</p>
+                {linkAction && <Button size="sm" variant="outline" className="bg-white border-slate-300" onClick={linkAction}>Update Profile</Button>}
             </div>
         ) : (
-            <div className="space-y-2">
+            <div className="space-y-3">
                 {items.map(item => {
                     const isSelected = selected.some(s => JSON.stringify(s) === JSON.stringify(item));
                     return (
                         <div key={JSON.stringify(item)} onClick={() => onChange(isSelected ? selected.filter(s => JSON.stringify(s) !== JSON.stringify(item)) : [...selected, item])}
-                            className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${isSelected ? 'bg-cyan-400/10 border-cyan-400/40' : 'bg-white/[0.04] border-white/[0.08] hover:border-white/20'}`}>
-                            <div className={`mt-1 w-5 h-5 rounded border flex items-center justify-center shrink-0 ${isSelected ? 'bg-cyan-500 border-cyan-500' : 'border-slate-600'}`}>
+                            className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${isSelected ? 'bg-indigo-50 border-indigo-500 shadow-sm shadow-indigo-500/10' : 'bg-white border-slate-200 hover:border-indigo-300 hover:bg-slate-50'}`}>
+                            <div className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-slate-300 bg-white'}`}>
                                 {isSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
                             </div>
-                            <div className="flex-1 text-slate-200">{renderItem(item)}</div>
+                            <div className="flex-1 text-slate-700">{renderItem(item)}</div>
                         </div>
                     );
                 })}
