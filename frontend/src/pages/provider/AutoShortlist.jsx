@@ -139,7 +139,7 @@ const AutoShortlist = () => {
                                 <Sparkles className="w-3 h-3" /> HireX Intelligence
                             </div>
                             <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4 leading-[1.1]">
-                                AI <span className="text-provider-blue-400">Talent Scouter</span>
+                                AI <span className="text-provider-blue-400">Talent Screener</span>
                             </h1>
                             <p className="text-provider-slate-400 font-medium text-lg max-w-xl">
                                 Instantly rank candidates based on deep multi-dimensional analysis of their resumes against your JD.
@@ -205,7 +205,7 @@ const AutoShortlist = () => {
                                     ) : (
                                         <>
                                             <Zap className="w-4 h-4" />
-                                            Run AI Scouter
+                                            Run AI Screener
                                         </>
                                     )}
                                 </motion.button>
@@ -248,12 +248,12 @@ const AutoShortlist = () => {
                         </AnimatePresence>
                     </div>
 
-                    {/* Right Column: Scouter Feed */}
+                    {/* Right Column: Screening Results */}
                     <div className="lg:col-span-8">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-lg font-black text-provider-slate-900 flex items-center gap-2 uppercase tracking-tight">
                                 <SearchCode className="w-5 h-5 text-provider-blue-600" />
-                                Scouter Results
+                                Screening Results
                             </h2>
 
                             <div className="flex items-center gap-4 text-xs font-bold text-provider-slate-500 bg-provider-slate-100 px-3 py-1.5 rounded-lg border border-provider-slate-200">
@@ -268,7 +268,7 @@ const AutoShortlist = () => {
                                 <div className="w-20 h-20 rounded-3xl bg-provider-slate-50 flex items-center justify-center mb-6">
                                     <Target className="w-10 h-10 text-provider-slate-300" />
                                 </div>
-                                <h3 className="text-xl font-black text-provider-slate-900 mb-2">Initialize Scouter</h3>
+                                <h3 className="text-xl font-black text-provider-slate-900 mb-2">Select a Job to Begin</h3>
                                 <p className="text-provider-slate-500 text-sm max-w-sm">Select a job posting from the panel to begin AI-powered candidate ranking and analysis.</p>
                             </div>
                         ) : loadingCandidates ? (

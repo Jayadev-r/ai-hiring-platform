@@ -453,7 +453,7 @@ const ApplicantManagement = () => {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-provider-slate-400" />
                         <input
                             type="text"
-                            placeholder="Locate candidate by name, protocol, or skill..."
+                            placeholder="Search by name, email, or skill..."
                             className="w-full bg-provider-slate-50 border border-provider-slate-200 rounded-xl py-3 pl-11 pr-4 text-sm font-bold text-provider-slate-900 placeholder:text-provider-slate-400 focus:outline-none focus:ring-2 focus:ring-provider-blue-500 focus:border-transparent transition-all"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -468,7 +468,7 @@ const ApplicantManagement = () => {
                                 value={jobFilter}
                                 onChange={(e) => setJobFilter(e.target.value)}
                             >
-                                <option value="all">Global Matrix</option>
+                                <option value="all">All Applicants</option>
                                 {uniqueJobs.map(job => (
                                     <option key={job} value={job}>{job}</option>
                                 ))}
@@ -527,7 +527,7 @@ const ApplicantManagement = () => {
                             <thead className="bg-provider-slate-50 border-b border-provider-slate-200">
                                 <tr>
                                     <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-provider-slate-400">Identity</th>
-                                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-provider-slate-400">Protocol</th>
+                                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-provider-slate-400">Status</th>
                                     <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-provider-slate-400">AI Compatibility</th>
                                     <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-provider-slate-400">Current Phase</th>
                                     <th className="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-provider-slate-400">Actions</th>

@@ -142,65 +142,17 @@ export const ThemeProvider = ({ children }) => {
         }
     }, [currentTheme]);
 
-    /**
-     * Save a custom theme (persists in DB)
-     */
-    const saveCustomTheme = useCallback(async (themeData) => {
-        try {
-            setError(null);
-            const data = await themeAPI.saveCustom(themeData);
-            if (data.success) {
-                await loadAllThemes(); // Refresh theme list
-            }
-            return data;
-        } catch (err) {
-            const msg = err.response?.data?.message || 'Failed to save custom theme';
-            const contrastErrors = err.response?.data?.contrast_errors;
-            setError(msg);
-            const error = new Error(msg);
-            error.contrastErrors = contrastErrors;
-            throw error;
-        }
-    }, [loadAllThemes]);
-
-    /**
-     * Delete a custom theme
-     */
-    const deleteTheme = useCallback(async (themeId) => {
-        try {
-            setError(null);
-            const data = await themeAPI.deleteTheme(themeId);
-            if (data.success) {
-                setAllThemes(prev => prev.filter(t => t.id !== themeId));
-                // If the deleted theme was the active one, clear CSS vars
-                if (currentTheme?.id === themeId) {
-                    clearThemeVariables();
-                    setCurrentTheme(null);
-                }
-            }
-            return data;
-        } catch (err) {
-            const msg = err.response?.data?.message || 'Failed to delete theme';
-            setError(msg);
-            throw err;
-        }
-    }, [currentTheme]);
-
     const presetThemes = allThemes.filter(t => t.type === 'preset');
-    const customThemes = allThemes.filter(t => t.type === 'custom');
 
     const value = {
         currentTheme,
         previewTheme,
         allThemes,
         presetThemes,
-        customThemes,
         loading,
         error,
         applyTheme,
         previewThemeLocally,
-        saveCustomTheme,
-        deleteTheme,
         loadAllThemes,
         loadCurrentTheme,
     };
