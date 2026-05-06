@@ -68,24 +68,29 @@ router.post('/optimize', auth, limiter, upload.single('resumeFile'), async (req,
                         // Raw base64
                         fileBuffer = Buffer.from(candidate.resume_pdf, 'base64');
                     }
-                    
-                    // ALWAYS detect mime type from magic numbers to override potentially incorrect frontend headers
-                    if (fileBuffer.length > 4) {
-                        if (fileBuffer[0] === 0x25 && fileBuffer[1] === 0x50 && fileBuffer[2] === 0x44 && fileBuffer[3] === 0x46) {
-                            mimeType = 'application/pdf';
-                        } else if (fileBuffer[0] === 0x50 && fileBuffer[1] === 0x4B && fileBuffer[2] === 0x03 && fileBuffer[3] === 0x04) {
-                            mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-                        }
+                } else if (Buffer.isBuffer(candidate.resume_pdf)) {
+                    // BYTEA column - pg returns a Buffer
+                    // Check if the buffer contains actual binary or base64 text stored as ASCII bytes
+                    const firstBytes = candidate.resume_pdf.slice(0, 5).toString('ascii');
+                    if (firstBytes.startsWith('%PDF') || (candidate.resume_pdf[0] === 0x50 && candidate.resume_pdf[1] === 0x4B)) {
+                        fileBuffer = candidate.resume_pdf;
+                    } else {
+                        // base64 text stored as BYTEA bytes - decode it
+                        const textContent = candidate.resume_pdf.toString('utf8');
+                        const dataUriMatch = textContent.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+                        const base64Data = dataUriMatch ? dataUriMatch[2] : textContent;
+                        fileBuffer = Buffer.from(base64Data, 'base64');
                     }
                 } else {
-                    // It might be a direct Buffer if pg returns it that way (e.g. BYTEA)
                     fileBuffer = candidate.resume_pdf;
-                    if (fileBuffer.length > 4) {
-                        if (fileBuffer[0] === 0x25 && fileBuffer[1] === 0x50 && fileBuffer[2] === 0x44 && fileBuffer[3] === 0x46) {
-                            mimeType = 'application/pdf';
-                        } else if (fileBuffer[0] === 0x50 && fileBuffer[1] === 0x4B && fileBuffer[2] === 0x03 && fileBuffer[3] === 0x04) {
-                            mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-                        }
+                }
+                    
+                // ALWAYS detect mime type from magic numbers
+                if (fileBuffer && fileBuffer.length > 4) {
+                    if (fileBuffer[0] === 0x25 && fileBuffer[1] === 0x50 && fileBuffer[2] === 0x44 && fileBuffer[3] === 0x46) {
+                        mimeType = 'application/pdf';
+                    } else if (fileBuffer[0] === 0x50 && fileBuffer[1] === 0x4B && fileBuffer[2] === 0x03 && fileBuffer[3] === 0x04) {
+                        mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
                     }
                 }
 
@@ -251,23 +256,26 @@ router.post('/analyze-match', auth, limiter, async (req, res) => {
                     if (matches) {
                         mimeType = matches[1];
                     }
-                    
-                    // ALWAYS override mime type using magic numbers
-                    if (fileBuffer.length > 4) {
-                        if (fileBuffer[0] === 0x25 && fileBuffer[1] === 0x50 && fileBuffer[2] === 0x44 && fileBuffer[3] === 0x46) {
-                            mimeType = 'application/pdf';
-                        } else if (fileBuffer[0] === 0x50 && fileBuffer[1] === 0x4B && fileBuffer[2] === 0x03 && fileBuffer[3] === 0x04) {
-                            mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-                        }
+                } else if (Buffer.isBuffer(candidate.resume_pdf)) {
+                    const firstBytes = candidate.resume_pdf.slice(0, 5).toString('ascii');
+                    if (firstBytes.startsWith('%PDF') || (candidate.resume_pdf[0] === 0x50 && candidate.resume_pdf[1] === 0x4B)) {
+                        fileBuffer = candidate.resume_pdf;
+                    } else {
+                        const textContent = candidate.resume_pdf.toString('utf8');
+                        const dataUriMatch = textContent.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+                        const base64Data = dataUriMatch ? dataUriMatch[2] : textContent;
+                        fileBuffer = Buffer.from(base64Data, 'base64');
                     }
                 } else {
                     fileBuffer = candidate.resume_pdf;
-                    if (fileBuffer.length > 4) {
-                        if (fileBuffer[0] === 0x25 && fileBuffer[1] === 0x50 && fileBuffer[2] === 0x44 && fileBuffer[3] === 0x46) {
-                            mimeType = 'application/pdf';
-                        } else if (fileBuffer[0] === 0x50 && fileBuffer[1] === 0x4B && fileBuffer[2] === 0x03 && fileBuffer[3] === 0x04) {
-                            mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-                        }
+                }
+                    
+                // ALWAYS override mime type using magic numbers
+                if (fileBuffer && fileBuffer.length > 4) {
+                    if (fileBuffer[0] === 0x25 && fileBuffer[1] === 0x50 && fileBuffer[2] === 0x44 && fileBuffer[3] === 0x46) {
+                        mimeType = 'application/pdf';
+                    } else if (fileBuffer[0] === 0x50 && fileBuffer[1] === 0x4B && fileBuffer[2] === 0x03 && fileBuffer[3] === 0x04) {
+                        mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
                     }
                 }
 

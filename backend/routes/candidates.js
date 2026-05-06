@@ -735,17 +735,27 @@ router.get('/resume', auth, async (req, res) => {
         const { resume_pdf, name } = result.rows[0];
         let fileBuffer;
 
-        console.log(`[VIEW_RESUME] Type: ${typeof resume_pdf}, IsBuffer: ${Buffer.isBuffer(resume_pdf)}, Length: ${resume_pdf?.length || 0}`);
-
         if (Buffer.isBuffer(resume_pdf)) {
-            // BYTEA column - pg returns raw Buffer
-            fileBuffer = resume_pdf;
+            // BYTEA column returns a Buffer, but it might contain:
+            // a) Actual binary PDF/DOCX data (starts with %PDF or PK)
+            // b) Base64-encoded TEXT stored as ASCII bytes in BYTEA
+            // c) Data URI stored as ASCII bytes in BYTEA
+            const firstBytes = resume_pdf.slice(0, 5).toString('ascii');
+            
+            if (firstBytes.startsWith('%PDF') || (resume_pdf[0] === 0x50 && resume_pdf[1] === 0x4B)) {
+                // It's actual binary data - use directly
+                fileBuffer = resume_pdf;
+            } else {
+                // It's base64 text stored as bytes - convert to string and decode
+                const textContent = resume_pdf.toString('utf8');
+                const dataUriMatch = textContent.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+                const base64Data = dataUriMatch ? dataUriMatch[2] : textContent;
+                fileBuffer = Buffer.from(base64Data, 'base64');
+            }
         } else if (typeof resume_pdf === 'string') {
-            // Check if it starts with \\x (PostgreSQL BYTEA hex escape)
             if (resume_pdf.startsWith('\\x')) {
                 fileBuffer = Buffer.from(resume_pdf.slice(2), 'hex');
             } else {
-                // Strip data URI prefix if present
                 const matches = resume_pdf.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
                 const base64Data = matches ? matches[2] : resume_pdf;
                 fileBuffer = Buffer.from(base64Data, 'base64');
@@ -758,9 +768,6 @@ router.get('/resume', auth, async (req, res) => {
             return res.status(404).json({ success: false, message: 'Resume data is empty.' });
         }
 
-        // Log first 4 bytes for debugging
-        console.log(`[VIEW_RESUME] Buffer length: ${fileBuffer.length}, First 4 bytes: [${fileBuffer[0]}, ${fileBuffer[1]}, ${fileBuffer[2]}, ${fileBuffer[3]}]`);
-
         // Detect actual file type from magic numbers
         let contentType = 'application/pdf';
         let fileExt = 'pdf';
@@ -768,14 +775,10 @@ router.get('/resume', auth, async (req, res) => {
             if (fileBuffer[0] === 0x50 && fileBuffer[1] === 0x4B && fileBuffer[2] === 0x03 && fileBuffer[3] === 0x04) {
                 contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
                 fileExt = 'docx';
-            } else if (fileBuffer[0] === 0x25 && fileBuffer[1] === 0x50 && fileBuffer[2] === 0x44 && fileBuffer[3] === 0x46) {
-                contentType = 'application/pdf';
-            } else {
-                console.warn(`[VIEW_RESUME] Unknown magic bytes: [${fileBuffer[0]}, ${fileBuffer[1]}, ${fileBuffer[2]}, ${fileBuffer[3]}]. Defaulting to PDF.`);
             }
         }
 
-        console.log(`[VIEW_RESUME] Serving as ${contentType}`);
+        console.log(`[VIEW_RESUME] Serving ${fileBuffer.length} bytes as ${contentType}, magic: [${fileBuffer[0]},${fileBuffer[1]},${fileBuffer[2]},${fileBuffer[3]}]`);
         res.setHeader('Content-Type', contentType);
         res.setHeader('Content-Disposition', `inline; filename="${name || 'resume'}_resume.${fileExt}"`);
         res.send(fileBuffer);
