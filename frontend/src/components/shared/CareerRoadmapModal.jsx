@@ -8,7 +8,7 @@ import ReactFlow, {
     MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Loader2, BookOpen, Clock, Target, X } from 'lucide-react';
+import { Loader2, BookOpen, Clock, Target, X, ArrowLeft } from 'lucide-react';
 import axios from '../../api/axios';
 
 const CareerRoadmapModal = ({ isOpen, onClose }) => {
@@ -39,16 +39,16 @@ const CareerRoadmapModal = ({ isOpen, onClose }) => {
                     draggable: false,
                     selectable: true,
                     style: {
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        border: '2px solid #5a67d8',
-                        borderRadius: '12px',
+                        background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+                        border: '2px solid #312e81',
+                        borderRadius: '16px',
                         padding: '16px 20px',
                         minWidth: 220,
                         minHeight: 80,
                         fontSize: '14px',
-                        fontWeight: '600',
+                        fontWeight: '700',
                         color: '#ffffff',
-                        boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+                        boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.4)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -60,12 +60,12 @@ const CareerRoadmapModal = ({ isOpen, onClose }) => {
                 const formattedEdges = apiEdges.map(e => ({
                     ...e,
                     animated: true,
-                    style: { stroke: '#8b5cf6', strokeWidth: 3 },
+                    style: { stroke: '#6366f1', strokeWidth: 3 },
                     markerEnd: {
                         type: MarkerType.ArrowClosed,
-                        color: '#8b5cf6',
-                        width: 25,
-                        height: 25
+                        color: '#6366f1',
+                        width: 20,
+                        height: 20
                     },
                 }));
 
@@ -87,60 +87,71 @@ const CareerRoadmapModal = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md">
-            <div className="rounded-2xl w-[95vw] h-[90vh] flex flex-col overflow-hidden" style={{ background: 'rgba(10,15,46,0.95)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4">
+            <div className="rounded-3xl w-[95vw] h-[90vh] flex flex-col overflow-hidden bg-white shadow-2xl border border-slate-200">
                 {/* Header */}
-                <div className="p-6 border-b border-white/[0.08] flex items-center justify-between" style={{ background: 'rgba(10,15,46,0.98)' }}>
-                    <div>
-                        <h2 className="font-heading text-2xl font-bold text-white">AI Career Roadmap</h2>
-                        <p className="text-sm text-slate-400 mt-1">Visualize your <span className="text-cyan-400">learning journey</span></p>
+                <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-white">
+                    <div className="flex items-center gap-3">
+                        <button 
+                            onClick={onClose}
+                            className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-500 hover:text-indigo-600 mr-1"
+                            title="Back"
+                        >
+                            <ArrowLeft className="w-6 h-6" />
+                        </button>
+                        <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                            <Target className="w-6 h-6 text-indigo-600" />
+                        </div>
+                        <div>
+                            <h2 className="font-heading text-xl font-bold text-slate-900">AI Career Roadmap</h2>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Visualize your <span className="text-indigo-500">learning journey</span></p>
+                        </div>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-white/[0.08] rounded-lg transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
                         <X className="w-6 h-6 text-slate-400" />
                     </button>
                 </div>
 
                 {/* Controls */}
-                <div className="p-4 border-b border-white/[0.08] flex gap-4 items-end" style={{ background: 'rgba(15,20,55,0.90)' }}>
+                <div className="p-4 border-b border-slate-100 flex gap-4 items-end bg-slate-50">
                     <div className="flex-1">
-                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Target Skill</label>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 ml-1">Target Skill</label>
                         <input
                             type="text"
                             value={skill}
                             onChange={(e) => setSkill(e.target.value)}
                             placeholder="e.g. React Native, Data Science"
-                            className="w-full p-2 rounded-lg text-sm text-white placeholder-slate-500"
-                            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)' }}
+                            className="w-full p-2.5 rounded-xl text-sm text-slate-900 bg-white border border-slate-200 outline-none focus:border-indigo-500 placeholder-slate-400 font-medium"
                             onKeyDown={(e) => e.key === 'Enter' && generateRoadmap()}
                         />
                     </div>
                     <div className="w-48">
-                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Current Level</label>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 ml-1">Current Level</label>
                         <select
                             value={level}
                             onChange={(e) => setLevel(e.target.value)}
-                            className="w-full p-2 rounded-lg text-sm text-white"
-                            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
+                            className="w-full p-2.5 rounded-xl text-sm text-slate-900 bg-white border border-slate-200 outline-none focus:border-indigo-500 font-bold"
                         >
-                            <option value="Beginner" style={{ background: '#0a0f2e' }}>Beginner</option>
-                            <option value="Intermediate" style={{ background: '#0a0f2e' }}>Intermediate</option>
-                            <option value="Advanced" style={{ background: '#0a0f2e' }}>Advanced</option>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
                         </select>
                     </div>
                     <button
                         onClick={generateRoadmap}
                         disabled={loading || !skill}
-                        className="btn-neon-purple px-6 py-2 rounded-lg font-semibold disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 h-[38px] text-sm"
+                        className="btn-indigo px-6 py-2.5 rounded-xl font-bold disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 h-[42px] text-sm shadow-md transition-all active:scale-95"
                     >
                         {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Target className="w-4 h-4" />}
-                        Generate
+                        Generate Roadmap
                     </button>
                 </div>
 
                 {/* Graph Area */}
-                <div className="flex-1 relative" style={{ background: '#080d25' }}>
+                <div className="flex-1 relative bg-slate-50">
                     {error && (
-                        <div className="absolute top-4 left-4 z-10 bg-red-400/10 text-red-400 px-4 py-2 rounded-lg text-sm border border-red-400/30">
+                        <div className="m-4 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm font-bold flex items-center gap-2">
+                            <X className="w-4 h-4" />
                             {error}
                         </div>
                     )}
@@ -167,30 +178,41 @@ const CareerRoadmapModal = ({ isOpen, onClose }) => {
                         maxZoom={1.5}
                         attributionPosition="bottom-left"
                     >
-                        <Controls style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }} />
-                        <MiniMap nodeStrokeColor="#7c3aed" nodeColor="#4c1d95" style={{ background: 'rgba(10,15,46,0.9)', border: '1px solid rgba(255,255,255,0.08)' }} />
-                        <Background color="#1e293b" gap={16} />
+                        <Background color="#cbd5e1" gap={20} />
+                        <Controls className="bg-white border border-slate-200 rounded-lg shadow-md" />
                     </ReactFlow>
 
                     {/* Node Details Drawer */}
                     {selectedNode && (
-                        <div className="absolute top-4 right-4 w-80 rounded-xl overflow-hidden z-20" style={{ background: 'rgba(10,15,46,0.96)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
-                            <div className="p-4 border-b border-white/[0.08] flex justify-between items-start" style={{ background: 'rgba(124,58,237,0.15)' }}>
-                                <div>
-                                    <h3 className="font-bold text-white">{selectedNode.data.label}</h3>
-                                    <div className="flex items-center gap-1 text-xs text-purple-400 mt-1">
-                                        <Clock className="w-3 h-3" />
-                                        <span>{selectedNode.data.estimated_time || 'Self-paced'}</span>
-                                    </div>
-                                </div>
-                                <button onClick={() => setSelectedNode(null)} className="text-slate-500 hover:text-slate-300 transition-colors">
-                                    <X className="w-4 h-4" />
+                        <div className="absolute top-4 right-4 w-80 bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl z-10 animate-in slide-in-from-right-4">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-bold text-slate-900">Step Details</h3>
+                                <button onClick={() => setSelectedNode(null)} className="p-1 hover:bg-slate-100 rounded-full">
+                                    <X className="w-4 h-4 text-slate-400" />
                                 </button>
                             </div>
-                            <div className="p-4 max-h-[60vh] overflow-y-auto">
-                                <p className="text-sm text-slate-300 mb-4 leading-relaxed">
+                            <div className="space-y-4">
+                                <div className="flex items-start gap-3">
+                                    <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+                                        <BookOpen className="w-4 h-4 text-indigo-600" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Skill Topic</h4>
+                                        <p className="text-sm font-bold text-slate-900">{selectedNode.data.label}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+                                        <Clock className="w-4 h-4 text-indigo-600" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Estimated Time</h4>
+                                        <p className="text-sm font-bold text-slate-900">{selectedNode.data.estimated_time || '2-4 weeks'}</p>
+                                    </div>
+                                </div>
+                                <div className="text-sm text-slate-600 leading-relaxed">
                                     {selectedNode.data.description}
-                                </p>
+                                </div>
 
                                 {selectedNode.data.resources && selectedNode.data.resources.length > 0 && (
                                     <div>

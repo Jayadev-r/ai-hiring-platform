@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, FileText, Download, RefreshCw, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
+import { X, FileText, Download, RefreshCw, Copy, Check, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button, Badge } from '../ui'; // Adjust imports based on your UI library
 import axios from '../../api/axios';
 
@@ -86,19 +86,26 @@ const CoverLetterModal = ({ isOpen, onClose, candidateId }) => { // candidateId 
     if (!isOpen) return null;
 
     return createPortal(
-        <div className="fixed inset-0 z-[100] flex flex-col font-sans" style={{ background: '#020617' }}>
+        <div className="fixed inset-0 z-[100] flex flex-col font-sans bg-slate-50">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/[0.08] z-10" style={{ background: 'rgba(10,15,46,0.98)' }}>
+            <div className="flex items-center justify-between p-4 border-b border-slate-200 z-10 bg-white shadow-sm">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-indigo-500/20 rounded-lg">
-                        <FileText className="w-6 h-6 text-indigo-400" />
+                    <button 
+                        onClick={onClose}
+                        className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-500 hover:text-indigo-600 mr-1"
+                        title="Back"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
+                        <FileText className="w-6 h-6 text-indigo-600" />
                     </div>
                     <div>
-                        <h2 className="font-heading text-xl font-bold text-white">AI Cover Letter Generator</h2>
-                        <p className="text-sm text-slate-500">Hybrid AI Agent • Enterprise Grade</p>
+                        <h2 className="font-heading text-xl font-bold text-slate-900">AI Cover Letter Generator</h2>
+                        <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">AI Hiring Assistant • Enterprise Grade</p>
                     </div>
                 </div>
-                <button onClick={onClose} className="p-2 hover:bg-white/[0.08] rounded-full transition-colors">
+                <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
                     <X className="w-6 h-6 text-slate-400" />
                 </button>
             </div>
@@ -107,21 +114,20 @@ const CoverLetterModal = ({ isOpen, onClose, candidateId }) => { // candidateId 
             <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
 
                 {/* Left Panel: Controls */}
-                <div className="w-full md:w-1/3 max-w-md p-6 border-r border-white/[0.08] overflow-y-auto h-full custom-scrollbar" style={{ background: 'rgba(15,20,55,0.90)' }}>
+                <div className="w-full md:w-1/3 max-w-md p-6 border-r border-slate-200 overflow-y-auto h-full custom-scrollbar bg-white">
                     <div className="space-y-6">
 
                         {/* Job Selection */}
                         <div>
                             <label className="block text-sm font-medium text-slate-300 mb-2">Target Job</label>
                             <select
-                                className="w-full p-2.5 rounded-lg text-white text-sm"
-                                style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)' }}
+                                className="w-full p-2.5 rounded-lg text-slate-900 text-sm border border-slate-200 bg-slate-50 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none"
                                 value={selectedJob}
                                 onChange={(e) => setSelectedJob(e.target.value)}
                             >
-                                <option value="" style={{ background: '#0a0f2e' }}>Select a job...</option>
+                                <option value="">Select a job...</option>
                                 {jobs.map(job => (
-                                    <option key={job.job_id} value={job.job_id} style={{ background: '#0a0f2e' }}>
+                                    <option key={job.job_id} value={job.job_id}>
                                         {job.job_title} - {job.company_name || job.external_company_name || 'Unknown Company'}
                                     </option>
                                 ))}
@@ -136,11 +142,10 @@ const CoverLetterModal = ({ isOpen, onClose, candidateId }) => { // candidateId 
                                     <button
                                         key={t}
                                         onClick={() => setTone(t)}
-                                        className={`p-2 text-sm rounded-md border transition-all ${tone === t
-                                            ? 'bg-indigo-600 text-white border-indigo-500'
-                                            : 'text-slate-400 border-white/[0.08] hover:border-indigo-500/50 hover:text-slate-200'
+                                        className={`p-2 text-sm rounded-md border transition-all font-semibold ${tone === t
+                                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
+                                            : 'text-slate-500 border-slate-200 bg-slate-50 hover:border-indigo-300 hover:text-indigo-600'
                                             }`}
-                                        style={tone !== t ? { background: 'rgba(255,255,255,0.04)' } : {}}
                                     >
                                         {t.charAt(0).toUpperCase() + t.slice(1)}
                                     </button>
@@ -171,16 +176,14 @@ const CoverLetterModal = ({ isOpen, onClose, candidateId }) => { // candidateId 
                         {/* Analysis Panel (Post-Generation) */}
                         {analysis && (
                             <div className="space-y-3 pt-4 border-t border-white/[0.08] animate-in slide-in-from-bottom duration-300">
-                                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">AI Analysis</h4>
-
-                                <div className="p-3 rounded-lg" style={{ background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(16,185,129,0.25)' }}>
+                                <div className="p-3 rounded-lg border border-emerald-200 bg-emerald-50/50">
                                     <div className="flex justify-between items-center mb-1">
-                                        <span className="text-xs font-medium text-emerald-400">Match Score</span>
-                                        <span className="text-xs font-bold text-emerald-400">{analysis.matchPercentage}%</span>
+                                        <span className="text-xs font-bold text-emerald-700">Match Score</span>
+                                        <span className="text-xs font-extrabold text-emerald-700">{analysis.matchPercentage}%</span>
                                     </div>
-                                    <div className="w-full bg-emerald-900/40 rounded-full h-1.5">
+                                    <div className="w-full bg-emerald-100 rounded-full h-1.5">
                                         <div
-                                            className="bg-emerald-500 h-1.5 rounded-full transition-all duration-1000"
+                                            className="bg-emerald-500 h-1.5 rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
                                             style={{ width: `${analysis.matchPercentage}%` }}
                                         />
                                     </div>
@@ -211,14 +214,14 @@ const CoverLetterModal = ({ isOpen, onClose, candidateId }) => { // candidateId 
                 </div>
 
                 {/* Right Panel: Preview */}
-                <div className="flex-1 flex flex-col" style={{ background: 'rgba(8,12,35,0.95)' }}>
-                    <div className="p-4 border-b border-white/[0.08] flex items-center justify-between z-10" style={{ background: 'rgba(10,15,46,0.95)' }}>
-                        <h3 className="font-medium text-white">Live Preview</h3>
+                <div className="flex-1 flex flex-col bg-slate-50">
+                    <div className="p-4 border-b border-slate-200 flex items-center justify-between z-10 bg-white">
+                        <h3 className="font-bold text-slate-800">Live Preview</h3>
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={handleCopy}
                                 disabled={!generatedContent}
-                                className="p-2 text-slate-500 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-colors flex items-center gap-1.5 text-sm"
+                                className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors flex items-center gap-1.5 text-sm font-semibold"
                             >
                                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                                 {copied ? 'Copied' : 'Copy Text'}
@@ -229,7 +232,7 @@ const CoverLetterModal = ({ isOpen, onClose, candidateId }) => { // candidateId 
                     <div className="flex-1 overflow-hidden relative">
                         {generatedContent ? (
                             <textarea
-                                className="w-full h-full p-8 resize-none border-none focus:ring-0 text-slate-200 leading-relaxed font-serif text-lg bg-transparent focus:outline-none placeholder-slate-600"
+                                className="w-full h-full p-8 resize-none border-none focus:ring-0 text-slate-800 leading-relaxed font-serif text-lg bg-white focus:outline-none placeholder-slate-400"
                                 value={generatedContent}
                                 onChange={(e) => setGeneratedContent(e.target.value)}
                                 spellCheck={false}
@@ -247,10 +250,10 @@ const CoverLetterModal = ({ isOpen, onClose, candidateId }) => { // candidateId 
                     </div>
 
                     {/* Footer with Download Button */}
-                    <div className="p-4 border-t border-white/[0.08] flex justify-end z-20" style={{ background: 'rgba(10,15,46,0.95)' }}>
+                    <div className="p-4 border-t border-slate-200 flex justify-end z-20 bg-white">
                         <div className="flex items-center gap-4">
                             {pdfUrl && (
-                                <span className="text-sm text-slate-500">Ready for download</span>
+                                <span className="text-sm text-slate-400 font-bold uppercase tracking-tighter">Ready for download</span>
                             )}
                             <Button
                                 onClick={handleDownload}

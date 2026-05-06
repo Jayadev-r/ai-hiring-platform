@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, MapPin, Briefcase, ExternalLink, RefreshCw, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Sparkles, MapPin, Briefcase, ExternalLink, RefreshCw, Zap } from 'lucide-react';
 
 import UserLayout from '../../components/user-layout/UserLayout';
 import GlassCard from '../../components/futuristic/GlassCard';
@@ -10,6 +11,7 @@ import SkeletonCard from '../../components/futuristic/SkeletonCard';
 import api from '../../api/axios';
 
 const RecommendedJobs = () => {
+    const navigate = useNavigate();
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -42,6 +44,13 @@ const RecommendedJobs = () => {
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             >
                 <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => navigate('/user/ai-actions')}
+                        className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 hover:text-indigo-600 hover:border-indigo-200 transition-all shadow-sm group"
+                        title="Back to AI Actions"
+                    >
+                        <ArrowLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
+                    </button>
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 border border-slate-200 flex items-center justify-center">
                         <Sparkles className="w-7 h-7 text-indigo-500" />
                     </div>
