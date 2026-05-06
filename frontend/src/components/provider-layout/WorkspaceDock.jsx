@@ -21,15 +21,15 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const DOCK_ITEMS = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/provider/dashboard' },
-    { id: 'company', label: 'Identity', icon: Building2, path: '/provider/company' },
-    { id: 'jobs', label: 'Pipeline', icon: Briefcase, path: '/provider/jobs' },
-    { id: 'applicants', label: 'Applicants', icon: Users, path: '/provider/applicants' },
-    { id: 'ai-tools', label: 'AI Suite', icon: Cpu, path: '/provider/ai-tools' },
-    { id: 'interviews', label: 'Interviews', icon: Video, path: '/provider/interviews' },
+    { id: 'dashboard', label: 'Home', icon: LayoutDashboard, path: '/provider/dashboard' },
+    { id: 'company', label: 'Company', icon: Building2, path: '/provider/company' },
+    { id: 'jobs', label: 'Jobs', icon: Briefcase, path: '/provider/jobs' },
+    { id: 'applicants', label: 'Candidates', icon: Users, path: '/provider/applicants' },
+    { id: 'ai-tools', label: 'AI Tools', icon: Cpu, path: '/provider/ai-tools' },
+    { id: 'interviews', label: 'Schedules', icon: Video, path: '/provider/interviews' },
     { id: 'tests', label: 'Assessments', icon: ClipboardList, path: '/provider/tests' },
-    { id: 'coding-tests', label: 'Arena', icon: Code2, path: '/provider/coding-tests' },
-    { id: 'themes', label: 'Themes', icon: Palette, path: '/provider/settings/themes' },
+    { id: 'coding-tests', label: 'Coding', icon: Code2, path: '/provider/coding-tests' },
+    { id: 'themes', label: 'Settings', icon: Palette, path: '/provider/settings/themes' },
 ];
 
 const WorkspaceDock = () => {
@@ -110,25 +110,6 @@ const WorkspaceDock = () => {
 
                     <div className="w-px h-6 bg-slate-200 mx-2" />
 
-                    <button
-                        onClick={() => setIsSearchOpen(true)}
-                        className="p-2 rounded-full text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all group relative"
-                        title="Search (Ctrl+K)"
-                    >
-                        <Search className="w-4 h-4" />
-                    </button>
-
-                    <button
-                        onClick={() => setHasUnread(false)}
-                        className="p-2 rounded-full text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all relative"
-                        title="Notifications"
-                    >
-                        <Bell className="w-4 h-4" />
-                        {hasUnread && (
-                            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse border border-white" />
-                        )}
-                    </button>
-
                     <div className="pl-2 ml-1 border-l border-slate-100 flex items-center gap-2">
                         <div className="cursor-pointer group relative" title={user?.name || 'Recruiter'}>
                             <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-black text-xs group-hover:bg-slate-200 transition-colors">
@@ -147,74 +128,8 @@ const WorkspaceDock = () => {
             </div>
 
             {/* Global Search Overlay */}
-            <AnimatePresence>
-                {isSearchOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-6">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setIsSearchOpen(false)}
-                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-                        />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                            className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200"
-                        >
-                            <div className="p-6 flex items-center gap-4 border-b border-slate-100">
-                                <Search className="w-6 h-6 text-blue-600" />
-                                <input
-                                    autoFocus
-                                    placeholder="Search positions, candidates, or protocols..."
-                                    className="flex-1 bg-transparent border-none outline-none text-xl font-bold text-slate-900 placeholder:text-slate-300"
-                                />
-                                <div className="flex items-center gap-1 px-2 py-1 bg-slate-100 rounded-lg text-[10px] font-black text-slate-400 uppercase border border-slate-200">
-                                    <Command className="w-3 h-3" /> K
-                                </div>
-                                <button onClick={() => setIsSearchOpen(false)} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors ml-2">
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
+            {/* Global Search Overlay Removed */}
 
-                            <div className="p-4 bg-slate-50 min-h-[300px]">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-2">Recent Protocols</p>
-                                <div className="space-y-1">
-                                    {[
-                                        { icon: Briefcase, text: 'Frontend Engineer (Global)', type: 'Position' },
-                                        { icon: Briefcase, text: 'Senior Backend Architect', type: 'Position' },
-                                        { icon: Users, text: 'Jayesh Patel', type: 'Candidate' },
-                                        { icon: LayoutDashboard, text: 'Analytics Overview', type: 'Dashboard' }
-                                    ].map((item, i) => (
-                                        <div key={i} className="flex items-center justify-between p-4 rounded-2xl hover:bg-blue-50 hover:shadow-sm transition-all cursor-pointer group border border-transparent hover:border-blue-100">
-                                            <div className="flex items-center gap-4">
-                                                <div className="p-2 bg-white rounded-xl border border-slate-200 group-hover:border-blue-200 group-hover:text-blue-600 shadow-sm transition-colors">
-                                                    <item.icon className="w-4 h-4 text-slate-400 group-hover:text-blue-600" />
-                                                </div>
-                                                <div>
-                                                    <span className="text-sm font-bold text-slate-700 group-hover:text-blue-700 block">{item.text}</span>
-                                                    <span className="text-[10px] font-medium text-slate-400">{item.type}</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-[10px] font-bold text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest hidden sm:block">Jump To</span>
-                                                <ChevronRight className="w-4 h-4 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="px-6 py-3 bg-white border-t border-slate-100 text-[10px] font-bold text-slate-400 flex items-center justify-end gap-4 uppercase tracking-widest">
-                                <span className="flex items-center gap-1">Use <span className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded">↑</span><span className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded">↓</span> to navigate</span>
-                                <span className="flex items-center gap-1">Use <span className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded">Enter</span> to select</span>
-                                <span className="flex items-center gap-1">Use <span className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded">Esc</span> to close</span>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
         </>
     );
 };
