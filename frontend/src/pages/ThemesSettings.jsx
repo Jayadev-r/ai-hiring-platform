@@ -5,73 +5,24 @@ import UserLayout from '../components/user-layout/UserLayout';
 import ProviderLayout from '../components/provider-layout/ProviderLayout';
 import AdminLayout from '../components/admin-layout/AdminLayout';
 import {
-    Palette, Check, Eye, Sliders, AlertTriangle,
-    Trash2, Plus, Loader, Clock, Tag, ChevronRight,
-    Sun, Moon, Layers
+    Palette, Check, Eye, Loader, Clock, Tag, Layers
 } from 'lucide-react';
 
-// ─── Helper: contrast ratio (for live frontend WCAG check) ───────────────────
-function hexToRgb(hex) {
-    const clean = hex.replace('#', '');
-    const full = clean.length === 3
-        ? clean.split('').map(c => c + c).join('')
-        : clean;
-    if (full.length !== 6) return null;
-    const num = parseInt(full, 16);
-    return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
-}
-function getLuminance(r, g, b) {
-    return [r, g, b].reduce((acc, c, i) => {
-        const s = c / 255;
-        const lin = s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
-        return acc + lin * [0.2126, 0.7152, 0.0722][i];
-    }, 0);
-}
-function contrastRatio(hex1, hex2) {
-    try {
-        const rgb1 = hexToRgb(hex1);
-        const rgb2 = hexToRgb(hex2);
-        if (!rgb1 || !rgb2) return null;
-        const l1 = getLuminance(...rgb1);
-        const l2 = getLuminance(...rgb2);
-        const lighter = Math.max(l1, l2);
-        const darker = Math.min(l1, l2);
-        return (lighter + 0.05) / (darker + 0.05);
-    } catch { return null; }
-}
-
-// ─── Color Field definitions for the Custom Builder ─────────────────────────
+// ─── Color Field definitions for visualization ──────────────────────────────
 const COLOR_FIELDS = [
-    { key: 'background_color', label: 'Background', group: 'Layout' },
-    { key: 'navbar_color', label: 'Navbar', group: 'Layout' },
-    { key: 'sidebar_color', label: 'Sidebar', group: 'Layout' },
-    { key: 'card_background', label: 'Card Background', group: 'Layout' },
-    { key: 'border_color', label: 'Border', group: 'Layout' },
-    { key: 'hover_color', label: 'Hover', group: 'Layout' },
-    { key: 'primary_color', label: 'Primary', group: 'Accent' },
-    { key: 'secondary_color', label: 'Secondary', group: 'Accent' },
-    { key: 'accent_color', label: 'Accent', group: 'Accent' },
-    { key: 'text_primary', label: 'Primary Text', group: 'Typography' },
-    { key: 'text_secondary', label: 'Secondary Text', group: 'Typography' },
-    { key: 'button_bg', label: 'Button Background', group: 'Button' },
-    { key: 'button_text', label: 'Button Text', group: 'Button' },
-    { key: 'table_header', label: 'Table Header', group: 'Table' },
-    { key: 'table_row', label: 'Table Row', group: 'Table' },
+    { key: 'background_color', label: 'Background' },
+    { key: 'navbar_color', label: 'Navbar' },
+    { key: 'sidebar_color', label: 'Sidebar' },
+    { key: 'card_background', label: 'Card Background' },
+    { key: 'border_color', label: 'Border' },
+    { key: 'primary_color', label: 'Primary' },
+    { key: 'text_primary', label: 'Primary Text' },
+    { key: 'button_bg', label: 'Button Background' },
 ];
-
-const CUSTOM_DEFAULTS = {
-    background_color: '#ffffff', primary_color: '#4F46E5',
-    secondary_color: '#7c3aed', accent_color: '#0891b2',
-    navbar_color: '#ffffff', sidebar_color: '#f1f5f9',
-    card_background: '#ffffff', border_color: '#e2e8f0',
-    text_primary: '#0f172a', text_secondary: '#475569',
-    button_bg: '#4F46E5', button_text: '#ffffff',
-    table_header: '#f1f5f9', table_row: '#ffffff',
-    hover_color: '#f8fafc',
-};
 
 // ─── Sub-component: Theme Preview Mini Card ──────────────────────────────────
 function ThemeMiniPreview({ theme }) {
+    if (!theme) return null;
     return (
         <div
             className="rounded-xl overflow-hidden border-2 transition-all duration-300"
@@ -177,13 +128,13 @@ function PresetThemeCard({ theme, isActive, onPreview, onApply, applying }) {
 export default function ThemesSettings() {
     const { user } = useAuth();
     const {
-        currentTheme, presetThemes, customThemes,
-        applyTheme, previewThemeLocally, saveCustomTheme, deleteTheme,
+        currentTheme, presetThemes,
+        applyTheme, previewThemeLocally,
         loading, error: ctxError,
     } = useTheme();
 
-    const [applying, setApplying] = useState(null);   // theme ID being applied
-    const [activeSection, setActiveSection] = useState('presets'); // 'presets' | 'current' | 'custom'
+    const [applying, setApplying] = useState(null);
+    const [activeSection, setActiveSection] = useState('presets');
 
     // ── Apply preset theme ────────────────────────────────────────────────────
     const handleApply = async (themeId) => {
@@ -199,12 +150,6 @@ export default function ThemesSettings() {
         { id: 'presets', label: 'Preset Themes', icon: Layers },
         { id: 'current', label: 'Current Theme', icon: Tag },
     ];
-
-    // Choose the wrapper Layout based on the user's role
-    let LayoutWrapper = React.Fragment;
-    if (user?.role === 'job_seeker') LayoutWrapper = UserLayout;
-    else if (user?.role === 'recruiter') LayoutWrapper = ProviderLayout;
-    else if (user?.role === 'admin') LayoutWrapper = AdminLayout;
 
     // Choose the wrapper Layout based on the user's role
     let LayoutWrapper = React.Fragment;
@@ -261,25 +206,22 @@ export default function ThemesSettings() {
 
                 {/* ── SECTION 1: Preset Themes ── */}
                 {activeSection === 'presets' && (
-                    <div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                            {loading
-                                ? Array.from({ length: 8 }).map((_, i) => (
-                                    <div key={i} className="rounded-2xl h-52 animate-pulse" style={{ backgroundColor: 'var(--theme-hover, #f8fafc)' }} />
-                                ))
-                                : presetThemes.map(theme => (
-                                    <PresetThemeCard
-                                        key={theme.id}
-                                        theme={theme}
-                                        isActive={currentTheme?.id === theme.id}
-                                        onPreview={previewThemeLocally}
-                                        onApply={handleApply}
-                                        applying={applying === theme.id}
-                                    />
-                                ))
-                            }
-                        </div>
-                        </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                        {loading
+                            ? Array.from({ length: 8 }).map((_, i) => (
+                                <div key={i} className="rounded-2xl h-52 animate-pulse" style={{ backgroundColor: 'var(--theme-hover, #f8fafc)' }} />
+                            ))
+                            : presetThemes.map(theme => (
+                                <PresetThemeCard
+                                    key={theme.id}
+                                    theme={theme}
+                                    isActive={currentTheme?.id === theme.id}
+                                    onPreview={previewThemeLocally}
+                                    onApply={handleApply}
+                                    applying={applying === theme.id}
+                                />
+                            ))
+                        }
                     </div>
                 )}
 
@@ -325,10 +267,9 @@ export default function ThemesSettings() {
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            {[0, 1, 2, 3, 4].map(i => {
-                                                const colors = [currentTheme.background_color, currentTheme.primary_color, currentTheme.accent_color, currentTheme.text_primary, currentTheme.sidebar_color];
-                                                return <div key={i} className="w-6 h-6 rounded-full border border-black/10 shadow" style={{ backgroundColor: colors[i] }} />;
-                                            })}
+                                            {[currentTheme.background_color, currentTheme.primary_color, currentTheme.accent_color, currentTheme.text_primary, currentTheme.sidebar_color].map((color, i) => (
+                                                <div key={i} className="w-6 h-6 rounded-full border border-black/10 shadow" style={{ backgroundColor: color }} />
+                                            ))}
                                         </div>
                                     </div>
 
@@ -368,7 +309,6 @@ export default function ThemesSettings() {
                         )}
                     </div>
                 )}
-
             </div>
         </LayoutWrapper>
     );
