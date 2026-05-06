@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Send, Target, Eye, Calendar, ArrowRight, Sparkles, User, Briefcase } from 'lucide-react';
+import { Send, Target, Eye, Calendar, ArrowRight, Sparkles, User, Briefcase, CheckCircle } from 'lucide-react';
 
 import UserLayout from '../../components/user-layout/UserLayout';
 import GlassCard from '../../components/futuristic/GlassCard';
@@ -36,85 +36,80 @@ const glowColors = {
 /* ── Job card ────────────────────────────────────────────── */
 const JobItem = ({ job, onApply, isApplied }) => {
     const skills = (job.required_skills || '').split(',').slice(0, 3);
-    const logoUrl = job.company_logo;
+    const fallbackLogo = `https://ui-avatars.com/api/?name=${encodeURIComponent(job.company_name || 'Company')}&background=e0e7ff&color=4338ca&bold=true`;
+    const logoUrl = job.company_logo || fallbackLogo;
 
     return (
-        <TiltCard className="group h-full">
-            <GlassCard hover glow="blue" padding="md" animate={false} className="h-full flex flex-col border border-slate-200/60 shadow-sm hover:shadow-xl transition-all duration-500">
-                {/* Company & Job Title Row */}
-                <div className="flex items-start gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-white to-slate-50 border border-slate-200 flex items-center justify-center shadow-inner flex-shrink-0">
-                        {logoUrl ? (
-                            <img src={logoUrl} alt={job.company_name} className="w-full h-full object-contain p-1.5" />
-                        ) : (
-                            <div className="text-indigo-600 font-heading font-extrabold text-lg">
-                                {job.company_name?.charAt(0) || 'C'}
+        <motion.div whileHover={{ y: -4 }} className="h-full">
+            <div className="h-full flex flex-col bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+                <div className="p-5 flex-1 flex flex-col">
+                    {/* Header: Logo and Title */}
+                    <div className="flex items-start gap-4 mb-4">
+                        <img 
+                            src={logoUrl} 
+                            alt={job.company_name} 
+                            onError={(e) => { e.target.src = fallbackLogo; }}
+                            className="w-12 h-12 rounded-lg border border-slate-100 object-cover bg-white shadow-sm flex-shrink-0" 
+                        />
+                        <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-bold text-slate-900 truncate group-hover:text-indigo-600 transition-colors">
+                                {job.job_title}
+                            </h3>
+                            <div className="text-sm font-medium text-slate-500 truncate mt-0.5">
+                                {job.company_name}
                             </div>
-                        )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <h3 className="text-base font-heading font-bold text-slate-900 truncate group-hover:text-indigo-600 transition-colors leading-snug">
-                            {job.job_title}
-                        </h3>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="text-xs font-semibold text-slate-500 truncate">{job.company_name}</span>
-                            {job.job_type && (
-                                <>
-                                    <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                                    <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-tight">{job.job_type}</span>
-                                </>
-                            )}
                         </div>
                     </div>
-                </div>
 
-                {/* Details / Tags */}
-                <div className="space-y-3 mb-5 flex-1">
-                    {/* Skills Pills */}
-                    <div className="flex flex-wrap gap-1.5">
+                    {/* Meta tags */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        {job.location && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-slate-600 text-xs font-semibold">
+                                <Target className="w-3.5 h-3.5 text-slate-400" />
+                                {job.location}
+                            </span>
+                        )}
+                        {job.job_type && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold uppercase tracking-wider">
+                                {job.job_type}
+                            </span>
+                        )}
+                    </div>
+
+                    {/* Skills */}
+                    <div className="flex flex-wrap gap-1.5 mt-auto">
                         {skills.filter(Boolean).map((s) => (
-                            <span key={s} className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-slate-50 border border-slate-100 text-slate-600 hover:bg-slate-100 transition-colors">
+                            <span key={s} className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 uppercase tracking-wider">
                                 {s.trim()}
                             </span>
                         ))}
                     </div>
-
-                    {/* Meta Info */}
-                    <div className="flex items-center gap-3">
-                        {job.location && (
-                            <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-50/50 border border-indigo-100/50 text-indigo-600">
-                                <Target className="w-3 h-3" />
-                                <span className="text-[10px] font-bold">{job.location}</span>
-                            </div>
-                        )}
-                        {job.salary_min && (
-                            <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50/50 border border-emerald-100/50 text-emerald-600">
-                                <Sparkles className="w-3 h-3" />
-                                <span className="text-[10px] font-bold">₹{job.salary_min / 1000}k+</span>
-                            </div>
-                        )}
-                    </div>
                 </div>
 
-                {/* Action Area */}
-                <div className="pt-3 border-t border-slate-100">
-                    {isApplied ? (
-                        <div className="w-full py-2.5 rounded-xl bg-emerald-50 text-emerald-600 text-xs font-bold flex items-center justify-center gap-1.5 border border-emerald-100">
-                            <Sparkles className="w-3.5 h-3.5" />
-                            Application Sent
+                {/* Footer Action */}
+                <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between mt-auto">
+                    {job.salary_min ? (
+                        <div className="text-xs font-bold text-slate-700">
+                            ₹{job.salary_min / 1000}k+ <span className="text-[10px] text-slate-500 font-normal">/yr</span>
                         </div>
                     ) : (
-                        <button
+                        <div className="text-xs font-medium text-slate-500">Salary Undisclosed</div>
+                    )}
+                    {isApplied ? (
+                        <div className="flex items-center gap-1 text-emerald-600 text-xs font-bold bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">
+                            <CheckCircle className="w-3.5 h-3.5" /> Applied
+                        </div>
+                    ) : (
+                        <button 
                             onClick={() => onApply(job)}
-                            className="w-full py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold tracking-wide hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group/btn"
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
                         >
                             Apply Now
-                            <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
                         </button>
                     )}
                 </div>
-            </GlassCard>
-        </TiltCard>
+            </div>
+        </motion.div>
     );
 };
 
@@ -251,98 +246,46 @@ const UserDashboard = () => {
                 </div>
             )}
 
-            {/* ── Profile completion + Jobs ───────────── */}
-            <div className="grid lg:grid-cols-[280px_1fr] gap-6 mb-8">
-                {/* Profile Health / Score */}
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
-                    className="h-fit lg:sticky lg:top-6"
-                >
-                    <GlassCard padding="lg" className="text-center py-10 border border-indigo-100/50 shadow-xl shadow-indigo-100/20">
-                        <div className="mb-6 relative inline-block">
-                            <MatchScoreRing 
-                                score={loading ? 0 : (stats.profileCompletion || 65)} 
-                                size={140} 
-                                thickness={10}
-                                label="Profile Health"
-                            />
-                            <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center">
-                                <Sparkles className="w-4 h-4 text-indigo-500" />
-                            </div>
+            {/* ── Recommended Jobs ───────────── */}
+            <div className="mb-8">
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-lg shadow-indigo-200">
+                            <Sparkles className="w-5 h-5 text-white" />
                         </div>
-                        
-                        <h3 className="font-heading text-xl font-bold text-slate-900 mb-2">Profile Maturity</h3>
-                        <p className="text-xs text-slate-500 font-medium mb-8 leading-relaxed px-2">
-                            A complete profile increases your chances of getting AI-curated job matches by <span className="text-indigo-600 font-bold">40%</span>.
-                        </p>
-                        
-                        <button
-                            onClick={() => navigate('/user/profile')}
-                            className="w-full bg-indigo-600 text-white hover:bg-indigo-700 py-3 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-indigo-200 flex items-center justify-center gap-2 group"
-                        >
-                            Optimize Profile
-                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </button>
-
-                        <div className="mt-8 pt-8 border-t border-slate-100 text-left">
-                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Discovery Metrics</div>
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs font-bold text-slate-600">Search Visibility</span>
-                                    <span className="text-xs font-black text-indigo-600 tracking-tighter">HIGH</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs font-bold text-slate-600">Market Rank</span>
-                                    <span className="text-xs font-black text-slate-900 tracking-tighter">TOP 12%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </GlassCard>
-                </motion.div>
-
-                {/* Recommended jobs */}
-                <div className="mt-0">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-lg shadow-indigo-200">
-                                <Sparkles className="w-5 h-5 text-white" />
-                            </div>
-                            <div>
-                                <h2 className="font-heading font-bold text-slate-900 text-2xl tracking-tight leading-none">Recommended Jobs</h2>
-                                <p className="text-xs text-slate-500 mt-1 font-medium">AI-powered matches based on your profile</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm">
-                            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
-                            <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">{jobs.length} Available</span>
+                        <div>
+                            <h2 className="font-heading font-bold text-slate-900 text-2xl tracking-tight leading-none">Recommended Jobs</h2>
+                            <p className="text-xs text-slate-500 mt-1 font-medium">AI-powered matches based on your profile</p>
                         </div>
                     </div>
-
-                    {loading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                            {[1, 2, 3].map(i => <SkeletonCard key={i} height="h-20" lines={2} />)}
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                            {jobs.slice(0, 6).map((job, idx) => (
-                                <motion.div
-                                    key={job.job_id}
-                                    initial={{ opacity: 0, y: 16 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.4 + idx * 0.06 }}
-                                >
-                                    <JobItem
-                                        job={job}
-                                        isApplied={userApplications.some(a => a.job_id === job.job_id)}
-                                        onApply={(j) => { setSelectedJob(j); setIsApplyModalOpen(true); }}
-                                    />
-                                </motion.div>
-                            ))}
-                        </div>
-                    )}
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm">
+                        <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+                        <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">{jobs.length} Available</span>
+                    </div>
                 </div>
+
+                {loading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {[1, 2, 3, 4].map(i => <SkeletonCard key={i} height="h-20" lines={2} />)}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {jobs.slice(0, 8).map((job, idx) => (
+                            <motion.div
+                                key={job.job_id}
+                                initial={{ opacity: 0, y: 16 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 + idx * 0.04 }}
+                            >
+                                <JobItem
+                                    job={job}
+                                    isApplied={userApplications.some(a => a.job_id === job.job_id)}
+                                    onApply={(j) => { setSelectedJob(j); setIsApplyModalOpen(true); }}
+                                />
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Apply modal – preserved */}

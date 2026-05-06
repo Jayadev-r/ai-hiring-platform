@@ -97,6 +97,8 @@ const JobCard = ({ job, isApplied, onApply, index }) => {
                 </GlassCard>
             </TiltCard>
         </motion.div>
+    );
+};
 
 /* ── Page ────────────────────────────────────────────────── */
 const JobDiscovery = () => {
