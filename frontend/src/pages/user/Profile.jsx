@@ -296,7 +296,20 @@ const Profile = () => {
         try {
             const blob = await getProfileResume();
             const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
+
+            // DOCX files can't be viewed inline in browsers - trigger download instead
+            if (blob.type && blob.type.includes('wordprocessingml')) {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${profile.name || 'My'}_Resume.docx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } else {
+                // PDF - open in browser viewer
+                window.open(url, '_blank');
+            }
         } catch (error) {
             if (error.response?.status === 404) alert('No resume found.');
             else alert('Failed to load resume.');

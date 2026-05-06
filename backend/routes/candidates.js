@@ -735,12 +735,31 @@ router.get('/resume', auth, async (req, res) => {
         const { resume_pdf, name } = result.rows[0];
         let fileBuffer;
 
-        if (typeof resume_pdf === 'string') {
-            const matches = resume_pdf.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-            fileBuffer = Buffer.from(matches ? matches[2] : resume_pdf, 'base64');
-        } else {
+        console.log(`[VIEW_RESUME] Type: ${typeof resume_pdf}, IsBuffer: ${Buffer.isBuffer(resume_pdf)}, Length: ${resume_pdf?.length || 0}`);
+
+        if (Buffer.isBuffer(resume_pdf)) {
+            // BYTEA column - pg returns raw Buffer
             fileBuffer = resume_pdf;
+        } else if (typeof resume_pdf === 'string') {
+            // Check if it starts with \\x (PostgreSQL BYTEA hex escape)
+            if (resume_pdf.startsWith('\\x')) {
+                fileBuffer = Buffer.from(resume_pdf.slice(2), 'hex');
+            } else {
+                // Strip data URI prefix if present
+                const matches = resume_pdf.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+                const base64Data = matches ? matches[2] : resume_pdf;
+                fileBuffer = Buffer.from(base64Data, 'base64');
+            }
+        } else {
+            return res.status(500).json({ success: false, message: 'Resume data is in an unknown format.' });
         }
+
+        if (!fileBuffer || fileBuffer.length === 0) {
+            return res.status(404).json({ success: false, message: 'Resume data is empty.' });
+        }
+
+        // Log first 4 bytes for debugging
+        console.log(`[VIEW_RESUME] Buffer length: ${fileBuffer.length}, First 4 bytes: [${fileBuffer[0]}, ${fileBuffer[1]}, ${fileBuffer[2]}, ${fileBuffer[3]}]`);
 
         // Detect actual file type from magic numbers
         let contentType = 'application/pdf';
@@ -749,13 +768,19 @@ router.get('/resume', auth, async (req, res) => {
             if (fileBuffer[0] === 0x50 && fileBuffer[1] === 0x4B && fileBuffer[2] === 0x03 && fileBuffer[3] === 0x04) {
                 contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
                 fileExt = 'docx';
+            } else if (fileBuffer[0] === 0x25 && fileBuffer[1] === 0x50 && fileBuffer[2] === 0x44 && fileBuffer[3] === 0x46) {
+                contentType = 'application/pdf';
+            } else {
+                console.warn(`[VIEW_RESUME] Unknown magic bytes: [${fileBuffer[0]}, ${fileBuffer[1]}, ${fileBuffer[2]}, ${fileBuffer[3]}]. Defaulting to PDF.`);
             }
         }
 
+        console.log(`[VIEW_RESUME] Serving as ${contentType}`);
         res.setHeader('Content-Type', contentType);
-        res.setHeader('Content-Disposition', `inline; filename="${name}_resume.${fileExt}"`);
+        res.setHeader('Content-Disposition', `inline; filename="${name || 'resume'}_resume.${fileExt}"`);
         res.send(fileBuffer);
     } catch (error) {
+        console.error('[VIEW_RESUME] Error:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
