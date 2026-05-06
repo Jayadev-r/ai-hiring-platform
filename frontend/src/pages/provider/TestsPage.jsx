@@ -61,7 +61,7 @@ const TestsPage = () => {
         durationMinutes: 60
     });
     const [questions, setQuestions] = useState([
-        { questionText: '', questionType: 'objective', options: ['', '', '', ''], expectedAnswer: '' }
+        { questionText: '', questionType: 'objective', options: ['', '', '', ''], expectedAnswer: '', expectedAnswerIndex: null }
     ]);
 
     // Results State
@@ -117,16 +117,24 @@ const TestsPage = () => {
         e.preventDefault();
         if (!selectedJobId) return addToast('warning', 'Please select a target position');
 
+        // Resolve expectedAnswer from selectedAnswerIndex for objective questions
+        const processedQuestions = questions.map(q => ({
+            ...q,
+            expectedAnswer: q.questionType === 'objective' && q.expectedAnswerIndex !== null
+                ? (q.options[q.expectedAnswerIndex] || '')
+                : q.expectedAnswer
+        }));
+
         setSaving(true);
         try {
             if (editingTestId) {
-                await updateTest(editingTestId, { ...testForm, questions });
+                await updateTest(editingTestId, { ...testForm, questions: processedQuestions });
                 addToast('success', 'Assessment updated successfully');
             } else {
                 await createTest({
                     jobId: selectedJobId,
                     ...testForm,
-                    questions
+                    questions: processedQuestions
                 });
                 addToast('success', 'Assessment published successfully');
             }
@@ -144,7 +152,7 @@ const TestsPage = () => {
         setSelectedJobId('');
         setEditingTestId(null);
         setTestForm({ title: '', description: '', instructions: '', startDate: '', startTime: '', endDate: '', endTime: '', durationMinutes: 60 });
-        setQuestions([{ questionText: '', questionType: 'objective', options: ['', '', '', ''], expectedAnswer: '' }]);
+        setQuestions([{ questionText: '', questionType: 'objective', options: ['', '', '', ''], expectedAnswer: '', expectedAnswerIndex: null }]);
     };
 
     const handleEditTest = async (test) => {
@@ -164,14 +172,21 @@ const TestsPage = () => {
                 durationMinutes: data.duration_minutes || 60,
             });
             if (data.questions) {
-                setQuestions(data.questions.map(q => ({
-                    questionText: q.question_text || '',
-                    questionType: q.question_type || 'objective',
-                    options: q.question_type === 'objective'
+                setQuestions(data.questions.map(q => {
+                    const options = q.question_type === 'objective'
                         ? (typeof q.options === 'string' ? JSON.parse(q.options) : q.options || ['', '', '', ''])
-                        : [],
-                    expectedAnswer: q.expected_answer || '',
-                })));
+                        : [];
+                    const expectedAnswerIndex = q.question_type === 'objective'
+                        ? options.indexOf(q.expected_answer)
+                        : null;
+                    return {
+                        questionText: q.question_text || '',
+                        questionType: q.question_type || 'objective',
+                        options,
+                        expectedAnswer: q.expected_answer || '',
+                        expectedAnswerIndex: expectedAnswerIndex >= 0 ? expectedAnswerIndex : null,
+                    };
+                }));
             }
             setActiveTab('edit');
         } catch (error) {
@@ -212,8 +227,13 @@ const TestsPage = () => {
     const updateQuestion = (index, field, value) => {
         const updated = [...questions];
         updated[index] = { ...updated[index], [field]: value };
-        if (field === 'questionType' && value === 'descriptive') updated[index].options = [];
-        else if (field === 'questionType' && value === 'objective') updated[index].options = ['', '', '', ''];
+        if (field === 'questionType' && value === 'descriptive') {
+            updated[index].options = [];
+            updated[index].expectedAnswerIndex = null;
+        } else if (field === 'questionType' && value === 'objective') {
+            updated[index].options = ['', '', '', ''];
+            updated[index].expectedAnswerIndex = null;
+        }
         setQuestions(updated);
     };
 
@@ -494,31 +514,43 @@ const TestsPage = () => {
                                     </div>
 
                                     {q.questionType === 'objective' && (
-                                        <div className="grid grid-cols-2 gap-4">
-                                            {q.options.map((opt, oIdx) => (
-                                                <div key={oIdx} className="relative">
-                                                    <input
-                                                        className={`provider-input text-xs font-bold pl-12 ${q.expectedAnswer === opt && opt ? 'border-emerald-500 bg-emerald-50/50' : ''}`}
-                                                        placeholder={`Option 0${oIdx + 1}`}
-                                                        value={opt}
-                                                        onChange={e => {
-                                                            const opts = [...q.options];
-                                                            opts[oIdx] = e.target.value;
-                                                            updateQuestion(idx, 'options', opts);
-                                                        }}
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => updateQuestion(idx, 'expectedAnswer', opt)}
-                                                        className={`absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg flex items-center justify-center transition-all ${q.expectedAnswer === opt && opt
-                                                                ? 'bg-emerald-500 text-white'
-                                                                : 'bg-provider-slate-100 text-provider-slate-400 hover:bg-provider-blue-100 hover:text-provider-blue-600'
+                                        <div className="space-y-3">
+                                            <div className="text-[10px] font-black text-provider-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                                <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                                                Click the checkmark to mark the correct answer
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                {q.options.map((opt, oIdx) => (
+                                                    <div key={oIdx} className="relative">
+                                                        <input
+                                                            className={`provider-input text-xs font-bold pr-10 ${
+                                                                q.expectedAnswerIndex === oIdx
+                                                                    ? 'border-emerald-500 bg-emerald-50/50'
+                                                                    : ''
                                                             }`}
-                                                    >
-                                                        <CheckCircle2 className="w-3.5 h-3.5" />
-                                                    </button>
-                                                </div>
-                                            ))}
+                                                            placeholder={`Option ${oIdx + 1}`}
+                                                            value={opt}
+                                                            onChange={e => {
+                                                                const opts = [...q.options];
+                                                                opts[oIdx] = e.target.value;
+                                                                updateQuestion(idx, 'options', opts);
+                                                            }}
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            title="Mark as correct answer"
+                                                            onClick={() => updateQuestion(idx, 'expectedAnswerIndex', oIdx)}
+                                                            className={`absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg flex items-center justify-center transition-all ${
+                                                                q.expectedAnswerIndex === oIdx
+                                                                    ? 'bg-emerald-500 text-white'
+                                                                    : 'bg-provider-slate-100 text-provider-slate-400 hover:bg-emerald-100 hover:text-emerald-600'
+                                                            }`}
+                                                        >
+                                                            <CheckCircle2 className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
 
@@ -548,7 +580,7 @@ const TestsPage = () => {
 
                     <button
                         type="button"
-                        onClick={() => setQuestions([...questions, { questionText: '', questionType: 'objective', options: ['', '', '', ''], expectedAnswer: '' }])}
+                        onClick={() => setQuestions([...questions, { questionText: '', questionType: 'objective', options: ['', '', '', ''], expectedAnswer: '', expectedAnswerIndex: null }])}
                         className="w-full py-6 border-2 border-dashed border-provider-slate-200 rounded-3xl text-provider-slate-400 font-black text-xs uppercase tracking-widest hover:border-provider-blue-400 hover:text-provider-blue-600 hover:bg-provider-blue-50/50 transition-all flex items-center justify-center gap-3"
                     >
                         <Plus className="w-5 h-5" /> Append Challenge
