@@ -733,18 +733,28 @@ router.get('/resume', auth, async (req, res) => {
         }
 
         const { resume_pdf, name } = result.rows[0];
-        let pdfBuffer;
+        let fileBuffer;
 
         if (typeof resume_pdf === 'string') {
             const matches = resume_pdf.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-            pdfBuffer = Buffer.from(matches ? matches[2] : resume_pdf, 'base64');
+            fileBuffer = Buffer.from(matches ? matches[2] : resume_pdf, 'base64');
         } else {
-            pdfBuffer = resume_pdf;
+            fileBuffer = resume_pdf;
         }
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="${name}_resume.pdf"`);
-        res.send(pdfBuffer);
+        // Detect actual file type from magic numbers
+        let contentType = 'application/pdf';
+        let fileExt = 'pdf';
+        if (fileBuffer.length > 4) {
+            if (fileBuffer[0] === 0x50 && fileBuffer[1] === 0x4B && fileBuffer[2] === 0x03 && fileBuffer[3] === 0x04) {
+                contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                fileExt = 'docx';
+            }
+        }
+
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Disposition', `inline; filename="${name}_resume.${fileExt}"`);
+        res.send(fileBuffer);
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

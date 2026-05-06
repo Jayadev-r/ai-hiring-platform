@@ -192,7 +192,7 @@ const CodingTestAttempt = () => {
 
     if (loading) return (
         <div className="h-screen w-screen flex flex-col items-center justify-center bg-slate-50 text-slate-900 gap-6">
-            <div className="w-16 h-16 border-4 border-violet-600/20 border-t-violet-600 rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
             <div className="space-y-2 text-center">
                 <h3 className="text-xl font-bold font-mono tracking-tighter">INITIALIZING_SANDBOX</h3>
                 <p className="text-slate-500 text-xs font-bold uppercase tracking-[0.2em]">Preparing your coding environment</p>
@@ -201,13 +201,13 @@ const CodingTestAttempt = () => {
     );
 
     return (
-        <div className={`h-screen flex flex-col bg-slate-50 text-neutral-300 font-sans selection:bg-violet-500/30 ${isFullScreen ? 'fixed inset-0 z-50' : ''}`}>
+        <div className={`h-screen flex flex-col bg-slate-50 text-slate-600 font-sans selection:bg-indigo-500/30 ${isFullScreen ? 'fixed inset-0 z-50' : ''}`}>
             {/* Header - Fixed Height */}
             <header className="h-16 border-b border-slate-200 px-6 flex items-center justify-between bg-white shadow-sm backdrop-blur-md shrink-0">
                 <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2 group cursor-pointer" onClick={() => navigate('/user/coding-tests')}>
-                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-violet-600/20">
-                            <Code className="w-5 h-5 text-slate-900" />
+                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md shadow-indigo-600/20">
+                            <Code className="w-5 h-5 text-white" />
                         </div>
                         <span className="font-black text-slate-900 tracking-tighter text-lg">CODE_FLOW</span>
                     </div>
@@ -219,7 +219,7 @@ const CodingTestAttempt = () => {
                 </div>
 
                 <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-3 bg-slate-100/50 px-4 py-1.5 rounded-full border border-neutral-700/50">
+                    <div className="flex items-center gap-3 bg-slate-100/50 px-4 py-1.5 rounded-full border border-slate-200/50">
                         <Clock className={`w-4 h-4 ${timeLeft < 300 ? 'text-red-500 animate-pulse' : 'text-indigo-600'}`} />
                         <span className={`font-mono font-bold text-sm ${timeLeft < 300 ? 'text-red-500' : 'text-slate-900'}`}>
                             {formatTime(timeLeft)}
@@ -227,7 +227,7 @@ const CodingTestAttempt = () => {
                     </div>
                     <button
                         onClick={() => navigate('/user/coding-tests')}
-                        className="px-4 py-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-slate-900 transition-all rounded-lg text-xs font-bold ring-1 ring-red-500/20"
+                        className="px-4 py-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-lg text-xs font-bold ring-1 ring-red-500/20"
                     >
                         Quit Test
                     </button>
@@ -240,7 +240,7 @@ const CodingTestAttempt = () => {
             {/* Main Content - Takes remaining height */}
             <div className="flex flex-1 overflow-hidden">
                 {/* Left Panel: Problem Statement - 1/3 width, scrollable */}
-                <div className="w-1/3 border-r border-slate-200 overflow-y-auto p-6 bg-neutral-900/30">
+                <div className="w-1/3 border-r border-slate-200 overflow-y-auto p-6 bg-white">
                     <div className="mb-4 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <span className="w-6 h-6 bg-indigo-600/10 text-indigo-600 border border-indigo-500/20 rounded flex items-center justify-center text-xs font-bold font-mono">
@@ -248,13 +248,13 @@ const CodingTestAttempt = () => {
                             </span>
                             <span className="text-sm font-bold text-slate-900 uppercase tracking-wider">{currentQuestion.title}</span>
                         </div>
-                        <span className="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded text-slate-600 border border-neutral-700">
+                        <span className="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded text-slate-600 border border-slate-200">
                             {currentQuestion.marks} PTS
                         </span>
                     </div>
 
                     <div className="space-y-6">
-                        <article className="prose prose-invert prose-sm max-w-none">
+                        <article className="prose prose-sm max-w-none">
                             <h4 className="text-slate-900 text-sm font-bold mb-2 uppercase tracking-widest border-l-2 border-indigo-500 pl-3">Problem</h4>
                             <p className="text-slate-600 leading-relaxed text-sm whitespace-pre-line">
                                 {currentQuestion.problem_statement}
@@ -267,7 +267,7 @@ const CodingTestAttempt = () => {
                                     <Terminal className="w-3.5 h-3.5 text-indigo-600" />
                                     Input Format
                                 </h4>
-                                <div className="bg-black/40 border border-slate-200 rounded-xl p-4 text-xs text-slate-600 font-mono leading-relaxed">
+                                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-slate-600 font-mono leading-relaxed">
                                     {currentQuestion.input_format}
                                 </div>
                             </div>
@@ -279,7 +279,7 @@ const CodingTestAttempt = () => {
                                     <FileCode className="w-3.5 h-3.5 text-blue-400" />
                                     Output Format
                                 </h4>
-                                <div className="bg-black/40 border border-slate-200 rounded-xl p-4 text-xs text-slate-600 font-mono leading-relaxed">
+                                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-slate-600 font-mono leading-relaxed">
                                     {currentQuestion.output_format}
                                 </div>
                             </div>
@@ -291,7 +291,7 @@ const CodingTestAttempt = () => {
                                     <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
                                     Constraints
                                 </h4>
-                                <div className="bg-black/40 border border-slate-200 rounded-xl p-4 text-xs text-slate-600 font-mono italic">
+                                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-slate-600 font-mono italic">
                                     {currentQuestion.constraints}
                                 </div>
                             </div>
@@ -306,13 +306,13 @@ const CodingTestAttempt = () => {
                                 {currentQuestion.sampleTestCases.map((tc, idx) => (
                                     <div key={idx} className="space-y-2">
                                         <div className="grid grid-cols-2 gap-2">
-                                            <div className="bg-slate-100/50 rounded-lg p-3 ring-1 ring-neutral-700/50">
+                                            <div className="bg-slate-100/50 rounded-lg p-3 ring-1 ring-slate-200">
                                                 <p className="text-[10px] font-bold text-slate-500 uppercase mb-1 flex items-center gap-1">
                                                     <ChevronRight className="w-3 h-3" /> Input
                                                 </p>
                                                 <pre className="text-xs text-slate-900 font-mono">{tc.input}</pre>
                                             </div>
-                                            <div className="bg-slate-100/50 rounded-lg p-3 ring-1 ring-neutral-700/50">
+                                            <div className="bg-slate-100/50 rounded-lg p-3 ring-1 ring-slate-200">
                                                 <p className="text-[10px] font-bold text-slate-500 uppercase mb-1 flex items-center gap-1">
                                                     <ChevronLeft className="w-3 h-3" /> Output
                                                 </p>
@@ -326,7 +326,7 @@ const CodingTestAttempt = () => {
                     </div>
 
                     {/* Question Navigator - Fixed at bottom */}
-                    <div className="mt-6 pt-4 border-t border-slate-200 grid grid-cols-2 gap-3 sticky bottom-0 bg-neutral-900/80 backdrop-blur-sm">
+                    <div className="mt-6 pt-4 border-t border-slate-200 grid grid-cols-2 gap-3 sticky bottom-0 bg-white/95 backdrop-blur-sm">
                         <button
                             disabled={currentQuestionIndex === 0}
                             onClick={() => setCurrentQuestionIndex(prev => prev - 1)}
@@ -349,14 +349,14 @@ const CodingTestAttempt = () => {
                     {/* Language Selector & Run Buttons - Fixed Height */}
                     <div className="h-14 flex items-center justify-between px-4 border-b border-slate-200 bg-white shadow-sm shrink-0">
                         <div className="flex items-center gap-4">
-                            <div className="flex bg-slate-100 p-0.5 rounded-lg border border-neutral-700">
+                            <div className="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
                                 {codingService.getSupportedLanguages().map(lang => (
                                     <button
                                         key={lang.id}
                                         onClick={() => handleLanguageChange(lang.id)}
                                         className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest transition-all ${currentLanguage === lang.id
-                                            ? 'bg-indigo-600 text-slate-900 shadow-lg shadow-violet-600/20'
-                                            : 'text-slate-500 hover:text-neutral-300'
+                                            ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+                                            : 'text-slate-500 hover:text-slate-800'
                                             }`}
                                     >
                                         {lang.id === 'python3' ? 'PY' : lang.id === 'cpp' ? 'C++' : lang.id === 'javascript' ? 'JS' : 'JAVA'}
@@ -374,7 +374,7 @@ const CodingTestAttempt = () => {
                             <button
                                 onClick={handleRunCode}
                                 disabled={running || submitting || isSubmitted}
-                                className="px-4 py-1.5 bg-slate-100 text-neutral-300 hover:bg-neutral-700 transition-all rounded-lg text-xs font-bold border border-neutral-700 disabled:opacity-50"
+                                className="px-4 py-1.5 bg-white text-slate-700 hover:bg-slate-50 transition-all rounded-lg text-xs font-bold border border-slate-200 shadow-sm disabled:opacity-50"
                             >
                                 <div className="flex items-center gap-2">
                                     <Play className="w-3.5 h-3.5 fill-current text-emerald-500" />
@@ -384,11 +384,11 @@ const CodingTestAttempt = () => {
                             <button
                                 onClick={handleSubmitSolution}
                                 disabled={submitting || running || isSubmitted}
-                                className={`px-6 py-1.5 rounded-lg text-xs font-bold shadow-lg transition-all disabled:opacity-50 ${isSubmitted ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30' : 'bg-indigo-600 text-slate-900 hover:bg-violet-700 shadow-violet-600/20'}`}
+                                className={`px-6 py-1.5 rounded-lg text-xs font-bold shadow-lg transition-all disabled:opacity-50 ${isSubmitted ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-600/20'}`}
                             >
                                 <div className="flex items-center gap-2">
                                     {submitting ? (
-                                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        <div className="w-3.5 h-3.5 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
                                     ) : (
                                         isSubmitted ? <CheckCircle className="w-3.5 h-3.5" /> : <Send className="w-3.5 h-3.5" />
                                     )}
@@ -408,8 +408,8 @@ const CodingTestAttempt = () => {
                             readOnly={isSubmitted}
                         />
                         {isSubmitted && (
-                            <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px] pointer-events-none z-10 flex items-center justify-center">
-                                <div className="bg-neutral-900/80 border border-slate-200 px-6 py-3 rounded-2xl flex items-center gap-3 shadow-2xl">
+                            <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] pointer-events-none z-10 flex items-center justify-center">
+                                <div className="bg-white border border-slate-200 shadow-xl px-6 py-3 rounded-2xl flex items-center gap-3 shadow-2xl">
                                     <Award className="w-6 h-6 text-emerald-500" />
                                     <div className="text-left">
                                         <p className="text-xs font-black text-slate-900 uppercase tracking-widest">Question Submitted</p>
@@ -421,17 +421,17 @@ const CodingTestAttempt = () => {
                     </div>
 
                     {/* Test Results Panel */}
-                    <div className="h-64 border-t border-slate-200 bg-neutral-900/80 shrink-0 flex flex-col">
+                    <div className="h-64 border-t border-slate-200 bg-white shrink-0 flex flex-col">
                         <div className="h-10 border-b border-slate-200 px-4 flex items-center gap-6 shrink-0">
                             <button
                                 onClick={() => setActiveResultTab('results')}
-                                className={`h-10 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all ${activeResultTab === 'results' ? 'border-violet-600 text-slate-900' : 'border-transparent text-slate-500 hover:text-neutral-300'}`}
+                                className={`h-10 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all ${activeResultTab === 'results' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-slate-400 hover:text-slate-700'}`}
                             >
                                 Test Results
                             </button>
                             <button
                                 onClick={() => setActiveResultTab('custom')}
-                                className={`h-10 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all ${activeResultTab === 'custom' ? 'border-violet-600 text-slate-900' : 'border-transparent text-slate-500 hover:text-neutral-300'}`}
+                                className={`h-10 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all ${activeResultTab === 'custom' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-slate-400 hover:text-slate-700'}`}
                             >
                                 Custom Input
                             </button>
@@ -443,7 +443,7 @@ const CodingTestAttempt = () => {
                                     {/* Evaluation Results (Visible after Submit) */}
                                     {isSubmitted && results[currentQuestion.id] && (
                                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                                            <div className="flex items-center justify-between bg-emerald-500/5 p-4 rounded-xl border border-emerald-500/10">
+                                            <div className="flex items-center justify-between bg-emerald-50 p-4 rounded-xl border border-emerald-200">
                                                 <div className="flex items-center gap-3">
                                                     <Award className="w-8 h-8 text-emerald-500" />
                                                     <div>
@@ -474,7 +474,7 @@ const CodingTestAttempt = () => {
                                     {!isSubmitted && (
                                         <div className="space-y-4">
                                             {!runResults[currentQuestion.id] && !running && (
-                                                <div className="h-32 flex flex-col items-center justify-center text-neutral-700 gap-2 opacity-50">
+                                                <div className="h-32 flex flex-col items-center justify-center text-slate-400 gap-2 opacity-50">
                                                     <Terminal className="w-8 h-8" />
                                                     <p className="text-[10px] font-black uppercase tracking-[0.2em]">Run code to see sample test results</p>
                                                 </div>
@@ -482,8 +482,8 @@ const CodingTestAttempt = () => {
 
                                             {running && (
                                                 <div className="h-32 flex flex-col items-center justify-center gap-4">
-                                                    <div className="w-8 h-8 border-2 border-indigo-500/20 border-t-violet-500 rounded-full animate-spin"></div>
-                                                    <p className="text-[10px] font-black uppercase text-indigo-600 animate-pulse">Running Sample Tests...</p>
+                                                    <div className="w-8 h-8 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                                                    <p className="text-[10px] font-black uppercase text-indigo-600 animate-pulse font-bold">Running Sample Tests...</p>
                                                 </div>
                                             )}
 
@@ -491,7 +491,7 @@ const CodingTestAttempt = () => {
                                                 <div className="space-y-3">
                                                     <div className="bg-slate-100/30 p-3 rounded-lg border border-slate-200 flex items-center justify-between">
                                                         <span className="text-xs font-bold text-slate-600">Sample Evaluation Results</span>
-                                                        <span className="text-[10px] font-black bg-neutral-900 px-2 py-0.5 rounded text-slate-500">
+                                                        <span className="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded text-slate-600">
                                                             {runResults[currentQuestion.id].filter(r => r.passed).length} / {runResults[currentQuestion.id].length} PASSED
                                                         </span>
                                                     </div>
@@ -509,17 +509,17 @@ const CodingTestAttempt = () => {
                                                                     <div className="p-3 grid grid-cols-2 gap-3 text-[10px] font-mono leading-tight">
                                                                         <div className="space-y-1">
                                                                             <p className="text-slate-500 font-bold uppercase tracking-tighter">Expected</p>
-                                                                            <div className="bg-neutral-900 p-2 rounded border border-slate-200 text-slate-600 overflow-x-auto">{res.expectedOutput}</div>
+                                                                            <div className="bg-slate-50 p-2 rounded border border-slate-200 text-slate-600 overflow-x-auto">{res.expectedOutput}</div>
                                                                         </div>
                                                                         <div className="space-y-1">
                                                                             <p className="text-slate-500 font-bold uppercase tracking-tighter">Actual</p>
-                                                                            <div className="bg-neutral-900 p-2 rounded border border-slate-200 text-red-400 overflow-x-auto">{res.actualOutput || '<Empty>'}</div>
+                                                                            <div className="bg-red-50 p-2 rounded border border-red-200 text-red-600 overflow-x-auto">{res.actualOutput || '<Empty>'}</div>
                                                                         </div>
                                                                     </div>
                                                                 )}
                                                                 {res.error && (
                                                                     <div className="px-3 pb-3">
-                                                                        <div className="bg-red-500/5 p-2 rounded border border-red-500/20 text-red-500 text-[10px] font-mono overflow-x-auto truncate">{res.error}</div>
+                                                                        <div className="bg-red-50 p-2 rounded border border-red-200 text-red-500 text-[10px] font-mono overflow-x-auto truncate">{res.error}</div>
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -538,7 +538,7 @@ const CodingTestAttempt = () => {
                                         <div className="flex-1 flex flex-col gap-2">
                                             <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Input</label>
                                             <textarea
-                                                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-mono focus:border-violet-600 outline-none resize-none placeholder:text-neutral-800"
+                                                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-mono focus:border-indigo-500 outline-none resize-none placeholder:text-neutral-800"
                                                 placeholder="Enter custom input here..."
                                                 value={customInputs[currentQuestion.id] || ''}
                                                 onChange={(e) => setCustomInputs(prev => ({ ...prev, [currentQuestion.id]: e.target.value }))}
@@ -549,7 +549,7 @@ const CodingTestAttempt = () => {
                                             <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Output</label>
                                             <div className="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-mono overflow-auto whitespace-pre custom-scrollbar">
                                                 {customOutputs[currentQuestion.id]?.stdout || <span className="text-neutral-800 italic">No output yet</span>}
-                                                {customOutputs[currentQuestion.id]?.stderr && <div className="text-red-500 border-t border-red-500/10 mt-2 pt-2">{customOutputs[currentQuestion.id].stderr}</div>}
+                                                {customOutputs[currentQuestion.id]?.stderr && <div className="text-red-500 border-t border-red-200 mt-2 pt-2">{customOutputs[currentQuestion.id].stderr}</div>}
                                             </div>
                                         </div>
                                     </div>
@@ -558,9 +558,9 @@ const CodingTestAttempt = () => {
                                             <button
                                                 onClick={handleRunCustom}
                                                 disabled={running || isSubmitted}
-                                                className="px-6 py-2 bg-slate-100 hover:bg-neutral-700 text-slate-900 rounded-xl text-xs font-bold border border-neutral-700 transition-all flex items-center gap-2"
+                                                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold border border-slate-200 transition-all flex items-center gap-2"
                                             >
-                                                {running ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <Terminal className="w-3.5 h-3.5" />}
+                                                {running ? <div className="w-3.5 h-3.5 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div> : <Terminal className="w-3.5 h-3.5" />}
                                                 Test Custom Input
                                             </button>
                                         </div>
@@ -577,8 +577,8 @@ const CodingTestAttempt = () => {
                 __html: `
                 .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #444; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
             ` }} />
         </div>
     );
