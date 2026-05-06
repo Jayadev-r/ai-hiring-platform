@@ -86,60 +86,60 @@ const RecommendedJobs = () => {
                             transition={{ delay: i * 0.05 }}
                         >
                             <TiltCard>
-                                <GlassCard hover glow="cyan" padding="md" animate={false} className="group">
+                                <GlassCard hover glow="cyan" padding="md" animate={false} className="group border border-slate-200/60 shadow-sm hover:shadow-xl transition-all duration-500">
                                     <div className="flex items-start justify-between gap-6 flex-wrap md:flex-nowrap">
-                                        {/* Left content */}
+                                        {/* Left content: Role & Company Info */}
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex flex-wrap items-center gap-2 mb-2">
-                                                <h3 className="font-heading font-bold text-slate-900 text-lg group-hover:text-indigo-600 transition-colors">
+                                            <div className="flex items-center gap-3 mb-1">
+                                                <h3 className="font-heading font-bold text-slate-900 text-lg md:text-xl group-hover:text-indigo-600 transition-colors leading-none">
                                                     {job.title}
                                                 </h3>
                                                 {job.source && (
-                                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 border border-indigo-200 text-indigo-600 uppercase tracking-wider">
+                                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-indigo-50 border border-indigo-100 text-indigo-600 uppercase tracking-wider">
                                                         {job.source}
                                                     </span>
                                                 )}
                                             </div>
 
-                                            {/* Matched skill tag */}
-                                            {job.matched_skill && (
-                                                <div className="inline-flex items-center gap-1.5 mb-3 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
-                                                    <Zap className="w-3 h-3" />
-                                                    Matched by: <span className="text-emerald-800">{job.matched_skill}</span>
-                                                </div>
-                                            )}
-
-                                            <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-500 font-medium mb-3">
-                                                {job.company && (
-                                                    <span className="flex items-center gap-1.5 text-slate-700">
-                                                        <Briefcase className="w-3.5 h-3.5 text-indigo-500" />{job.company}
-                                                    </span>
-                                                )}
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <span className="text-sm font-bold text-slate-600">{job.company || 'Direct Hiring'}</span>
                                                 {job.location && (
-                                                    <span className="flex items-center gap-1.5 text-slate-600">
-                                                        <MapPin className="w-3.5 h-3.5" />{job.location}
-                                                    </span>
+                                                    <>
+                                                        <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                                        <span className="text-xs font-semibold text-slate-500">{job.location}</span>
+                                                    </>
                                                 )}
                                             </div>
 
+                                            {/* AI Insight / Matched tag */}
+                                            {job.matched_skill && (
+                                                <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-lg bg-emerald-50/50 border border-emerald-100/50 text-emerald-700 text-[11px] font-bold">
+                                                    <Zap className="w-3.5 h-3.5 fill-emerald-500" />
+                                                    AI Match: <span className="text-emerald-800 ml-0.5">{job.matched_skill}</span>
+                                                </div>
+                                            )}
+
                                             {job.description && (
-                                                <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed font-medium">{job.description}</p>
+                                                <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed font-medium mb-2">{job.description}</p>
                                             )}
                                         </div>
 
                                         {/* Right: score + apply */}
-                                        <div className="flex flex-col items-center gap-3 shrink-0">
+                                        <div className="flex flex-col items-center gap-4 shrink-0 w-full md:w-32">
                                             {job.match_score != null && (
-                                                <MatchScoreRing score={Math.round(job.match_score)} size={70} label="Match" thickness={5} />
+                                                <div className="relative p-1 rounded-full bg-slate-50 border border-slate-100 shadow-inner group-hover:scale-105 transition-transform duration-300">
+                                                    <MatchScoreRing score={Math.round(job.match_score)} size={64} label="Score" thickness={6} />
+                                                </div>
                                             )}
                                             {job.apply_url && (
                                                 <a
                                                     href={job.apply_url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="bg-indigo-600 text-white hover:bg-indigo-700 px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
+                                                    className="w-full bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-indigo-200 group/btn"
                                                 >
-                                                    Apply Now <ExternalLink className="w-4 h-4" />
+                                                    View Details
+                                                    <ExternalLink className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                                                 </a>
                                             )}
                                         </div>

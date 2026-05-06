@@ -16,50 +16,51 @@ const ExternalJobCard = ({ job, index }) => (
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: index * 0.04, duration: 0.35 }}
     >
-        <GlassCard hover glow="green" padding="md" animate={false} className="group">
-            <div className="flex items-start justify-between gap-4">
+        <GlassCard hover glow="green" padding="md" animate={false} className="group border border-slate-200/60 shadow-sm hover:shadow-xl transition-all duration-500">
+            <div className="flex items-start justify-between gap-6 flex-wrap md:flex-nowrap">
                 <div className="flex-1 min-w-0">
-                    {/* Badge */}
-                    <div className="flex items-center gap-2 mb-2">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 border border-emerald-200 text-emerald-700 uppercase tracking-wider flex items-center gap-1">
-                            <Globe className="w-2.5 h-2.5" /> External
+                    {/* Badge Stack */}
+                    <div className="flex items-center gap-2 mb-3">
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-50 border border-emerald-100 text-emerald-600 uppercase tracking-wider flex items-center gap-1">
+                            <Globe className="w-2.5 h-2.5" /> External Provider
                         </span>
                         {job.source && (
-                            <span className="text-[10px] text-slate-500 font-medium">{job.source}</span>
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">{job.source}</span>
                         )}
                     </div>
 
-                    <h3 className="font-heading font-bold text-slate-900 text-sm mb-1 group-hover:text-emerald-600 transition-colors truncate" dangerouslySetInnerHTML={{ __html: job.job_title || job.title || job.name || 'External Job' }} />
+                    <h3 className="font-heading font-bold text-slate-900 text-lg md:text-xl mb-1 group-hover:text-emerald-600 transition-colors leading-none truncate" dangerouslySetInnerHTML={{ __html: job.job_title || job.title || job.name || 'External Job' }} />
 
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 mb-2">
-                        {(job.external_company_name || job.company || job.company_name) && (
-                            <span className="flex items-center gap-1">
-                                <Briefcase className="w-3 h-3" />
-                                {job.external_company_name || job.company || job.company_name}
-                            </span>
-                        )}
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="text-sm font-bold text-slate-600">{job.external_company_name || job.company || job.company_name || 'Verified Employer'}</span>
                         {job.location && (
-                            <span className="flex items-center gap-1">
-                                <MapPin className="w-3 h-3" />
-                                {job.location}
-                            </span>
+                            <>
+                                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                <div className="flex items-center gap-1 text-slate-500">
+                                    <MapPin className="w-3.5 h-3.5 text-emerald-500" />
+                                    <span className="text-xs font-semibold">{job.location}</span>
+                                </div>
+                            </>
                         )}
                     </div>
 
                     {(job.job_description || job.description) && (
-                        <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed" dangerouslySetInnerHTML={{ __html: job.job_description || job.description }} />
+                        <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed font-medium" dangerouslySetInnerHTML={{ __html: job.job_description || job.description }} />
                     )}
                 </div>
 
-                {/* Apply */}
-                <a
-                    href={job.source_url || job.redirect_url || job.apply_url || job.job_url || job.url || '#'}
-                    target={job.source_url || job.redirect_url || job.apply_url || job.job_url || job.url ? "_blank" : "_self"}
-                    rel="noopener noreferrer"
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors shadow-sm"
-                >
-                    Apply on Provider <ExternalLink className="w-3 h-3" />
-                </a>
+                {/* Apply Action */}
+                <div className="w-full md:w-auto pt-4 md:pt-0 border-t md:border-0 border-slate-100 mt-2 md:mt-0 flex items-center md:items-start shrink-0">
+                    <a
+                        href={job.source_url || job.redirect_url || job.apply_url || job.job_url || job.url || '#'}
+                        target={job.source_url || job.redirect_url || job.apply_url || job.job_url || job.url ? "_blank" : "_self"}
+                        rel="noopener noreferrer"
+                        className="w-full md:w-40 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-md hover:shadow-emerald-200 group/btn"
+                    >
+                        Apply on Partner
+                        <ExternalLink className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                    </a>
+                </div>
             </div>
         </GlassCard>
     </motion.div>
