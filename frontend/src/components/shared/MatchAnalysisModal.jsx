@@ -318,20 +318,39 @@ const MatchAnalysisModal = ({ isOpen, onClose }) => {
                                                     <div className="flex items-center gap-2 text-[10px] font-extrabold text-slate-400 uppercase mb-3 tracking-widest">
                                                         <BookOpen className="w-3 h-3" /> Learning Resources
                                                     </div>
-                                                    {bridge.learning_resources.map((resource, rIdx) => (
+                                                    {bridge.learning_resources.map((resource, rIdx) => {
+                                                        // Generate real search URL based on platform
+                                                        const query = encodeURIComponent(resource.title);
+                                                        const platformUrls = {
+                                                            'coursera': `https://www.coursera.org/search?query=${query}`,
+                                                            'udemy': `https://www.udemy.com/courses/search/?q=${query}`,
+                                                            'youtube': `https://www.youtube.com/results?search_query=${query}`,
+                                                            'edx': `https://www.edx.org/search?q=${query}`,
+                                                            'pluralsight': `https://www.pluralsight.com/search?q=${query}`,
+                                                            'linkedin learning': `https://www.linkedin.com/learning/search?keywords=${query}`,
+                                                            'linkedin': `https://www.linkedin.com/learning/search?keywords=${query}`,
+                                                            'freecodecamp': `https://www.freecodecamp.org/news/search/?query=${query}`,
+                                                            'kaggle': `https://www.kaggle.com/search?q=${query}`,
+                                                        };
+                                                        const platformKey = resource.platform?.toLowerCase().trim();
+                                                        const resourceUrl = platformUrls[platformKey] || `https://www.google.com/search?q=${query}+${encodeURIComponent(resource.platform || '')}+course`;
+
+                                                        return (
                                                         <a
                                                             key={rIdx}
-                                                            href="#"
+                                                            href={resourceUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
                                                             className="flex items-center justify-between p-3 rounded-2xl transition-all group bg-white border border-slate-200 hover:border-indigo-300 hover:shadow-sm"
-                                                            onClick={(e) => e.preventDefault()}
                                                         >
                                                             <div>
                                                                 <p className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1">{resource.title}</p>
                                                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">{resource.platform} • {resource.type}</p>
                                                             </div>
-                                                            <ExternalLink className="w-4 h-4 text-slate-300 group-hover:text-indigo-600 transition-colors" />
+                                                            <ExternalLink className="w-4 h-4 text-slate-300 group-hover:text-indigo-600 transition-colors shrink-0" />
                                                         </a>
-                                                    ))}
+                                                        );
+                                                    })}
                                                 </div>
                                             </div>
                                         </div>
