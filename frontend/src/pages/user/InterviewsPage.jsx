@@ -24,46 +24,81 @@ const InterviewsPage = () => {
         }
     };
 
-    const handleJoinInterview = (channelName, scheduledAt, status) => {
+    /**
+     * Build a LOCAL-time Date from interview_date + start_time fields.
+     * Using T-separator without Z tells JS to treat it as local time,
+     * avoiding the UTC+offset bug from scheduled_at (stored without timezone).
+     */
+    const getLocalInterviewDate = (interview) => {
+        if (!interview.interview_date || !interview.start_time) return null;
+        
+        let datePart = '';
+        if (typeof interview.interview_date === 'string') {
+            datePart = interview.interview_date.split('T')[0];
+        } else {
+            // Ensure we get the correct local date string (YYYY-MM-DD)
+            const d = new Date(interview.interview_date);
+            datePart = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+        
+        const timePart = interview.start_time.substring(0, 5); // "HH:MM"
+        
+        const [year, month, day] = datePart.split('-').map(Number);
+        const [hour, minute] = timePart.split(':').map(Number);
+        
+        // new Date(year, monthIndex, day, hours, minutes) is guaranteed to be local time
+        return new Date(year, month - 1, day, hour, minute, 0);
+    };
+
+    const handleJoinInterview = (channelName, interview, status) => {
         // If the interview is live (in_progress), join immediately
         if (status === 'in_progress') {
             window.location.href = `/interview/${channelName}`;
             return;
         }
-        if (!scheduledAt) {
+        const interviewTime = getLocalInterviewDate(interview);
+        if (!interviewTime) {
             window.location.href = `/interview/${channelName}`;
             return;
         }
-        const interviewTime = new Date(scheduledAt);
-        const now = new Date();
-        const timeDiff = (interviewTime - now) / (1000 * 60);
+        const timeDiff = (interviewTime - new Date()) / (1000 * 60);
         if (timeDiff > 10) { alert(`Interview starts in ${Math.round(timeDiff)} minutes. You can join 10 minutes before.`); return; }
         if (timeDiff < -240) { alert('This interview session has expired. Please contact the recruiter.'); return; }
         window.location.href = `/interview/${channelName}`;
     };
 
-
-    const formatDate = (date) => {
-        if (!date) return 'Not scheduled';
-        return new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const formatDate = (dateString, interview) => {
+        if (!dateString) return 'Not scheduled';
+        // If an interview object is passed, use the robust local date builder
+        if (interview) {
+            const localDate = getLocalInterviewDate(interview);
+            if (localDate) {
+                return localDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+        }
+        return new Date(dateString).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     };
     const formatTime = (time) => time ? time.substring(0, 5) : '';
 
-    const canJoin = (scheduledAt, status) => {
+    const canJoin = (interview, status) => {
         if (status === 'in_progress') return true;
         if (status !== 'scheduled') return false;
-        if (!scheduledAt) return true; // No time restriction if no scheduled time
-        const diff = (new Date(scheduledAt) - new Date()) / (1000 * 60);
+        const interviewTime = getLocalInterviewDate(interview);
+        if (!interviewTime) return true; // No time restriction if no date/time fields
+        const diff = (interviewTime - new Date()) / (1000 * 60);
         return diff <= 15 && diff >= -240; // Allow joining from 15min before to 4hrs after
     };
 
-    const getTimeUntilInterview = (scheduledAt) => {
-        if (!scheduledAt) return null;
-        const diff = (new Date(scheduledAt) - new Date()) / (1000 * 60);
+    const getTimeUntilInterview = (interview) => {
+        const interviewTime = getLocalInterviewDate(interview);
+        if (!interviewTime) return null;
+        const diff = (interviewTime - new Date()) / (1000 * 60);
         if (diff <= 0) return null;
         if (diff < 60) return `Starts in ${Math.round(diff)} min`;
-        if (diff < 1440) return `Starts in ${Math.round(diff / 60)}h ${Math.round(diff % 60)}m`;
-        return `Starts on ${formatDate(scheduledAt)}`;
+        const hours = Math.floor(diff / 60);
+        const mins = Math.round(diff % 60);
+        if (diff < 1440) return `Starts in ${hours}h ${mins}m`;
+        return `Starts on ${formatDate(interview.interview_date, interview)}`;
     };
 
     const statusConfig = {
@@ -96,7 +131,7 @@ const InterviewsPage = () => {
                 <div className="space-y-4">
                     {interviews.map((interview, i) => {
                         const sc = statusConfig[interview.status] || statusConfig.pending;
-                        const joinable = canJoin(interview.scheduled_at, interview.status);
+                        const joinable = canJoin(interview, interview.status);
                         return (
                             <motion.div
                                 key={interview.id}
@@ -133,7 +168,7 @@ const InterviewsPage = () => {
                                                 </div>
                                                 <div>
                                                     <p className="text-[10px] text-slate-500">Date</p>
-                                                    <p className="text-xs font-medium text-slate-900">{formatDate(interview.interview_date)}</p>
+                                                    <p className="text-xs font-medium text-slate-900">{formatDate(interview.interview_date, interview)}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
@@ -153,7 +188,7 @@ const InterviewsPage = () => {
                                     {(interview.status === 'scheduled' || interview.status === 'in_progress') && (
                                         joinable ? (
                                             <motion.button
-                                                onClick={() => handleJoinInterview(interview.channel_name, interview.scheduled_at, interview.status)}
+                                                onClick={() => handleJoinInterview(interview.channel_name, interview, interview.status)}
                                                 className="bg-indigo-600 text-white hover:bg-indigo-700 w-full py-3 rounded-xl flex items-center justify-center gap-2 font-semibold shadow-sm"
                                                 whileHover={{ scale: 1.01 }}
                                                 whileTap={{ scale: 0.98 }}
@@ -167,10 +202,12 @@ const InterviewsPage = () => {
                                             <div className="w-full">
                                                 <button disabled className="w-full py-3 rounded-xl flex items-center justify-center gap-2 bg-slate-50 border border-slate-200 text-slate-500 cursor-not-allowed font-semibold text-sm">
                                                     <Video className="w-5 h-5" />
-                                                    {getTimeUntilInterview(interview.scheduled_at) || 'Scheduled'}
+                                                    {getTimeUntilInterview(interview) || 'Scheduled'}
                                                 </button>
-                                                {interview.scheduled_at && (() => {
-                                                    const diff = (new Date(interview.scheduled_at) - new Date()) / (1000 * 60);
+                                                {(() => {
+                                                    const t = getLocalInterviewDate(interview);
+                                                    if (!t) return null;
+                                                    const diff = (t - new Date()) / (1000 * 60);
                                                     return diff > 15 ? (
                                                         <p className="text-center text-xs text-slate-400 mt-2">
                                                             You can join 15 minutes before the interview starts
