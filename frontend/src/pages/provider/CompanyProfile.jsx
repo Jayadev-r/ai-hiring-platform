@@ -76,7 +76,7 @@ const CompanyProfile = () => {
                 setFormData(prev => ({ ...prev, name: user?.name || '' }));
             }
         } catch (error) {
-            toast.error('Failed to synchronize identity data.');
+            toast.error('Failed to load company profile.');
         } finally {
             setLoading(false);
         }
@@ -91,7 +91,7 @@ const CompanyProfile = () => {
         const file = e.target.files[0];
         if (file) {
             if (file.size > 2 * 1024 * 1024) {
-                toast.error('Identity media must be under 2MB');
+                toast.error('Logo file must be under 2MB');
                 return;
             }
             setLogoFile(file);
@@ -114,11 +114,11 @@ const CompanyProfile = () => {
             });
 
             if (response.data.success) {
-                toast.success('Corporate identity synchronized successfully');
+                toast.success('Company profile saved successfully');
                 fetchCompanyProfile();
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Failed to sync identity');
+            toast.error(error.response?.data?.message || 'Failed to save profile');
         } finally {
             setSaving(false);
         }
@@ -144,10 +144,10 @@ const CompanyProfile = () => {
                         <div>
                             <div className="flex items-center gap-2 text-provider-slate-500 mb-1">
                                 <Fingerprint className="w-4 h-4" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Company Protocol</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest">Company Profile</span>
                             </div>
                             <h1 className="text-4xl font-black text-provider-slate-900 tracking-tight">
-                                {formData.name || 'Identity Console'}
+                                {formData.name || 'Company Profile'}
                             </h1>
                             <p className="text-sm font-medium text-provider-slate-400 mt-2">Structure your employer brand and corporate presence.</p>
                         </div>
@@ -162,7 +162,7 @@ const CompanyProfile = () => {
 
                             <h2 className="text-[10px] font-black uppercase tracking-wider text-provider-slate-400 mb-6 flex items-center gap-2">
                                 <Camera className="w-3 h-3" />
-                                Visual Core
+                                Company Logo
                             </h2>
 
                             <div
@@ -174,7 +174,7 @@ const CompanyProfile = () => {
                                 ) : (
                                     <div className="flex flex-col items-center text-provider-slate-400 text-center px-4">
                                         <UploadCloud className="w-8 h-8 mb-2 group-hover:scale-110 transition-transform" />
-                                        <p className="text-xs font-black uppercase tracking-tighter leading-none">Drop Architecture<br /><span className="text-[10px] opacity-50">or click to browse</span></p>
+                                        <p className="text-xs font-black uppercase tracking-tighter leading-none">Upload Logo<br /><span className="text-[10px] opacity-50">or click to browse</span></p>
                                     </div>
                                 )}
                                 <div className="absolute inset-0 bg-provider-blue-600/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
@@ -185,7 +185,7 @@ const CompanyProfile = () => {
 
                             <div className="mt-10 space-y-4">
                                 <div className="p-4 bg-provider-slate-50 rounded-2xl border border-provider-slate-100">
-                                    <div className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest mb-3">Verification Matrix</div>
+                                    <div className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest mb-3">Company Stats</div>
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
                                             <span className="text-xs font-bold text-provider-slate-600">Active Jobs</span>
@@ -203,7 +203,7 @@ const CompanyProfile = () => {
                         </div>
 
                         <div className="provider-panel p-6 border-none shadow-xl">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-provider-slate-400 mb-4">Master Credentials</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-provider-slate-400 mb-4">Account Owner</h3>
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-2xl bg-provider-blue-600 flex items-center justify-center font-black text-xl">
                                     {user?.name?.charAt(0)}
@@ -216,17 +216,17 @@ const CompanyProfile = () => {
                         </div>
                     </div>
 
-                    {/* Right Panel: Data Architecture */}
+                    {/* Right Panel: Company Details */}
                     <div className="lg:col-span-8 space-y-8 pb-32">
                         <div className="provider-panel p-10 space-y-12 shadow-sm border-none">
                             <section>
                                 <h2 className="text-sm font-black uppercase tracking-widest text-provider-slate-400 mb-8 flex items-center gap-2">
                                     <Building2 className="w-4 h-4 text-provider-blue-600" />
-                                    Base Infrastructure
+                                    Basic Information
                                 </h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="md:col-span-2 space-y-2">
-                                        <label className="text-[10px] font-black text-provider-slate-500 uppercase tracking-widest ml-1">Company Legal Handle</label>
+                                        <label className="text-[10px] font-black text-provider-slate-500 uppercase tracking-widest ml-1">Company Name</label>
                                         <input
                                             name="name"
                                             value={formData.name}
@@ -237,7 +237,7 @@ const CompanyProfile = () => {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-provider-slate-500 uppercase tracking-widest ml-1">Industry Sector</label>
+                                        <label className="text-[10px] font-black text-provider-slate-500 uppercase tracking-widest ml-1">Industry</label>
                                         <input
                                             name="industry"
                                             value={formData.industry}
@@ -247,7 +247,7 @@ const CompanyProfile = () => {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-provider-slate-500 uppercase tracking-widest ml-1">Geographic HQ</label>
+                                        <label className="text-[10px] font-black text-provider-slate-500 uppercase tracking-widest ml-1">Location</label>
                                         <div className="relative">
                                             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-provider-slate-400" />
                                             <input
@@ -260,7 +260,7 @@ const CompanyProfile = () => {
                                         </div>
                                     </div>
                                     <div className="md:col-span-2 space-y-2">
-                                        <label className="text-[10px] font-black text-provider-slate-500 uppercase tracking-widest ml-1">Digital Coordinates (Website)</label>
+                                        <label className="text-[10px] font-black text-provider-slate-500 uppercase tracking-widest ml-1">Website URL</label>
                                         <div className="relative">
                                             <Globe2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-provider-slate-400" />
                                             <input
@@ -278,16 +278,16 @@ const CompanyProfile = () => {
                             <section>
                                 <h2 className="text-sm font-black uppercase tracking-widest text-provider-slate-400 mb-8 flex items-center gap-2">
                                     <ShieldCheck className="w-4 h-4 text-provider-blue-600" />
-                                    The Manifesto
+                                    About Us
                                 </h2>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-provider-slate-500 uppercase tracking-widest ml-1">Mission & Culture Statement</label>
+                                    <label className="text-[10px] font-black text-provider-slate-500 uppercase tracking-widest ml-1">Company Description</label>
                                     <textarea
                                         name="description"
                                         value={formData.description}
                                         onChange={handleInputChange}
                                         className="provider-input w-full min-h-[150px] py-4 px-6 font-medium leading-relaxed resize-none"
-                                        placeholder="We are building the future of algorithmic hiring..."
+                                        placeholder="Tell candidates about your company, culture, and mission..."
                                     />
                                 </div>
                             </section>
@@ -295,7 +295,7 @@ const CompanyProfile = () => {
                             <section>
                                 <h2 className="text-sm font-black uppercase tracking-widest text-provider-slate-400 mb-8 flex items-center gap-2">
                                     <ArrowUpRight className="w-4 h-4 text-provider-blue-600" />
-                                    Social Expansion
+                                    Social Links
                                 </h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="relative group">
@@ -336,7 +336,7 @@ const CompanyProfile = () => {
                     <div className="max-w-[1400px] mx-auto flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="h-10 w-px bg-provider-slate-200" />
-                            <p className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest">Master Identity Sync Status: <span className={saving ? "text-amber-600" : "text-emerald-600"}>{saving ? "PROCESSING..." : "VERIFIED"}</span></p>
+                            <p className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest">Save Status: <span className={saving ? "text-amber-600" : "text-emerald-600"}>{saving ? "SAVING..." : "ALL SAVED"}</span></p>
                         </div>
                         <div className="flex items-center gap-4">
                             <button
@@ -344,7 +344,7 @@ const CompanyProfile = () => {
                                 onClick={() => window.location.reload()}
                                 className="provider-btn-secondary px-8 h-12 font-black uppercase text-xs tracking-widest shadow-sm"
                             >
-                                Revert Identity
+                                Discard Changes
                             </button>
                             <button
                                 onClick={handleSubmit}
@@ -356,7 +356,7 @@ const CompanyProfile = () => {
                                 ) : (
                                     <Save className="w-4 h-4" />
                                 )}
-                                Sync Architecture
+                                Save Changes
                             </button>
                         </div>
                     </div>

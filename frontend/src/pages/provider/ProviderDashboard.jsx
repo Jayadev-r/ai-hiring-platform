@@ -47,7 +47,7 @@ const ProviderDashboard = () => {
                     setDashboardData(response.data);
                 }
             } catch (error) {
-                console.error('Data synchronization failed');
+                console.error('Failed to load dashboard data');
             } finally {
                 setLoading(false);
             }
@@ -97,7 +97,7 @@ const ProviderDashboard = () => {
         );
     }
 
-    // Dynamic metrics calculations (simulated velocity/trends based on payload existence)
+    // Dynamic metrics calculations (simulated trends based on data)
     const applicantTrend = stats?.applicants > 20 ? 14.2 : 2.1;
     const jobsTrend = stats?.jobsPosted > 5 ? 8.4 : 0;
     const shortlistTrend = stats?.shortlisted > 5 ? 12.5 : null;
@@ -114,7 +114,7 @@ const ProviderDashboard = () => {
                             <div className="flex items-center gap-3 mb-2">
                                 <div className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100 flex items-center gap-1.5 shadow-sm">
                                     <Activity className="w-3.5 h-3.5 animate-pulse" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">Operational Pulse: Optimized</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">System Status: Active</span>
                                 </div>
                                 <div className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-100 flex items-center gap-1.5 shadow-sm">
                                     <ShieldCheck className="w-3.5 h-3.5" />
@@ -122,9 +122,9 @@ const ProviderDashboard = () => {
                                 </div>
                             </div>
                             <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-                                {user?.company_name || user?.name || 'Command'} <span className="text-blue-600">Center</span>
+                                {user?.company_name || user?.name || 'Recruitment'} <span className="text-blue-600">Dashboard</span>
                             </h1>
-                            <p className="text-sm font-medium text-slate-400 mt-2">Executive oversight of company architecture and talent acquisition.</p>
+                            <p className="text-sm font-medium text-slate-400 mt-2">Overview of your hiring activity and talent acquisition.</p>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-4">
@@ -133,7 +133,7 @@ const ProviderDashboard = () => {
                                     <Calendar className="w-5 h-5 text-slate-400" />
                                 </div>
                                 <div>
-                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Session Protocol</div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Today's Date</div>
                                     <div className="text-sm font-black text-slate-900">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                                 </div>
                             </div>
@@ -142,7 +142,7 @@ const ProviderDashboard = () => {
                                 className="provider-btn-primary h-14 px-8 rounded-2xl flex items-center gap-3 shadow-[0_4px_16px_rgba(37,99,235,0.2)] hover:shadow-[0_8px_30px_rgba(37,99,235,0.3)] group"
                             >
                                 <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-                                <span className="font-black uppercase text-xs tracking-widest">Post Position</span>
+                                <span className="font-black uppercase text-xs tracking-widest">Post a Job</span>
                             </button>
                         </div>
                     </motion.div>
@@ -161,7 +161,7 @@ const ProviderDashboard = () => {
                                 value={stats?.applicants || 0}
                                 icon={Users}
                                 trend={applicantTrend}
-                                trendLabel="Velocity"
+                                trendLabel="Growth"
                             />
                         </motion.div>
                         <motion.div variants={itemVariants} className="h-full">
@@ -170,7 +170,7 @@ const ProviderDashboard = () => {
                                 value={stats?.jobsPosted || 0}
                                 icon={Briefcase}
                                 trend={jobsTrend}
-                                trendLabel="Expansion"
+                                trendLabel="Growth"
                             />
                         </motion.div>
                         <motion.div variants={itemVariants} className="h-full">
@@ -179,7 +179,7 @@ const ProviderDashboard = () => {
                                 value={stats?.shortlisted || 0}
                                 icon={Target}
                                 trend={shortlistTrend}
-                                trendLabel="Precision"
+                                trendLabel="Accuracy"
                             />
                         </motion.div>
                         <motion.div variants={itemVariants} className="h-full">
@@ -202,8 +202,8 @@ const ProviderDashboard = () => {
                         <motion.div variants={itemVariants} className="xl:col-span-8 provider-panel p-8 shadow-sm group hover:shadow-md transition-shadow">
                             <div className="flex items-center justify-between mb-10">
                                 <div>
-                                    <h3 className="text-lg font-black text-slate-900 tracking-tight uppercase tracking-[0.05em]">Acquisition Dynamics</h3>
-                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Real-time candidate influx tracking</p>
+                                    <h3 className="text-lg font-black text-slate-900 tracking-tight uppercase tracking-[0.05em]">Application Trends</h3>
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Tracking candidate applications over time</p>
                                 </div>
                                 <div className="flex gap-2">
                                     <button className="px-4 py-2 rounded-xl bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest transition-colors hover:bg-blue-100">30 Days</button>
@@ -269,8 +269,8 @@ const ProviderDashboard = () => {
                                             <Target className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <div className="text-xs font-black tracking-tight text-slate-900 leading-none mb-1.5">Rank Delta Detected</div>
-                                            <div className="text-[10px] text-slate-500 font-medium leading-relaxed">{stats?.shortlisted > 0 ? `${stats.shortlisted} candidates heavily match requirements.` : 'Auto-ranking analyzing candidates...'}</div>
+                                            <div className="text-xs font-black tracking-tight text-slate-900 leading-none mb-1.5">Top Matches Found</div>
+                                            <div className="text-[10px] text-slate-500 font-medium leading-relaxed">{stats?.shortlisted > 0 ? `${stats.shortlisted} candidates closely match your requirements.` : 'Analyzing candidates for best matches...'}</div>
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-4 p-4 rounded-2xl border transition-colors cursor-pointer group/insight"
@@ -279,8 +279,8 @@ const ProviderDashboard = () => {
                                             <Zap className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <div className="text-xs font-black tracking-tight text-slate-900 leading-none mb-1.5">System Status</div>
-                                            <div className="text-[10px] text-slate-500 font-medium leading-relaxed">Agentic scanning enabled for active positions.</div>
+                                            <div className="text-xs font-black tracking-tight text-slate-900 leading-none mb-1.5">AI Screening Active</div>
+                                            <div className="text-[10px] text-slate-500 font-medium leading-relaxed">Automatic candidate screening is running for your open positions.</div>
                                         </div>
                                     </div>
                                     <button
@@ -288,13 +288,13 @@ const ProviderDashboard = () => {
                                         className="w-full mt-2 py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-colors group/btn border shadow-sm hover:shadow-md"
                                         style={{ backgroundColor: 'var(--theme-bg)', color: 'var(--theme-text-primary)', borderColor: 'var(--theme-border)' }}
                                     >
-                                        Launch AI Studio <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                        Open AI Tools <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                     </button>
                                 </div>
                             </div>
 
                             <div className="provider-panel p-8 shadow-sm">
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Recruitment Velocity</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Hiring Progress</h3>
                                 <div className="space-y-5">
                                     <div>
                                         <div className="flex justify-between text-[11px] font-black text-slate-900 mb-2 uppercase tracking-tighter">
@@ -313,8 +313,8 @@ const ProviderDashboard = () => {
                                     </div>
                                     <div>
                                         <div className="flex justify-between text-[11px] font-black text-slate-900 mb-2 uppercase tracking-tighter">
-                                            <span>System Capacity</span>
-                                            <span className="text-emerald-600 font-mono text-xs">Optimal</span>
+                                            <span>Pipeline Health</span>
+                                            <span className="text-emerald-600 font-mono text-xs">Good</span>
                                         </div>
                                         <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                                             <motion.div
@@ -335,11 +335,11 @@ const ProviderDashboard = () => {
                     <motion.div variants={floatVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="space-y-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h2 className="text-xl font-black text-slate-900 tracking-tight uppercase tracking-[0.05em]">Active Pipelines</h2>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Mission critical job listings</p>
+                                <h2 className="text-xl font-black text-slate-900 tracking-tight uppercase tracking-[0.05em]">Recent Job Listings</h2>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Your currently active job postings</p>
                             </div>
                             <Link to="/provider/jobs" className="flex items-center gap-2 text-[10px] font-black text-blue-600 uppercase tracking-widest hover:translate-x-1 transition-transform bg-blue-50 px-4 py-2 rounded-xl">
-                                Full Portfolio <ChevronRight className="w-4 h-4" />
+                                View All Jobs <ChevronRight className="w-4 h-4" />
                             </Link>
                         </div>
 
@@ -349,8 +349,8 @@ const ProviderDashboard = () => {
                                     <tr>
                                         <th className="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Position & Metadata</th>
                                         <th className="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Applicants</th>
-                                        <th className="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Operational Status</th>
-                                        <th className="px-8 py-5 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Protocol</th>
+                                        <th className="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                                        <th className="px-8 py-5 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
@@ -360,8 +360,8 @@ const ProviderDashboard = () => {
                                                 <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
                                                     <Briefcase className="w-6 h-6 text-slate-300" />
                                                 </div>
-                                                <p className="text-sm font-bold text-slate-900">No active pipelines</p>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Create a position to begin tracking</p>
+                                                <p className="text-sm font-bold text-slate-900">No job listings yet</p>
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Post a job to start tracking applicants</p>
                                             </td>
                                         </tr>
                                     ) : (

@@ -166,7 +166,7 @@ const InterviewScheduler = () => {
             }
         } catch (error) {
             console.error('Scheduling error:', error);
-            addToast('error', error.response?.data?.message || 'Failed to orchestrate schedule');
+            addToast('error', error.response?.data?.message || 'Failed to create schedule');
         } finally {
             setScheduling(false);
         }
@@ -189,7 +189,7 @@ const InterviewScheduler = () => {
                         <div>
                             <div className="flex items-center gap-2 text-provider-blue-600 mb-1">
                                 <CalendarCheck className="w-4 h-4" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Orchestration Module</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest">Scheduling Tools</span>
                             </div>
                             <h1 className="text-3xl font-black text-provider-slate-900 tracking-tight">
                                 Smart <span className="text-provider-blue-600">Interview Scheduler</span>
@@ -246,7 +246,7 @@ const InterviewScheduler = () => {
                                         ) : topCandidates.length === 0 ? (
                                             <div className="col-span-full py-6 text-center text-provider-slate-400 text-[10px] font-black italic uppercase tracking-widest bg-provider-slate-50/50 rounded-xl border border-dashed border-provider-slate-200">
                                                 No AI-shortlisted candidates found. <br/>
-                                                <span className="text-provider-blue-600">Run the AI Scouter first.</span>
+                                                <span className="text-provider-blue-600">Run the AI Shortlister first.</span>
                                             </div>
                                         ) : (
                                             topCandidates.map((c, idx) => (
@@ -450,7 +450,7 @@ const InterviewScheduler = () => {
                     {/* Right Column: Execution & Preview */}
                     <div className="lg:col-span-4 space-y-6 sticky top-24">
                         <section className="provider-panel p-6 bg-provider-blue-900 text-white border-none">
-                            <h3 className="text-xs font-black uppercase tracking-widest text-provider-blue-300 mb-6">Orchestration Summary</h3>
+                            <h3 className="text-xs font-black uppercase tracking-widest text-provider-blue-300 mb-6">Schedule Summary</h3>
 
                             <div className="space-y-4 mb-8">
                                 <div className="flex justify-between items-center py-3 border-b border-white/10">
@@ -493,7 +493,7 @@ const InterviewScheduler = () => {
                                         {topCandidates.length === 0 && selectedJobId && (
                                             <div className="py-6 text-center text-provider-slate-400 text-[10px] font-black italic uppercase tracking-widest bg-provider-slate-50/50 rounded-xl border border-dashed border-provider-slate-200">
                                                 No AI-shortlisted candidates found. <br/>
-                                                <span className="text-provider-blue-600">Run the AI Scouter first.</span>
+                                                <span className="text-provider-blue-600">Run the AI Shortlister first.</span>
                                             </div>
                                         )}
                                         {topCandidates.map((c, idx) => (
@@ -529,7 +529,7 @@ const InterviewScheduler = () => {
                                 </div>
                                 <div className="flex-1">
                                     <h2 className="text-2xl font-black text-provider-slate-900 mb-2">Scheduling Successful!</h2>
-                                    <p className="text-provider-slate-500 font-medium mb-8">All invites have been dispatched. The timeline has been synchronized with the team.</p>
+                                    <p className="text-provider-slate-500 font-medium mb-8">All invites have been sent. The schedule has been shared with the team.</p>
 
                                     <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
                                         <div className="bg-white p-4 rounded-2xl border border-provider-slate-200 shadow-sm">

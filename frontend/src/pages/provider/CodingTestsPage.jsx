@@ -108,7 +108,7 @@ const CodingTestsPage = () => {
             const res = await codingService.getRecruiterCodingTests();
             setTests(res.data || []);
         } catch (error) {
-            addToast('error', 'Failed to synchronize algorithmic challenges');
+            addToast('error', 'Failed to load coding tests');
         } finally {
             if (!silent) setLoading(false);
         }
@@ -135,13 +135,13 @@ const CodingTestsPage = () => {
                 addToast('success', 'Algorithm challenge updated');
             } else {
                 await codingService.createCodingTest(payload);
-                addToast('success', 'Algorithm challenge deployed');
+                addToast('success', 'Coding test created successfully');
             }
             setActiveTab('list');
             fetchTests(true);
             resetForm();
         } catch (error) {
-            addToast('error', 'Failed to deploy verification engine');
+            addToast('error', 'Failed to save coding test');
         } finally {
             setSaving(false);
         }
@@ -213,7 +213,7 @@ const CodingTestsPage = () => {
             })));
             setActiveTab('edit');
         } catch (error) {
-            addToast('error', 'Failed to retrieve challenge blueprint');
+            addToast('error', 'Failed to load test details');
         }
     };
 
@@ -225,7 +225,7 @@ const CodingTestsPage = () => {
             const res = await codingService.getCodingTestResults(test.id);
             setResults(res.data || []);
         } catch (error) {
-            addToast('error', 'Failed to aggregate submission data');
+            addToast('error', 'Failed to load submission results');
         } finally {
             setLoadingResults(false);
         }
@@ -238,7 +238,7 @@ const CodingTestsPage = () => {
             setSelectedSubmission(res.data);
             setCodeModalOpen(true);
         } catch (error) {
-            addToast('error', 'Failed to decompile submission');
+            addToast('error', 'Failed to load submission code');
         } finally {
             setLoadingSubmission(false);
         }
@@ -262,7 +262,7 @@ const CodingTestsPage = () => {
                 <div>
                     <div className="flex items-center gap-2 text-provider-blue-600 mb-1">
                         <Terminal className="w-4 h-4" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Algorithmic Verification</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest">Coding Assessments</span>
                     </div>
                     <h1 className="text-3xl font-black text-provider-slate-900 tracking-tight">
                         Coding <span className="text-provider-blue-600">Arena</span>
@@ -281,7 +281,7 @@ const CodingTestsPage = () => {
                         className="provider-btn-primary px-6 flex items-center gap-2"
                     >
                         <Plus className="w-4 h-4" />
-                        Engineer New Challenge
+                        Create New Challenge
                     </button>
                 </div>
             </div>
@@ -296,7 +296,7 @@ const CodingTestsPage = () => {
                         <Code className="w-8 h-8" />
                     </div>
                     <h3 className="text-xl font-black text-provider-slate-900 mb-2">No Challenges Configured</h3>
-                    <p className="text-provider-slate-500 font-medium mb-8 max-w-sm mx-auto">Deploy algorithmic challenges to test candidate implementation skills.</p>
+                    <p className="text-provider-slate-500 font-medium mb-8 max-w-sm mx-auto">Create coding challenges to evaluate candidate technical skills.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-4">
@@ -377,7 +377,7 @@ const CodingTestsPage = () => {
                     <div>
                         <div className="flex items-center gap-2 text-provider-blue-600 mb-1">
                             <Sparkles className="w-4 h-4" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Algorithm Architect</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">Challenge Builder</span>
                         </div>
                         <h1 className="text-3xl font-black text-provider-slate-900 tracking-tight">
                             Build <span className="text-provider-blue-600">Challenge</span>
@@ -458,7 +458,7 @@ const CodingTestsPage = () => {
 
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
-                                            <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest">Verification Cases</label>
+                                            <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest">Test Cases</label>
                                             <button
                                                 type="button"
                                                 onClick={() => {
@@ -523,14 +523,14 @@ const CodingTestsPage = () => {
                         onClick={() => setQuestions([...questions, { title: '', problemStatement: '', inputFormat: '', outputFormat: '', constraints: '', marks: 50, testCases: [{ input: '', expectedOutput: '', isHidden: false }] }])}
                         className="w-full py-6 border-2 border-dashed border-provider-slate-200 rounded-3xl text-provider-slate-400 font-black text-xs uppercase tracking-widest hover:border-provider-blue-400 hover:text-provider-blue-600 hover:bg-provider-blue-50/50 transition-all flex items-center justify-center gap-3"
                     >
-                        <Plus className="w-5 h-5" /> Vectorize New Question
+                        <Plus className="w-5 h-5" /> Add New Question
                     </button>
                 </section>
 
                 <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-provider-slate-100 flex items-center justify-end gap-4 z-50">
-                    <button type="button" onClick={() => setActiveTab('list')} className="provider-btn-secondary px-8 font-black uppercase text-xs">Abort</button>
+                    <button type="button" onClick={() => setActiveTab('list')} className="provider-btn-secondary px-8 font-black uppercase text-xs">Cancel</button>
                     <button type="submit" disabled={saving} className="provider-btn-primary px-12 font-black uppercase text-xs shadow-xl shadow-provider-blue-200">
-                        {saving ? 'Processing...' : 'Deploy Arena'}
+                        {saving ? 'Processing...' : 'Save Challenge'}
                     </button>
                 </div>
             </form>
@@ -547,7 +547,7 @@ const CodingTestsPage = () => {
                     <div>
                         <div className="flex items-center gap-2 text-provider-blue-600 mb-1">
                             <Terminal className="w-4 h-4" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Submission Intelligence</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">Submission Results</span>
                         </div>
                         <h1 className="text-3xl font-black text-provider-slate-900 tracking-tight">Challenge <span className="text-provider-blue-600">Analytics</span></h1>
                         <div className="text-xs font-bold text-provider-slate-400 mt-1">{selectedTest?.title}</div>
@@ -632,11 +632,11 @@ const CodingTestsPage = () => {
                         <tbody className="divide-y divide-provider-slate-50">
                             {loadingCandidates ? (
                                 <tr>
-                                    <td colSpan="4" className="px-6 py-8 text-center text-provider-slate-400 font-bold text-sm">Synchronizing profiles...</td>
+                                    <td colSpan="4" className="px-6 py-8 text-center text-provider-slate-400 font-bold text-sm">Loading candidates...</td>
                                 </tr>
                             ) : shortlistedCandidates.length === 0 ? (
                                 <tr>
-                                    <td colSpan="4" className="px-6 py-8 text-center text-provider-slate-400 font-bold text-sm">No candidates currently shortlisted for algorithmic verification.</td>
+                                    <td colSpan="4" className="px-6 py-8 text-center text-provider-slate-400 font-bold text-sm">No candidates currently shortlisted for testing.</td>
                                 </tr>
                             ) : shortlistedCandidates.map((c, idx) => (
                                 <tr key={idx} className="hover:bg-provider-blue-50/30 transition-colors group">

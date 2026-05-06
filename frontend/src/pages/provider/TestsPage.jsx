@@ -82,7 +82,7 @@ const TestsPage = () => {
             setTests(res.data || []);
         } catch (error) {
             console.error('Error fetching tests:', error);
-            addToast('error', 'Failed to synchronize assessments');
+            addToast('error', 'Failed to load assessments');
         } finally {
             if (!silent) setLoading(false);
         }
@@ -142,7 +142,7 @@ const TestsPage = () => {
             fetchTests(true);
             resetForm();
         } catch (error) {
-            addToast('error', error.response?.data?.message || 'Verification engine experienced an error');
+            addToast('error', error.response?.data?.message || 'Failed to save assessment');
         } finally {
             setSaving(false);
         }
@@ -218,7 +218,7 @@ const TestsPage = () => {
             const res = await getTestResults(test.id);
             setResults(res.data);
         } catch (error) {
-            addToast('error', 'Failed to aggregate performance data');
+            addToast('error', 'Failed to load results');
         } finally {
             setLoadingResults(false);
         }
@@ -243,7 +243,7 @@ const TestsPage = () => {
                 <div>
                     <div className="flex items-center gap-2 text-provider-blue-600 mb-1">
                         <Target className="w-4 h-4" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Skill Verification</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest">Assessment Builder</span>
                     </div>
                     <h1 className="text-3xl font-black text-provider-slate-900 tracking-tight">
                         Assessment <span className="text-provider-blue-600">Engine</span>
@@ -254,7 +254,7 @@ const TestsPage = () => {
                     className="provider-btn-primary px-6 flex items-center gap-2"
                 >
                     <Plus className="w-4 h-4" />
-                    Engineer New Test
+                    Create New Test
                 </button>
             </div>
 
@@ -285,7 +285,7 @@ const TestsPage = () => {
                         <ClipboardCheck className="w-8 h-8" />
                     </div>
                     <h3 className="text-xl font-black text-provider-slate-900 mb-2">No Assessments Found</h3>
-                    <p className="text-provider-slate-500 font-medium mb-8 max-w-sm mx-auto">Build custom skill verification tests to accurately filter top talent.</p>
+                    <p className="text-provider-slate-500 font-medium mb-8 max-w-sm mx-auto">Build custom assessments to evaluate candidate skills.</p>
                     <button
                         onClick={() => setActiveTab('create')}
                         className="provider-btn-secondary"
@@ -395,7 +395,7 @@ const TestsPage = () => {
                     <div>
                         <div className="flex items-center gap-2 text-provider-blue-600 mb-1">
                             <Sparkles className="w-4 h-4" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Protocol Architect</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">Assessment Builder</span>
                         </div>
                         <h1 className="text-3xl font-black text-provider-slate-900 tracking-tight">
                             {editingTestId ? 'Edit' : 'Create'} <span className="text-provider-blue-600">Assessment</span>
@@ -599,14 +599,14 @@ const TestsPage = () => {
                             onClick={() => setActiveTab('list')}
                             className="provider-btn-secondary px-8 font-black uppercase tracking-widest text-xs"
                         >
-                            Abort
+                            Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={saving}
                             className="provider-btn-primary px-12 font-black uppercase tracking-widest text-xs shadow-xl shadow-provider-blue-200"
                         >
-                            {saving ? 'Processing...' : 'Deploy Protocol'}
+                            {saving ? 'Processing...' : 'Save Assessment'}
                         </button>
                     </div>
                 </div>
@@ -631,7 +631,7 @@ const TestsPage = () => {
                             <span className="text-[10px] font-black uppercase tracking-widest">Performance Intelligence</span>
                         </div>
                         <h1 className="text-3xl font-black text-provider-slate-900 tracking-tight">
-                            Verification <span className="text-provider-blue-600">Analytics</span>
+                            Assessment <span className="text-provider-blue-600">Analytics</span>
                         </h1>
                     </div>
                 </div>
