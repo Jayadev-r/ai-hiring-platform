@@ -278,4 +278,42 @@ router.put('/:id', auth, roleGuard('recruiter'), upload.single('logo'), async (r
     }
 });
 
+/**
+ * @route   GET /api/companies/public/:id
+ * @desc    Get a public company profile by ID (for job seekers)
+ * @access  Private (Logged-in users)
+ */
+router.get('/public/:id', auth, async (req, res) => {
+    try {
+        const companyId = req.params.id;
+        
+        // Fetch company details, but don't require ownership
+        const query = `
+            SELECT id, name, industry, website_url, location, description, linkedin_url, twitter_url, logo, created_at
+            FROM companies 
+            WHERE id = $1
+        `;
+        const { rows } = await pool.query(query, [companyId]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Company not found' });
+        }
+
+        const company = rows[0];
+
+        // Convert binary logo to base64 if it exists
+        if (company.logo) {
+            company.logo = `data:image/jpeg;base64,${company.logo.toString('base64')}`;
+        }
+
+        res.json({ success: true, company });
+    } catch (error) {
+        console.error('Error fetching public company profile:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error fetching company profile'
+        });
+    }
+});
+
 export default router;

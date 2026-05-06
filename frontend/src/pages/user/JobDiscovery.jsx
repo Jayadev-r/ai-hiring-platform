@@ -7,12 +7,13 @@ import GlassCard from '../../components/futuristic/GlassCard';
 import TiltCard from '../../components/futuristic/TiltCard';
 import SkeletonCard from '../../components/futuristic/SkeletonCard';
 import JobApplyModal from '../../components/shared/JobApplyModal';
+import CompanyProfileModal from '../../components/shared/CompanyProfileModal';
 
 import { getJobs } from '../../api/jobs';
 import { getUserApplications } from '../../api/applications';
 
 /* ── Job card ──────────────────────────────────────────── */
-const JobCard = ({ job, isApplied, onApply, index }) => {
+const JobCard = ({ job, isApplied, onApply, onCompanyClick, index }) => {
     const skills = (job.required_skills || '').split(',').slice(0, 4);
     const logoUrl = job.company_logo;
 
@@ -27,7 +28,11 @@ const JobCard = ({ job, isApplied, onApply, index }) => {
                     <div className="flex items-start justify-between gap-6 flex-wrap md:flex-nowrap">
                         {/* Company Logo & Job Info */}
                         <div className="flex items-start gap-4 flex-1 min-w-0">
-                            <div className="w-14 h-14 rounded-2xl overflow-hidden bg-gradient-to-br from-white to-slate-50 border border-slate-200 flex items-center justify-center shadow-inner flex-shrink-0 transition-transform group-hover:scale-105 duration-300">
+                            <div 
+                                onClick={() => job.company_id && onCompanyClick(job.company_id)}
+                                className={`w-14 h-14 rounded-2xl overflow-hidden bg-gradient-to-br from-white to-slate-50 border border-slate-200 flex items-center justify-center shadow-inner flex-shrink-0 transition-transform duration-300 ${job.company_id ? 'cursor-pointer hover:scale-105 hover:shadow-md hover:border-indigo-200' : 'group-hover:scale-105'}`}
+                                title={job.company_id ? "View Company Profile" : ""}
+                            >
                                 {logoUrl ? (
                                     <img src={logoUrl} alt={job.company_name} className="w-full h-full object-contain p-2" />
                                 ) : (
@@ -47,7 +52,13 @@ const JobCard = ({ job, isApplied, onApply, index }) => {
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-sm text-slate-600 font-bold mb-3">{job.company_name}</p>
+                                <p 
+                                    onClick={() => job.company_id && onCompanyClick(job.company_id)}
+                                    className={`text-sm font-bold mb-3 inline-block transition-colors ${job.company_id ? 'text-indigo-600 hover:text-indigo-800 cursor-pointer underline decoration-indigo-200 underline-offset-4' : 'text-slate-600'}`}
+                                    title={job.company_id ? "View Company Profile" : ""}
+                                >
+                                    {job.company_name}
+                                </p>
 
                                 {/* Meta Details */}
                                 <div className="flex flex-wrap gap-4 text-xs text-slate-500 font-semibold mb-4">
@@ -108,6 +119,7 @@ const JobDiscovery = () => {
     const [showFilters, setShowFilters] = useState(false);
     const [filters, setFilters] = useState({ role: '', experience: '', location: '', remote: false });
     const [selectedJob, setSelectedJob] = useState(null);
+    const [selectedCompanyId, setSelectedCompanyId] = useState(null);
     const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
     const [userApplications, setUserApplications] = useState([]);
 
@@ -284,6 +296,7 @@ const JobDiscovery = () => {
                             index={i}
                             isApplied={userApplications.some(a => a.job_id === job.job_id)}
                             onApply={(j) => { setSelectedJob(j); setIsApplyModalOpen(true); }}
+                            onCompanyClick={setSelectedCompanyId}
                         />
                     ))}
                 </div>
@@ -304,6 +317,7 @@ const JobDiscovery = () => {
             )}
 
             <JobApplyModal isOpen={isApplyModalOpen} onClose={() => setIsApplyModalOpen(false)} job={selectedJob} />
+            <CompanyProfileModal isOpen={!!selectedCompanyId} onClose={() => setSelectedCompanyId(null)} companyId={selectedCompanyId} />
         </UserLayout>
     );
 };
