@@ -15,6 +15,7 @@ const CandidateProfilePanel = ({ applicationId, isOpen, onClose, onUpdateStatus,
     const [isSnapshot, setIsSnapshot] = useState(false);
     const [snapshotDate, setSnapshotDate] = useState(null);
     const [resumeUrl, setResumeUrl] = useState(null);
+    const [resumeBlob, setResumeBlob] = useState(null);
 
     useEffect(() => {
         if (isOpen) {
@@ -54,6 +55,7 @@ const CandidateProfilePanel = ({ applicationId, isOpen, onClose, onUpdateStatus,
             if (blob && blob.size > 0) {
                 const url = URL.createObjectURL(blob);
                 setResumeUrl(url);
+                setResumeBlob(blob);
             }
         } catch (err) {
             console.error('Failed to fetch resume:', err);
@@ -62,7 +64,17 @@ const CandidateProfilePanel = ({ applicationId, isOpen, onClose, onUpdateStatus,
 
     const handleViewResume = () => {
         if (resumeUrl) {
-            window.open(resumeUrl, '_blank');
+            // DOCX files can't be viewed inline in browsers - trigger download instead
+            if (resumeBlob && resumeBlob.type && resumeBlob.type.includes('wordprocessingml')) {
+                const a = document.createElement('a');
+                a.href = resumeUrl;
+                a.download = `${profileData?.personal_info?.name || 'Candidate'}_Resume.docx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } else {
+                window.open(resumeUrl, '_blank');
+            }
         }
     };
 

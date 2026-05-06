@@ -27,11 +27,21 @@ const ApplicantDetailsModal = ({ applicant, isOpen, onClose, onUpdateStatus }) =
             // Create object URL
             const url = window.URL.createObjectURL(blob);
 
-            // Open in new tab
-            window.open(url, '_blank');
-
-            // Cleanup after a delay (let browser load it first)
-            setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+            // DOCX files can't be viewed inline in browsers - trigger download instead
+            if (blob.type && blob.type.includes('wordprocessingml')) {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = resume_name || 'Resume.docx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } else {
+                // PDF - open in browser viewer
+                window.open(url, '_blank');
+                // Cleanup after a delay (let browser load it first)
+                setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+            }
 
         } catch (error) {
             console.error("Failed to fetch resume:", error);

@@ -584,19 +584,49 @@ router.get('/recruiter/applications/:id/resume', auth, roleGuard('recruiter'), a
             return res.status(404).json({ success: false, message: 'No resume data found for this application' });
         }
 
-        // 2. Process Base64 Data
-        // The data might be a raw base64 string or a Data URI (data:application/pdf;base64,...)
-        // We need to strip the prefix if it exists
-        let base64Data = resume_data;
-        if (base64Data.includes('base64,')) {
-            base64Data = base64Data.split('base64,')[1];
+        // 2. Process Data Robustly (handle Buffer, base64 text, data URI, hex)
+        let fileBuffer;
+
+        if (Buffer.isBuffer(resume_data)) {
+            const firstBytes = resume_data.slice(0, 5).toString('ascii');
+            
+            if (firstBytes.startsWith('%PDF') || (resume_data[0] === 0x50 && resume_data[1] === 0x4B)) {
+                // It's actual binary data
+                fileBuffer = resume_data;
+            } else {
+                // It's base64 text stored as bytes
+                const textContent = resume_data.toString('utf8');
+                const dataUriMatch = textContent.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+                const base64Data = dataUriMatch ? dataUriMatch[2] : textContent;
+                fileBuffer = Buffer.from(base64Data, 'base64');
+            }
+        } else if (typeof resume_data === 'string') {
+            if (resume_data.startsWith('\\x')) {
+                fileBuffer = Buffer.from(resume_data.slice(2), 'hex');
+            } else {
+                const matches = resume_data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+                const base64Data = matches ? matches[2] : resume_data;
+                fileBuffer = Buffer.from(base64Data, 'base64');
+            }
         }
 
-        const fileBuffer = Buffer.from(base64Data, 'base64');
+        if (!fileBuffer || fileBuffer.length === 0) {
+            return res.status(404).json({ success: false, message: 'Resume data is empty or invalid.' });
+        }
 
-        // 3. Send File
-        res.setHeader('Content-Type', 'application/pdf'); // Assuming PDF, could infer from name or signature
-        res.setHeader('Content-Disposition', `inline; filename="${resume_name || 'resume.pdf'}"`);
+        // 3. Detect actual file type from magic numbers
+        let contentType = 'application/pdf';
+        let fileExt = 'pdf';
+        if (fileBuffer.length > 4) {
+            if (fileBuffer[0] === 0x50 && fileBuffer[1] === 0x4B && fileBuffer[2] === 0x03 && fileBuffer[3] === 0x04) {
+                contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                fileExt = 'docx';
+            }
+        }
+
+        // 4. Send File
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Disposition', `inline; filename="${resume_name || `resume.${fileExt}`}"`);
         res.send(fileBuffer);
 
     } catch (error) {
