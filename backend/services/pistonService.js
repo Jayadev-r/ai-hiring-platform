@@ -15,32 +15,34 @@ import pLimit from 'p-limit';
 // Concurrency limiter - max 3 parallel executions to respect rate limits
 const limit = pLimit(3);
 
-// Language mapping for Piston API
+// Language mapping for JDoodle API
 const LANGUAGE_MAP = {
     python: 'python3',
     python3: 'python3',
     cpp: 'cpp',
     c: 'c',
-    javascript: 'javascript',
-    js: 'javascript',
+    javascript: 'nodejs',
+    js: 'nodejs',
     java: 'java'
 };
 
-// Safest version mapping for Piston API
+// Safest version mapping for JDoodle API
 const LANGUAGE_VERSIONS = {
-    python3: '3.10.0',
-    python: '3.10.0',
-    cpp: '10.2.0',
-    c: '10.2.0',
-    javascript: '18.15.0',
-    js: '18.15.0',
-    java: '15.0.2'
+    python3: '3', // Usually corresponds to Python 3.9+ on JDoodle
+    python: '3',
+    cpp: '5',     // Standard C++ (usually 17)
+    c: '5',       
+    nodejs: '4',  // NodeJS
+    javascript: '4',
+    js: '4',
+    java: '4'     // Java 17
 };
 
-// Piston API configuration
-const PISTON_URL = process.env.PISTON_URL || 'https://emkc.org/api/v2/piston';
+// JDoodle API configuration
+const JDOODLE_URL = 'https://api.jdoodle.com/v1/execute';
+const JDOODLE_CLIENT_ID = process.env.JDOODLE_CLIENT_ID || '1bf9968b8b9e3edec99eae9ee0fe2d99';
+const JDOODLE_CLIENT_SECRET = process.env.JDOODLE_CLIENT_SECRET || '1c515e378a2f7b71613c0dc25c1fee391849cc7ed4040ffeab6bd1d6d3a204a9';
 const MAX_EXECUTION_TIME = parseInt(process.env.MAX_EXECUTION_TIME) || 5000;
-const MAX_MEMORY = parseInt(process.env.MAX_MEMORY) || 128000;
 
 /**
  * Execute code using Piston API
@@ -60,27 +62,21 @@ async function executeCode(sourceCode, language, stdin = '') {
             console.log("Language:", pistonLanguage, "Version:", version);
 
             const requestBody = {
-                language: pistonLanguage,
-                version: version,
-                files: [
-                    {
-                        content: sourceCode
-                    }
-                ],
+                clientId: JDOODLE_CLIENT_ID,
+                clientSecret: JDOODLE_CLIENT_SECRET,
+                script: sourceCode,
                 stdin: stdin,
-                compile_timeout: 5000,
-                run_timeout: 5000,
-                compile_memory_limit: 512 * 1024 * 1024,
-                run_memory_limit: 512 * 1024 * 1024
+                language: pistonLanguage,
+                versionIndex: version
             };
 
-            // Implement retry logic for 429 Too Many Requests
+            // Implement retry logic for API limits
             let retries = 3;
             let response;
 
             while (retries > 0) {
                 try {
-                    response = await axios.post(`${PISTON_URL}/execute`, requestBody, {
+                    response = await axios.post(JDOODLE_URL, requestBody, {
                         headers: {
                             'Content-Type': 'application/json'
                         },
@@ -89,7 +85,7 @@ async function executeCode(sourceCode, language, stdin = '') {
                     break; // Success
                 } catch (err) {
                     if (err.response?.status === 429 && retries > 1) {
-                        console.warn(`Piston rate limited (429). Retrying in 1s... (${retries} retries left)`);
+                        console.warn(`JDoodle rate limited (429). Retrying in 1s... (${retries} retries left)`);
                         retries--;
                         await new Promise(resolve => setTimeout(resolve, 1000));
                         continue;
@@ -98,11 +94,20 @@ async function executeCode(sourceCode, language, stdin = '') {
                 }
             }
 
-            console.log("Piston Response Status:", response.status);
-            return response.data;
+            console.log("JDoodle Response Status:", response.status);
+            
+            // Format JDoodle response to match the expected Piston format for backward compatibility
+            const data = response.data;
+            return {
+                run: {
+                    stdout: data.output || '',
+                    stderr: data.error || (data.statusCode !== 200 ? data.output : ''),
+                    code: data.statusCode === 200 && !data.error ? 0 : 1
+                }
+            };
 
         } catch (error) {
-            console.error("Piston Execution Error:", error.response?.data || error.message);
+            console.error("JDoodle Execution Error:", error.response?.data || error.message);
             // Return a mock error response to prevent crashes
             return {
                 run: {
@@ -153,9 +158,9 @@ async function evaluateCode(sourceCode, language, testCases) {
 
             const result = await executeCode(sourceCode, language, testCase.input);
 
-            // Parse Piston response (Step 3: Fix Response Parsing)
+            // Parse JDoodle mapped response
             const stdout = result.run?.stdout || "";
-            const stderr = result.run?.stderr || result.compile?.stderr || "";
+            const stderr = result.run?.stderr || "";
             const exitCode = result.run?.code || 0;
 
             const actualOutput = normalize(stdout);
