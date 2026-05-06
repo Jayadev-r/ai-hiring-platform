@@ -191,22 +191,31 @@ router.post('/shortlist/:jobId', auth, roleGuard('recruiter'), async (req, res) 
         }
 
         // 3. Run AI Logic (Service Layer)
-        // This might take time, but for <100 resumes it's acceptable to likely await.
-        // For larger scale, we'd use a job queue, but strict requirements denote simpler implementation.
         const jobMetadata = { required_skills, required_education, job_title };
         const results = await rankCandidates(jobContext, applications, jobMetadata);
 
         // 4. Update Database safely
         await client.query('BEGIN');
 
+        // Extract count from request body (default to 5 if not provided)
+        const shortlistLimit = parseInt(req.body.count) || 5;
+
+        // Sort results by match_score descending to find top candidates
+        const sortedResults = [...results].sort((a, b) => b.match_score - a.match_score);
+
         const updateQuery = `
             UPDATE job_applications 
-            SET match_score = $1, shortlisted_by_ai = true
+            SET match_score = $1, 
+                shortlisted_by_ai = true,
+                status = $3
             WHERE id = $2
         `;
 
-        for (const result of results) {
-            await client.query(updateQuery, [result.match_score, result.application_id]);
+        for (let i = 0; i < sortedResults.length; i++) {
+            const result = sortedResults[i];
+            // If candidate is in the top N, change status to 'shortlisted'
+            const newStatus = i < shortlistLimit ? 'shortlisted' : 'applied';
+            await client.query(updateQuery, [result.match_score, result.application_id, newStatus]);
         }
 
         await client.query('COMMIT');

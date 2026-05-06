@@ -94,14 +94,18 @@ const AutoShortlist = () => {
         fetchCandidates();
     }, [selectedJobId]);
 
+    const [shortlistCount, setShortlistCount] = useState(5);
+
     const handleRunAutoShortlist = async () => {
         if (!selectedJobId) return;
         setProcessing(true);
 
         try {
-            const response = await api.post(`/ai-tools/shortlist/${selectedJobId}`);
+            const response = await api.post(`/ai-tools/shortlist/${selectedJobId}`, {
+                count: shortlistCount
+            });
             if (response.data.success) {
-                addToast('success', 'AI Analysis Complete');
+                addToast('success', `AI Analysis Complete: Top ${shortlistCount} shortlisted`);
                 setCandidates(response.data.data);
             }
         } catch (error) {
@@ -185,6 +189,23 @@ const AutoShortlist = () => {
                                             </option>
                                         ))}
                                     </select>
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-tighter mb-1.5 block">Shortlist Capacity</label>
+                                    <div className="relative">
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            max="50"
+                                            value={shortlistCount}
+                                            onChange={(e) => setShortlistCount(parseInt(e.target.value) || '')}
+                                            className="provider-input font-bold text-provider-slate-700 pr-12"
+                                            placeholder="e.g. 10"
+                                        />
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-provider-slate-300 uppercase">Heads</div>
+                                    </div>
+                                    <p className="mt-1.5 text-[9px] text-provider-slate-400 font-medium">Top N candidates will be automatically moved to 'Shortlisted' status.</p>
                                 </div>
 
                                 <motion.button
