@@ -482,6 +482,55 @@ router.put('/schedule/:id', auth, roleGuard('recruiter'), async (req, res) => {
 });
 
 /**
+ * PUT /api/interviews/start/:id
+ * Mark interview as 'in_progress' (recruiter has started the session now)
+ * Accessible by: Recruiter only
+ */
+router.put('/start/:id', auth, roleGuard('recruiter'), async (req, res) => {
+    const client = await pool.connect();
+    try {
+        const userId = req.user.userId;
+        const interviewId = req.params.id;
+
+        // Verify ownership
+        const ownershipQuery = 'SELECT id, channel_name FROM interviews WHERE id = $1 AND recruiter_id = $2';
+        const ownershipResult = await client.query(ownershipQuery, [interviewId, userId]);
+
+        if (ownershipResult.rows.length === 0) {
+            return res.status(403).json({
+                success: false,
+                message: 'Interview not found or access denied'
+            });
+        }
+
+        await client.query('BEGIN');
+        const result = await client.query(
+            `UPDATE interviews SET status = 'in_progress', updated_at = NOW() WHERE id = $1
+             RETURNING id, channel_name, status`,
+            [interviewId]
+        );
+        await client.query('COMMIT');
+
+        res.json({
+            success: true,
+            message: 'Interview is now in progress',
+            data: result.rows[0]
+        });
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error starting interview:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to start interview',
+            error: error.message
+        });
+    } finally {
+        client.release();
+    }
+});
+
+/**
  * POST /api/interviews/send-email/:id
  * Send interview invitation email to candidate
  * Accessible by: Recruiter only

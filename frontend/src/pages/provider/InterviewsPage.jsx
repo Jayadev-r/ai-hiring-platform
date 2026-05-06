@@ -113,13 +113,21 @@ const InterviewsPage = () => {
         }
     }, [activeTab, selectedJobId]);
 
-    const startInterview = (interview) => {
-        if (interview.channel_name) {
-            window.open(`/interview/${interview.channel_name}`, '_blank');
-        } else {
+    const startInterview = async (interview) => {
+        if (!interview.channel_name) {
             toast.error('Interview room not initialized.');
+            return;
         }
+        // Mark as in_progress so the candidate sees "Join Live Interview"
+        try {
+            await api.put(`/interviews/start/${interview.id}`);
+            fetchInterviews(selectedJobId);
+        } catch (err) {
+            console.warn('Could not set in_progress status:', err);
+        }
+        window.open(`/interview/${interview.channel_name}`, '_blank');
     };
+
 
     const handleScheduleClick = (applicant) => {
         setSelectedApplicantForSchedule(applicant);
@@ -150,7 +158,16 @@ const InterviewsPage = () => {
 
             const res = await api.post('/interviews/create-and-schedule', payload);
             if (res.data.success) {
-                toast.success('Session generated.');
+                const interviewId = res.data.data?.id;
+                // Mark the interview as in_progress so the candidate can join immediately
+                if (interviewId) {
+                    try {
+                        await api.put(`/interviews/start/${interviewId}`);
+                    } catch (startErr) {
+                        console.warn('Could not mark interview as in_progress:', startErr);
+                    }
+                }
+                toast.success('Session generated. Candidate can join now.');
                 fetchInterviews(selectedJobId);
                 // Navigate to the room if channel_name is returned
                 if (res.data.data?.channel_name) {
@@ -161,6 +178,7 @@ const InterviewsPage = () => {
             toast.error('Failed to launch immediate session.');
         }
     };
+
 
     return (
         <ProviderLayout>

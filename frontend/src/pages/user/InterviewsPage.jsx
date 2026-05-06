@@ -24,14 +24,24 @@ const InterviewsPage = () => {
         }
     };
 
-    const handleJoinInterview = (channelName, scheduledAt) => {
+    const handleJoinInterview = (channelName, scheduledAt, status) => {
+        // If the interview is live (in_progress), join immediately
+        if (status === 'in_progress') {
+            window.location.href = `/interview/${channelName}`;
+            return;
+        }
+        if (!scheduledAt) {
+            window.location.href = `/interview/${channelName}`;
+            return;
+        }
         const interviewTime = new Date(scheduledAt);
         const now = new Date();
         const timeDiff = (interviewTime - now) / (1000 * 60);
         if (timeDiff > 10) { alert(`Interview starts in ${Math.round(timeDiff)} minutes. You can join 10 minutes before.`); return; }
-        if (timeDiff < -60) { alert('This interview has ended.'); return; }
+        if (timeDiff < -240) { alert('This interview session has expired. Please contact the recruiter.'); return; }
         window.location.href = `/interview/${channelName}`;
     };
+
 
     const formatDate = (date) => {
         if (!date) return 'Not scheduled';
@@ -40,14 +50,26 @@ const InterviewsPage = () => {
     const formatTime = (time) => time ? time.substring(0, 5) : '';
 
     const canJoin = (scheduledAt, status) => {
+        if (status === 'in_progress') return true;
         if (status !== 'scheduled') return false;
+        if (!scheduledAt) return true; // No time restriction if no scheduled time
         const diff = (new Date(scheduledAt) - new Date()) / (1000 * 60);
-        return diff <= 15 && diff >= -120;
+        return diff <= 15 && diff >= -240; // Allow joining from 15min before to 4hrs after
+    };
+
+    const getTimeUntilInterview = (scheduledAt) => {
+        if (!scheduledAt) return null;
+        const diff = (new Date(scheduledAt) - new Date()) / (1000 * 60);
+        if (diff <= 0) return null;
+        if (diff < 60) return `Starts in ${Math.round(diff)} min`;
+        if (diff < 1440) return `Starts in ${Math.round(diff / 60)}h ${Math.round(diff % 60)}m`;
+        return `Starts on ${formatDate(scheduledAt)}`;
     };
 
     const statusConfig = {
         pending: { label: 'Pending', color: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-400/30' },
         scheduled: { label: 'Scheduled', color: 'text-green-400', bg: 'bg-green-400/10', border: 'border-green-400/30' },
+        in_progress: { label: 'Live Now', color: 'text-rose-400', bg: 'bg-rose-400/10', border: 'border-rose-400/30' },
         completed: { label: 'Completed', color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-400/30' },
         cancelled: { label: 'Cancelled', color: 'text-red-400', bg: 'bg-red-400/10', border: 'border-red-400/30' },
     };
@@ -128,22 +150,34 @@ const InterviewsPage = () => {
                                         </div>
                                     )}
 
-                                    {interview.status === 'scheduled' && (
+                                    {(interview.status === 'scheduled' || interview.status === 'in_progress') && (
                                         joinable ? (
                                             <motion.button
-                                                onClick={() => handleJoinInterview(interview.channel_name, interview.scheduled_at)}
+                                                onClick={() => handleJoinInterview(interview.channel_name, interview.scheduled_at, interview.status)}
                                                 className="bg-indigo-600 text-white hover:bg-indigo-700 w-full py-3 rounded-xl flex items-center justify-center gap-2 font-semibold shadow-sm"
                                                 whileHover={{ scale: 1.01 }}
                                                 whileTap={{ scale: 0.98 }}
                                                 animate={{ boxShadow: ['0 0 16px rgba(79,70,229,0.4)', '0 0 28px rgba(79,70,229,0.7)', '0 0 16px rgba(79,70,229,0.4)'] }}
                                                 transition={{ boxShadow: { duration: 2, repeat: Infinity } }}
                                             >
-                                                <Video className="w-5 h-5" /> Join Interview
+                                                <Video className="w-5 h-5" />
+                                                {interview.status === 'in_progress' ? 'Join Live Interview' : 'Join Interview'}
                                             </motion.button>
                                         ) : (
-                                            <button disabled className="w-full py-3 rounded-xl flex items-center justify-center gap-2 bg-slate-50 border border-slate-200 text-slate-500 cursor-not-allowed font-semibold text-sm">
-                                                <Video className="w-5 h-5" /> Interview Not Started
-                                            </button>
+                                            <div className="w-full">
+                                                <button disabled className="w-full py-3 rounded-xl flex items-center justify-center gap-2 bg-slate-50 border border-slate-200 text-slate-500 cursor-not-allowed font-semibold text-sm">
+                                                    <Video className="w-5 h-5" />
+                                                    {getTimeUntilInterview(interview.scheduled_at) || 'Scheduled'}
+                                                </button>
+                                                {interview.scheduled_at && (() => {
+                                                    const diff = (new Date(interview.scheduled_at) - new Date()) / (1000 * 60);
+                                                    return diff > 15 ? (
+                                                        <p className="text-center text-xs text-slate-400 mt-2">
+                                                            You can join 15 minutes before the interview starts
+                                                        </p>
+                                                    ) : null;
+                                                })()}
+                                            </div>
                                         )
                                     )}
 
