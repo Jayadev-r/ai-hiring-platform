@@ -29,7 +29,7 @@ const DOCK_ITEMS = [
     { id: 'interviews', label: 'Interviews', icon: Video, path: '/provider/interviews' },
     { id: 'tests', label: 'Assessments', icon: ClipboardList, path: '/provider/tests' },
     { id: 'coding-tests', label: 'Coding', icon: Code2, path: '/provider/coding-tests' },
-    { id: 'themes', label: 'Settings', icon: Palette, path: '/provider/settings/themes' },
+    { id: 'themes', label: 'Themes', icon: Palette, path: '/provider/settings/themes' },
 ];
 
 const WorkspaceDock = () => {
