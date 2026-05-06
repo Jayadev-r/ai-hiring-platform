@@ -21,7 +21,8 @@ export const ProviderToastProvider = ({ children }) => {
 
     return (
         <ToastContext.Provider value={{
-            addToast,
+            // All provider pages call addToast(type, message) — expose a wrapper that matches
+            addToast: (type, message) => addToast(message, type),
             success: (m) => addToast(m, 'success'),
             error: (m) => addToast(m, 'error'),
             info: (m) => addToast(m, 'info'),
