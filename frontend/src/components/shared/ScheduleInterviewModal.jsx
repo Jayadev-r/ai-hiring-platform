@@ -24,12 +24,18 @@ const ScheduleInterviewModal = ({ isOpen, onClose, applicant, jobId, onSuccess }
             return;
         }
 
+        const candidateId = applicant.candidate_id || applicant.user_id;
+        if (!candidateId) {
+            addToast('error', 'Candidate information is missing');
+            return;
+        }
+
         setLoading(true);
         try {
             const payload = {
                 jobId: jobId || applicant.job_id,
                 applicationId: applicant.id,
-                candidateId: applicant.candidate_id || applicant.user_id, // Adjust based on how candidate info is passed
+                candidateId: candidateId,
                 ...formData
             };
 

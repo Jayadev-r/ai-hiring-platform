@@ -75,16 +75,16 @@ const TestsPage = () => {
         fetchJobs();
     }, []);
 
-    const fetchTests = async () => {
+    const fetchTests = async (silent = false) => {
         try {
-            setLoading(true);
+            if (!silent) setLoading(true);
             const res = await getRecruiterTests();
             setTests(res.data || []);
         } catch (error) {
             console.error('Error fetching tests:', error);
             addToast('error', 'Failed to synchronize assessments');
         } finally {
-            setLoading(false);
+            if (!silent) setLoading(false);
         }
     };
 
@@ -131,7 +131,7 @@ const TestsPage = () => {
                 addToast('success', 'Assessment published successfully');
             }
             setActiveTab('list');
-            fetchTests();
+            fetchTests(true);
             resetForm();
         } catch (error) {
             addToast('error', error.response?.data?.message || 'Verification engine experienced an error');
@@ -182,11 +182,14 @@ const TestsPage = () => {
     const handlePublishTest = async (testId) => {
         try {
             setSaving(true);
+            // Optimistic update
+            setTests(prev => prev.map(t => t.id === testId ? { ...t, status: 'published' } : t));
             await publishTest(testId);
             addToast('success', 'Assessment published successfully');
-            fetchTests();
+            fetchTests(true);
         } catch (error) {
             addToast('error', error?.response?.data?.message || 'Failed to publish assessment');
+            fetchTests(true);
         } finally {
             setSaving(false);
         }

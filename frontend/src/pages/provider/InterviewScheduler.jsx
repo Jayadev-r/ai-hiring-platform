@@ -108,8 +108,19 @@ const InterviewScheduler = () => {
         setNewInEmail('');
     };
 
+    const handleInterviewerKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAddInterviewer();
+        }
+    };
+
     const handleSchedule = async (e) => {
-        e.preventDefault();
+        if (e?.preventDefault) e.preventDefault();
+        
+        if (!selectedJobId) return addToast('warning', 'Select a target position first');
+        if (!interviewDate) return addToast('warning', 'Select a campaign date');
+        if (!startTime) return addToast('warning', 'Set a start time');
         if (interviewers.length === 0) return addToast('warning', 'Add at least one interviewer');
 
         setScheduling(true);
@@ -130,7 +141,21 @@ const InterviewScheduler = () => {
             });
 
             if (response.data.success) {
-                setScheduledData(response.data.data);
+                const scheduled = response.data.data;
+                const selectedJob = jobs.find(j => j.job_id == selectedJobId);
+                
+                // Transform to object expected by UI
+                setScheduledData({
+                    jobTitle: selectedJob?.job_title || 'Interview Campaign',
+                    interviewDate: interviewDate,
+                    mode: mode,
+                    scheduledInterviews: scheduled.map(s => ({
+                        candidateName: s.candidateName,
+                        interviewerName: s.interviewerName || 'TBD',
+                        timeSlot: `${s.startTime} - ${s.endTime}`
+                    }))
+                });
+                
                 addToast('success', 'Interview campaign launched!');
             }
         } catch (error) {
@@ -143,7 +168,7 @@ const InterviewScheduler = () => {
 
     return (
         <ProviderLayout>
-            {(loadingJobs || loadingCandidates || scheduling) && <TopProgressBar progress={scheduling ? 70 : 40} />}
+            {(loadingJobs || loadingCandidates || scheduling) && <TopProgressBar loading={true} />}
 
             <div className="max-w-[1400px] mx-auto px-6 py-10">
                 {/* Header Area */}
@@ -205,6 +230,34 @@ const InterviewScheduler = () => {
                                     </select>
                                 </div>
                             </div>
+
+                            {selectedJobId && (
+                                <div className="mt-8 border-t border-provider-slate-100 pt-8">
+                                    <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-tighter mb-4 block">Candidates in Selection Pool</label>
+                                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {loadingCandidates ? (
+                                            [...Array(3)].map((_, i) => <div key={i} className="h-14 bg-provider-slate-50 rounded-xl animate-pulse" />)
+                                        ) : topCandidates.length === 0 ? (
+                                            <div className="col-span-full py-6 text-center text-provider-slate-400 text-[10px] font-black italic uppercase tracking-widest bg-provider-slate-50/50 rounded-xl border border-dashed border-provider-slate-200">
+                                                No AI-shortlisted candidates found. <br/>
+                                                <span className="text-provider-blue-600">Run the AI Scouter first.</span>
+                                            </div>
+                                        ) : (
+                                            topCandidates.map((c, idx) => (
+                                                <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-provider-slate-50 border border-provider-slate-100">
+                                                    <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-[10px] font-black text-provider-slate-400">
+                                                        #{idx + 1}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="text-xs font-black text-provider-slate-900 truncate">{c.candidate_name}</div>
+                                                        <div className="text-[10px] font-bold text-provider-blue-600 uppercase tracking-tighter">{c.match_score}% Match</div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </section>
 
                         {/* Step 2: Scheduling Logic */}
@@ -251,6 +304,33 @@ const InterviewScheduler = () => {
                                             <option value={45}>45 Minutes (Recommended)</option>
                                             <option value={60}>60 Minutes</option>
                                         </select>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-tighter mb-2 block">Break Interval</label>
+                                            <select
+                                                value={breakFrequency}
+                                                onChange={(e) => setBreakFrequency(Number(e.target.value))}
+                                                className="provider-input font-bold text-xs"
+                                            >
+                                                <option value={0}>No Breaks</option>
+                                                <option value={2}>Every 2 slots</option>
+                                                <option value={3}>Every 3 slots</option>
+                                                <option value={4}>Every 4 slots</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-tighter mb-2 block">Break Length</label>
+                                            <select
+                                                value={breakDuration}
+                                                onChange={(e) => setBreakDuration(Number(e.target.value))}
+                                                className="provider-input font-bold text-xs"
+                                            >
+                                                <option value={5}>5 Min</option>
+                                                <option value={10}>10 Min</option>
+                                                <option value={15}>15 Min</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -308,6 +388,7 @@ const InterviewScheduler = () => {
                                             value={newInName}
                                             onChange={(e) => setNewInName(e.target.value)}
                                             className="provider-input font-bold"
+                                            onKeyDown={handleInterviewerKeyDown}
                                         />
                                         <div className="flex gap-2">
                                             <input
@@ -316,6 +397,7 @@ const InterviewScheduler = () => {
                                                 value={newInEmail}
                                                 onChange={(e) => setNewInEmail(e.target.value)}
                                                 className="provider-input flex-1 font-bold"
+                                                onKeyDown={handleInterviewerKeyDown}
                                             />
                                             <button
                                                 onClick={handleAddInterviewer}
@@ -399,17 +481,27 @@ const InterviewScheduler = () => {
                                     <div className="space-y-2">
                                         {[...Array(3)].map((_, i) => <div key={i} className="h-10 bg-provider-slate-100 rounded-lg animate-pulse" />)}
                                     </div>
-                                ) : topCandidates.map((c, idx) => (
-                                    <div key={idx} className="flex items-center gap-3 p-2 rounded-xl bg-provider-slate-50 border border-provider-slate-100">
-                                        <div className="w-6 h-6 rounded-lg bg-provider-slate-200 text-[10px] font-black flex items-center justify-center text-provider-slate-500">#{idx + 1}</div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="text-xs font-bold text-provider-slate-900 truncate">{c.candidate_name}</div>
-                                            <div className="text-[10px] font-bold text-provider-blue-600 uppercase tracking-tighter">{c.match_score}% Match</div>
-                                        </div>
-                                    </div>
-                                ))}
-                                {topCandidates.length === 0 && (
-                                    <div className="py-6 text-center text-provider-slate-400 text-xs font-bold italic">No candidates selected</div>
+                                ) : (
+                                    <>
+                                        {topCandidates.length === 0 && selectedJobId && (
+                                            <div className="py-6 text-center text-provider-slate-400 text-[10px] font-black italic uppercase tracking-widest bg-provider-slate-50/50 rounded-xl border border-dashed border-provider-slate-200">
+                                                No AI-shortlisted candidates found. <br/>
+                                                <span className="text-provider-blue-600">Run the AI Scouter first.</span>
+                                            </div>
+                                        )}
+                                        {topCandidates.map((c, idx) => (
+                                            <div key={idx} className="flex items-center gap-3 p-2 rounded-xl bg-provider-slate-50 border border-provider-slate-100">
+                                                <div className="w-6 h-6 rounded-lg bg-provider-slate-200 text-[10px] font-black flex items-center justify-center text-provider-slate-500">#{idx + 1}</div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="text-xs font-bold text-provider-slate-900 truncate">{c.candidate_name}</div>
+                                                    <div className="text-[10px] font-bold text-provider-blue-600 uppercase tracking-tighter">{c.match_score}% Match</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        {topCandidates.length === 0 && !selectedJobId && (
+                                            <div className="py-6 text-center text-provider-slate-400 text-xs font-bold italic">Select a job to see candidates</div>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </section>

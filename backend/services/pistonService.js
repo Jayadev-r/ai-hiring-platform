@@ -26,18 +26,22 @@ const LANGUAGE_MAP = {
     java: 'java'
 };
 
+// Safest version mapping for Piston API
+const LANGUAGE_VERSIONS = {
+    python3: '3.10.0',
+    python: '3.10.0',
+    cpp: '10.2.0',
+    c: '10.2.0',
+    javascript: '18.15.0',
+    js: '18.15.0',
+    java: '15.0.2'
+};
+
 // Piston API configuration
 const PISTON_URL = process.env.PISTON_URL || 'https://emkc.org/api/v2/piston';
 const MAX_EXECUTION_TIME = parseInt(process.env.MAX_EXECUTION_TIME) || 5000;
 const MAX_MEMORY = parseInt(process.env.MAX_MEMORY) || 128000;
 
-/**
- * Execute code using Piston API
- * @param {string} sourceCode - The source code to execute
- * @param {string} language - Programming language (python, cpp, javascript, java)
- * @param {string} stdin - Standard input for the program
- * @returns {Promise<Object>} Execution result with stdout, stderr, exitCode
- */
 /**
  * Execute code using Piston API
  * @param {string} sourceCode - The source code to execute
@@ -49,24 +53,15 @@ async function executeCode(sourceCode, language, stdin = '') {
     return limit(async () => {
         try {
             // Language mapping
-            const languageMap = {
-                python: 'python3',
-                python3: 'python3',
-                cpp: 'cpp',
-                c: 'c',
-                javascript: 'javascript',
-                js: 'javascript',
-                java: 'java'
-            };
-            const pistonLanguage = languageMap[language.toLowerCase()] || language;
+            const pistonLanguage = LANGUAGE_MAP[language.toLowerCase()] || language;
+            const version = LANGUAGE_VERSIONS[language.toLowerCase()] || '*';
 
             console.log("Executing code...");
-            console.log("Language:", pistonLanguage);
-            console.log("Input:", stdin);
+            console.log("Language:", pistonLanguage, "Version:", version);
 
             const requestBody = {
                 language: pistonLanguage,
-                version: '*',
+                version: version,
                 files: [
                     {
                         content: sourceCode
@@ -79,14 +74,31 @@ async function executeCode(sourceCode, language, stdin = '') {
                 run_memory_limit: 512 * 1024 * 1024
             };
 
-            const response = await axios.post(`${PISTON_URL}/execute`, requestBody, {
-                headers: {
-                    'Content-Type': 'application/json'
+            // Implement retry logic for 429 Too Many Requests
+            let retries = 3;
+            let response;
+
+            while (retries > 0) {
+                try {
+                    response = await axios.post(`${PISTON_URL}/execute`, requestBody, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        timeout: 15000 // 15s timeout
+                    });
+                    break; // Success
+                } catch (err) {
+                    if (err.response?.status === 429 && retries > 1) {
+                        console.warn(`Piston rate limited (429). Retrying in 1s... (${retries} retries left)`);
+                        retries--;
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        continue;
+                    }
+                    throw err;
                 }
-            });
+            }
 
-            console.log("Piston Response:", JSON.stringify(response.data));
-
+            console.log("Piston Response Status:", response.status);
             return response.data;
 
         } catch (error) {
@@ -134,9 +146,9 @@ async function evaluateCode(sourceCode, language, testCases) {
     // Use sequential execution to strictly respect Piston's 1 req / 200ms limit
     for (const [index, testCase] of testCases.entries()) {
         try {
-            // Add a fixed delay (300ms) between sequential cases to avoid burst limits
+            // Add a fixed delay (500ms) between sequential cases to avoid burst limits
             if (index > 0) {
-                await new Promise(resolve => setTimeout(resolve, 300));
+                await new Promise(resolve => setTimeout(resolve, 500));
             }
 
             const result = await executeCode(sourceCode, language, testCase.input);

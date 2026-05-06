@@ -134,6 +134,11 @@ const InterviewsPage = () => {
             const timeStr = now.toTimeString().split(' ')[0].substring(0, 5);
             const endTimeStr = new Date(now.getTime() + 60 * 60 * 1000).toTimeString().split(' ')[0].substring(0, 5);
 
+            if (!applicant.candidate_id) {
+                toast.error('Candidate ID missing. Cannot start session.');
+                return;
+            }
+
             const payload = {
                 jobId: selectedJobId,
                 applicationId: applicant.id,

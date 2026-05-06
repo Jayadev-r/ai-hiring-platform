@@ -102,15 +102,15 @@ const CodingTestsPage = () => {
         fetchJobs();
     }, []);
 
-    const fetchTests = async () => {
+    const fetchTests = async (silent = false) => {
         try {
-            setLoading(true);
+            if (!silent) setLoading(true);
             const res = await codingService.getRecruiterCodingTests();
             setTests(res.data || []);
         } catch (error) {
             addToast('error', 'Failed to synchronize algorithmic challenges');
         } finally {
-            setLoading(false);
+            if (!silent) setLoading(false);
         }
     };
 
@@ -138,7 +138,7 @@ const CodingTestsPage = () => {
                 addToast('success', 'Algorithm challenge deployed');
             }
             setActiveTab('list');
-            fetchTests();
+            fetchTests(true);
             resetForm();
         } catch (error) {
             addToast('error', 'Failed to deploy verification engine');
@@ -152,7 +152,9 @@ const CodingTestsPage = () => {
             setSaving(true);
             await codingService.publishCodingTest(testId);
             addToast('success', 'Coding test published successfully');
-            fetchTests();
+            // Optimistic update
+            setTests(prev => prev.map(t => t.id === testId ? { ...t, status: 'published' } : t));
+            fetchTests(true);
         } catch (error) {
             addToast('error', error?.response?.data?.message || 'Failed to publish coding test');
         } finally {
@@ -166,7 +168,7 @@ const CodingTestsPage = () => {
             setLoading(true);
             await codingService.deleteCodingTest(testId);
             addToast('success', 'Algorithm challenge removed');
-            fetchTests();
+            fetchTests(true);
         } catch (error) {
             addToast('error', 'Failed to remove challenge from system');
         } finally {

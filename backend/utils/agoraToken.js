@@ -21,7 +21,8 @@ if (!AGORA_APP_ID || !AGORA_APP_CERTIFICATE) {
  */
 export const generateAgoraToken = (channelName, uid = 0, role = 'publisher') => {
     if (!AGORA_APP_ID || !AGORA_APP_CERTIFICATE) {
-        throw new Error('Agora credentials are not configured in environment variables');
+        console.warn('Agora credentials not configured. Returning null token for development.');
+        return null;
     }
     try {
         // Token expiry time (1 hour from now)

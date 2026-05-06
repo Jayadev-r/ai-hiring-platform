@@ -205,8 +205,8 @@ router.post('/shortlist/:jobId', auth, roleGuard('recruiter'), async (req, res) 
             WHERE id = $2
         `;
 
-        for (const res of results) {
-            await client.query(updateQuery, [res.match_score, res.application_id]);
+        for (const result of results) {
+            await client.query(updateQuery, [result.match_score, result.application_id]);
         }
 
         await client.query('COMMIT');
@@ -242,7 +242,7 @@ router.post('/shortlist/:jobId', auth, roleGuard('recruiter'), async (req, res) 
         // User requested: "The endpoint must always return a successful response: { matchScore: 0, ... }"
         // But we might not have list of candidates if it crashed early.
         // Best effort:
-        res.status(200).json({
+        res.status(500).json({
             success: false,
             message: 'AI processing encountered an issue but system preserved state.',
             error: error.message

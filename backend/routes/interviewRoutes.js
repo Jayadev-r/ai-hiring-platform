@@ -834,8 +834,8 @@ router.post('/join', auth, async (req, res) => {
         res.json({
             success: true,
             data: {
-                appId: process.env.AGORA_APP_ID,
-                token: token,
+                appId: process.env.AGORA_APP_ID || '',
+                token: token || '',
                 channelName: channelName,
                 uid: uid
             }
