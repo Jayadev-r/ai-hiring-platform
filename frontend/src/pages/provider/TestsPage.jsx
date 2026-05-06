@@ -398,6 +398,7 @@ const TestsPage = () => {
                                 value={selectedJobId}
                                 onChange={(e) => setSelectedJobId(e.target.value)}
                                 className="provider-input font-bold"
+                                required
                             >
                                 <option value="">Select a listing...</option>
                                 {jobs.map(j => (
@@ -413,6 +414,7 @@ const TestsPage = () => {
                                 value={testForm.title}
                                 onChange={(e) => setTestForm({ ...testForm, title: e.target.value })}
                                 placeholder="e.g., Technical Proficiency Evaluation"
+                                required
                             />
                         </div>
                     </div>
@@ -420,19 +422,19 @@ const TestsPage = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div>
                             <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest mb-2 block">Start Date</label>
-                            <input type="date" value={testForm.startDate} onChange={e => setTestForm({ ...testForm, startDate: e.target.value })} className="provider-input text-xs font-bold" />
+                            <input type="date" value={testForm.startDate} onChange={e => setTestForm({ ...testForm, startDate: e.target.value })} className="provider-input text-xs font-bold" required />
                         </div>
                         <div>
                             <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest mb-2 block">Start Time</label>
-                            <input type="time" value={testForm.startTime} onChange={e => setTestForm({ ...testForm, startTime: e.target.value })} className="provider-input text-xs font-bold" />
+                            <input type="time" value={testForm.startTime} onChange={e => setTestForm({ ...testForm, startTime: e.target.value })} className="provider-input text-xs font-bold" required />
                         </div>
                         <div>
                             <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest mb-2 block">End Date</label>
-                            <input type="date" value={testForm.endDate} onChange={e => setTestForm({ ...testForm, endDate: e.target.value })} className="provider-input text-xs font-bold" />
+                            <input type="date" value={testForm.endDate} onChange={e => setTestForm({ ...testForm, endDate: e.target.value })} className="provider-input text-xs font-bold" required />
                         </div>
                         <div>
                             <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest mb-2 block">Duration (min)</label>
-                            <input type="number" value={testForm.durationMinutes} onChange={e => setTestForm({ ...testForm, durationMinutes: e.target.value })} className="provider-input text-xs font-bold" />
+                            <input type="number" min="1" value={testForm.durationMinutes} onChange={e => setTestForm({ ...testForm, durationMinutes: e.target.value })} className="provider-input text-xs font-bold" required />
                         </div>
                     </div>
                 </section>

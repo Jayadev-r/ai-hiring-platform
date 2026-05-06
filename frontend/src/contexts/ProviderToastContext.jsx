@@ -21,6 +21,7 @@ export const ProviderToastProvider = ({ children }) => {
 
     return (
         <ToastContext.Provider value={{
+            addToast,
             success: (m) => addToast(m, 'success'),
             error: (m) => addToast(m, 'error'),
             info: (m) => addToast(m, 'info'),
