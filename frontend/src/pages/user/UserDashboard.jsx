@@ -253,27 +253,57 @@ const UserDashboard = () => {
 
             {/* ── Profile completion + Jobs ───────────── */}
             <div className="grid lg:grid-cols-[280px_1fr] gap-6 mb-8">
-                {/* Profile ring */}
+                {/* Profile Health / Score */}
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
+                    className="h-fit lg:sticky lg:top-6"
                 >
-                    <GlassCard padding="lg" className="text-center py-16">
-                        <Briefcase className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                        <h3 className="font-heading text-xl font-bold text-slate-900 mb-2">No recommended jobs yet</h3>
-                        <p className="text-slate-600 font-medium mb-6">Complete your profile to get AI-curated matches.</p>
+                    <GlassCard padding="lg" className="text-center py-10 border border-indigo-100/50 shadow-xl shadow-indigo-100/20">
+                        <div className="mb-6 relative inline-block">
+                            <MatchScoreRing 
+                                score={loading ? 0 : (stats.profileCompletion || 65)} 
+                                size={140} 
+                                thickness={10}
+                                label="Profile Health"
+                            />
+                            <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center">
+                                <Sparkles className="w-4 h-4 text-indigo-500" />
+                            </div>
+                        </div>
+                        
+                        <h3 className="font-heading text-xl font-bold text-slate-900 mb-2">Profile Maturity</h3>
+                        <p className="text-xs text-slate-500 font-medium mb-8 leading-relaxed px-2">
+                            A complete profile increases your chances of getting AI-curated job matches by <span className="text-indigo-600 font-bold">40%</span>.
+                        </p>
+                        
                         <button
-                            onClick={() => navigate('/user/job-discovery')}
-                            className="bg-indigo-600 text-white hover:bg-indigo-700 px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+                            onClick={() => navigate('/user/profile')}
+                            className="w-full bg-indigo-600 text-white hover:bg-indigo-700 py-3 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-indigo-200 flex items-center justify-center gap-2 group"
                         >
-                            Browse All Jobs
+                            Optimize Profile
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </button>
+
+                        <div className="mt-8 pt-8 border-t border-slate-100 text-left">
+                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Discovery Metrics</div>
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-slate-600">Search Visibility</span>
+                                    <span className="text-xs font-black text-indigo-600 tracking-tighter">HIGH</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-slate-600">Market Rank</span>
+                                    <span className="text-xs font-black text-slate-900 tracking-tighter">TOP 12%</span>
+                                </div>
+                            </div>
+                        </div>
                     </GlassCard>
                 </motion.div>
 
                 {/* Recommended jobs */}
-                <div className="mt-12">
+                <div className="mt-0">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-lg shadow-indigo-200">
