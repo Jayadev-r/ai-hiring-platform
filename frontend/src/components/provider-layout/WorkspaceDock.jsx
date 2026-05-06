@@ -26,7 +26,7 @@ const DOCK_ITEMS = [
     { id: 'jobs', label: 'Jobs', icon: Briefcase, path: '/provider/jobs' },
     { id: 'applicants', label: 'Candidates', icon: Users, path: '/provider/applicants' },
     { id: 'ai-tools', label: 'AI Tools', icon: Cpu, path: '/provider/ai-tools' },
-    { id: 'interviews', label: 'Schedules', icon: Video, path: '/provider/interviews' },
+    { id: 'interviews', label: 'Interviews', icon: Video, path: '/provider/interviews' },
     { id: 'tests', label: 'Assessments', icon: ClipboardList, path: '/provider/tests' },
     { id: 'coding-tests', label: 'Coding', icon: Code2, path: '/provider/coding-tests' },
     { id: 'themes', label: 'Settings', icon: Palette, path: '/provider/settings/themes' },
