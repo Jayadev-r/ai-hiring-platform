@@ -123,15 +123,21 @@ const TestAttemptPage = () => {
 
     const timerColor = timeLeft <= 60 ? 'text-red-400 border-red-400/40 bg-red-400/10' : timeLeft <= 300 ? 'text-amber-400 border-amber-400/40 bg-amber-400/10' : 'text-cyan-400 border-cyan-400/40 bg-cyan-400/10';
 
+    const pageStyle = {
+        background: '#020617',
+        '--theme-card-bg': 'rgba(255, 255, 255, 0.03)',
+        '--theme-border': 'rgba(255, 255, 255, 0.08)'
+    };
+
     // ── States ────────────────────────────────────────────────
     if (loading) return (
-        <div className="min-h-screen flex items-center justify-center" style={{ background: '#020617' }}>
+        <div className="min-h-screen flex items-center justify-center" style={pageStyle}>
             <AILoader text="Loading test..." size="lg" />
         </div>
     );
 
     if (error) return (
-        <div className="min-h-screen flex items-center justify-center" style={{ background: '#020617' }}>
+        <div className="min-h-screen flex items-center justify-center" style={pageStyle}>
             <GlassCard padding="lg" className="max-w-md text-center border-red-400/20">
                 <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
                 <h2 className="font-heading text-xl font-bold text-white mb-2">Cannot Access Test</h2>
@@ -142,7 +148,7 @@ const TestAttemptPage = () => {
     );
 
     if (submitted) return (
-        <div className="min-h-screen flex items-center justify-center" style={{ background: '#020617' }}>
+        <div className="min-h-screen flex items-center justify-center" style={pageStyle}>
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
                 <GlassCard padding="lg" className="max-w-md text-center">
                     <div className="w-20 h-20 rounded-full bg-green-400/10 border border-green-400/30 flex items-center justify-center mx-auto mb-4">
@@ -169,7 +175,7 @@ const TestAttemptPage = () => {
     const answeredCount = Object.keys(answers).filter(k => answers[k]?.trim()).length;
 
     return (
-        <div className="min-h-screen" style={{ background: '#020617' }}>
+        <div className="min-h-screen" style={pageStyle}>
             {/* Violation warning */}
             <AnimatePresence>
                 {warning && (
