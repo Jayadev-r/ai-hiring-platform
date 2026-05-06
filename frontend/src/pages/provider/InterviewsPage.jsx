@@ -66,15 +66,26 @@ const InterviewsPage = () => {
 
     // Filtered lists
     const upcomingInterviews = interviews.filter(i => {
+        if (i.status === 'completed' || i.status === 'cancelled') return false;
+        if (i.status === 'in_progress') return true;
         const interviewTime = getLocalInterviewDate(i);
         if (!interviewTime) return true; // Default to showing if missing time
-        return interviewTime >= new Date();
+        
+        // Show in upcoming if the interview is today or in the future
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Start of today
+        return interviewTime >= today;
     });
     
     const pastInterviews = interviews.filter(i => {
+        if (i.status === 'completed' || i.status === 'cancelled') return true;
+        if (i.status === 'in_progress') return false;
         const interviewTime = getLocalInterviewDate(i);
         if (!interviewTime) return false;
-        return interviewTime < new Date();
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Start of today
+        return interviewTime < today;
     });
 
     useEffect(() => {
@@ -368,7 +379,11 @@ const InterviewsPage = () => {
                                         <div className="p-12 text-center text-provider-slate-400 font-bold">Synchronizing candidate roster...</div>
                                     ) : applicants.length > 0 ? (
                                         <div className="grid grid-cols-1 gap-4">
-                                            {applicants.map((app) => (
+                                            {applicants.map((app) => {
+                                                const appInterview = interviews.find(i => i.application_id === app.id || i.candidate_id === app.candidate_id);
+                                                const isScheduled = appInterview && ['scheduled', 'in_progress'].includes(appInterview.status);
+
+                                                return (
                                                 <div key={app.id} className="provider-panel p-6 flex items-center justify-between group hover:border-provider-blue-200 transition-all">
                                                     <div className="flex items-center gap-6">
                                                         <div className="w-14 h-14 rounded-2xl bg-provider-slate-100 flex items-center justify-center text-provider-slate-400 font-black text-xl overflow-hidden">
@@ -383,21 +398,39 @@ const InterviewsPage = () => {
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-3">
-                                                        <button 
-                                                            onClick={() => handleStartNow(app)}
-                                                            className="px-6 py-3 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-2"
-                                                        >
-                                                            <Video className="w-4 h-4" /> Start Now
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => handleScheduleClick(app)}
-                                                            className="px-6 py-3 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-2"
-                                                        >
-                                                            <Calendar className="w-4 h-4" /> Schedule
-                                                        </button>
+                                                        {isScheduled ? (
+                                                            <>
+                                                                <div className="px-4 py-3 bg-provider-slate-50 border border-provider-slate-200 rounded-xl text-xs font-bold text-provider-slate-600 flex items-center gap-2">
+                                                                    <Calendar className="w-3.5 h-3.5 text-provider-blue-600" />
+                                                                    {getLocalInterviewDate(appInterview) ? getLocalInterviewDate(appInterview).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''} at {appInterview.start_time}
+                                                                </div>
+                                                                <button 
+                                                                    onClick={() => startInterview(appInterview)}
+                                                                    className="px-6 py-3 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-2"
+                                                                >
+                                                                    <Video className="w-4 h-4" /> {appInterview.status === 'in_progress' ? 'Join Live' : 'Start'}
+                                                                </button>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <button 
+                                                                    onClick={() => handleStartNow(app)}
+                                                                    className="px-6 py-3 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-2"
+                                                                >
+                                                                    <Video className="w-4 h-4" /> Start Now
+                                                                </button>
+                                                                <button 
+                                                                    onClick={() => handleScheduleClick(app)}
+                                                                    className="px-6 py-3 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-2"
+                                                                >
+                                                                    <Calendar className="w-4 h-4" /> Schedule
+                                                                </button>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     ) : (
                                         <div className="p-20 text-center provider-panel border-dashed">
