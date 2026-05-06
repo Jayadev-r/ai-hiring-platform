@@ -331,7 +331,7 @@ const InterviewsPage = () => {
                                                         </div>
                                                         <div className="flex items-center gap-3 text-xs font-bold text-provider-slate-600">
                                                             <Video className="w-4 h-4 text-provider-blue-600" />
-                                                            Secure Interview Room #102
+                                                            Panel: {session.interviewer_name || 'TBD'}
                                                         </div>
                                                     </div>
 

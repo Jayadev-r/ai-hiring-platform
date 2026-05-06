@@ -102,7 +102,10 @@ const InterviewScheduler = () => {
     }, [selectedJobId, candidateLimit]);
 
     const handleAddInterviewer = () => {
-        if (!newInName.trim() || !newInEmail.trim()) return;
+        if (!newInName.trim() || !newInEmail.trim()) {
+            addToast('warning', 'Please provide both interviewer name and email');
+            return;
+        }
         setInterviewers([...interviewers, { name: newInName, email: newInEmail }]);
         setNewInName('');
         setNewInEmail('');
@@ -400,6 +403,7 @@ const InterviewScheduler = () => {
                                                 onKeyDown={handleInterviewerKeyDown}
                                             />
                                             <button
+                                                type="button"
                                                 onClick={handleAddInterviewer}
                                                 className="px-4 bg-provider-blue-600 text-white rounded-xl hover:bg-provider-blue-700 transition-all shadow-sm"
                                             >

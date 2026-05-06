@@ -333,14 +333,16 @@ router.post('/auto-schedule', auth, roleGuard('recruiter'), async (req, res) => 
                     SET 
                         interview_date = $1, start_time = $2, end_time = $3,
                         scheduled_at = $4, meeting_link = $5, channel_name = $6,
-                        status = 'scheduled', updated_at = NOW(), recruiter_id = $7
+                        status = 'scheduled', updated_at = NOW(), recruiter_id = $7,
+                        interviewer_name = $9, interviewer_email = $10, interviewer_index = $11
                     WHERE id = $8
                     RETURNING id
                 `;
                 await client.query(updateQuery, [
                     interviewDate, startTime, endTime,
                     scheduledAt, meetingLink, channelName,
-                    userId, interviewId
+                    userId, interviewId,
+                    interview.interviewerName, interview.interviewerEmail, interview.interviewerIndex
                 ]);
             } else {
                 // Insert new
@@ -348,15 +350,17 @@ router.post('/auto-schedule', auth, roleGuard('recruiter'), async (req, res) => 
                     INSERT INTO interviews (
                         job_id, application_id, candidate_id, recruiter_id,
                         channel_name, status, interview_date, start_time, end_time,
-                        scheduled_at, meeting_link, created_at, updated_at
+                        scheduled_at, meeting_link, created_at, updated_at,
+                        interviewer_name, interviewer_email, interviewer_index
                     )
-                    VALUES ($1, $2, $3, $4, $5, 'scheduled', $6, $7, $8, $9, $10, NOW(), NOW())
+                    VALUES ($1, $2, $3, $4, $5, 'scheduled', $6, $7, $8, $9, $10, NOW(), NOW(), $11, $12, $13)
                     RETURNING id
                 `;
                 const insertRes = await client.query(insertQuery, [
                     jobId, applicationId, candidateId, userId,
                     channelName, interviewDate, startTime, endTime,
-                    scheduledAt, meetingLink
+                    scheduledAt, meetingLink,
+                    interview.interviewerName, interview.interviewerEmail, interview.interviewerIndex
                 ]);
                 interviewId = insertRes.rows[0].id;
             }
@@ -635,7 +639,7 @@ router.get('/recruiter', auth, roleGuard('recruiter'), async (req, res) => {
             SELECT 
                 i.id, i.interview_date, i.start_time, i.end_time,
                 i.meeting_link, i.status, i.email_sent, i.channel_name,
-                i.created_at, i.scheduled_at,
+                i.created_at, i.scheduled_at, i.interviewer_name, i.interviewer_email,
                 c.name as candidate_name, c.email as candidate_email,
                 c.resume_url,
                 jp.job_title, jp.job_id,
@@ -705,7 +709,7 @@ router.get('/job/:jobId', auth, roleGuard('recruiter'), async (req, res) => {
             SELECT 
                 i.id, i.interview_date, i.start_time, i.end_time,
                 i.meeting_link, i.status, i.email_sent, i.channel_name,
-                i.created_at, i.scheduled_at,
+                i.created_at, i.scheduled_at, i.interviewer_name, i.interviewer_email,
                 c.name as candidate_name, c.email as candidate_email,
                 c.resume_url,
                 jp.job_title, jp.job_id,
@@ -771,7 +775,7 @@ router.get('/candidate', auth, roleGuard('job_seeker'), async (req, res) => {
             SELECT 
                 i.id, i.interview_date, i.start_time, i.end_time,
                 i.meeting_link, i.status, i.channel_name,
-                i.scheduled_at,
+                i.scheduled_at, i.interviewer_name, i.interviewer_email,
                 jp.job_title, jp.job_id,
                 comp.name AS company_name,
                 cr.name as recruiter_name

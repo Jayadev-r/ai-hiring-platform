@@ -149,9 +149,9 @@ const InterviewsPage = () => {
                                             <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
                                                 <Building2 className="w-3.5 h-3.5" />{interview.company_name}
                                             </div>
-                                            {interview.recruiter_name && (
+                                            {(interview.interviewer_name || interview.recruiter_name) && (
                                                 <div className="flex items-center gap-2 text-sm text-slate-500">
-                                                    <User className="w-3.5 h-3.5" />Interviewer: {interview.recruiter_name}
+                                                    <User className="w-3.5 h-3.5" />Interviewer: {interview.interviewer_name || interview.recruiter_name}
                                                 </div>
                                             )}
                                         </div>
