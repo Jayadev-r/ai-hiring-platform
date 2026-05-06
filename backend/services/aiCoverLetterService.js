@@ -157,15 +157,15 @@ const generateTemplateFallback = (candidate, job, analysis) => {
         ? `My background includes hands-on experience with ${analysis.matchedSkills}, which aligns well with your requirements.`
         : `My skills and adaptability align closely with the core requirements of this role.`;
 
-    return \`Dear Hiring Manager,
+    return `Dear Hiring Manager,
 
-I am writing to express my strong interest in the ${job.job_title} position at ${job.company_name}. \${expText}
+I am writing to express my strong interest in the ${job.job_title} position at ${job.company_name}. ${expText}
 
-Your job description highlights the need for skills such as ${job.required_skills}. \${skillsText} I am excited about the opportunity to bring my enthusiasm and expertise to ${job.company_name}.
+Your job description highlights the need for skills such as ${job.required_skills}. ${skillsText} I am excited about the opportunity to bring my enthusiasm and expertise to ${job.company_name}.
 
 Thank you for considering my application. I look forward to the possibility of discussing how my technical background and goals align with your team's vision.
 
 Sincerely,
 
-${candidate.name}\`;
+${candidate.name}`;
 };
