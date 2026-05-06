@@ -153,12 +153,12 @@ const InterviewScheduler = () => {
                     interviewDate: interviewDate,
                     mode: mode,
                     duration: slotDuration,
-                    meetingLink: mode === 'online' ? meetingLink : 'N/A',
                     status: 'Scheduled',
                     scheduledInterviews: scheduled.map(s => ({
                         candidateName: s.candidateName,
                         interviewerName: s.interviewerName || 'TBD',
-                        timeSlot: `${s.startTime} - ${s.endTime}`
+                        timeSlot: `${s.startTime} - ${s.endTime}`,
+                        meetingLink: s.meetingLink
                     }))
                 });
                 
@@ -558,30 +558,31 @@ const InterviewScheduler = () => {
                                         </div>
                                     </div>
                                     
-                                    {scheduledData.mode === 'online' && scheduledData.meetingLink && (
-                                        <div className="mb-8 p-4 bg-white rounded-2xl border border-provider-slate-200 shadow-sm flex items-center justify-between">
-                                            <div>
-                                                <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest block mb-1 font-mono">Meeting Link</label>
-                                                <div className="text-sm font-medium text-provider-blue-600 truncate max-w-md">{scheduledData.meetingLink}</div>
-                                            </div>
-                                            <a href={scheduledData.meetingLink} target="_blank" rel="noreferrer" className="px-4 py-2 bg-provider-blue-50 text-provider-blue-600 rounded-xl text-xs font-bold hover:bg-provider-blue-100 transition-colors">Open Link</a>
-                                        </div>
-                                    )}
-
                                     <div className="space-y-3">
                                         <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-tighter block ml-2">Session Timeline</label>
                                         {scheduledData.scheduledInterviews.map((slot, sidx) => (
-                                            <div key={sidx} className="bg-white flex items-center justify-between p-4 rounded-2xl border border-provider-slate-100 shadow-sm group hover:border-provider-blue-300 transition-all">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-8 h-8 rounded-lg bg-provider-slate-50 text-provider-slate-400 flex items-center justify-center text-xs font-black">{sidx + 1}</div>
-                                                    <div>
-                                                        <div className="text-sm font-black text-provider-slate-900">{slot.candidateName}</div>
-                                                        <div className="text-[10px] font-bold text-provider-slate-400">Panel: {slot.interviewerName}</div>
+                                            <div key={sidx} className="bg-white p-4 rounded-2xl border border-provider-slate-100 shadow-sm group hover:border-provider-blue-300 transition-all flex flex-col gap-3">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-8 h-8 rounded-lg bg-provider-slate-50 text-provider-slate-400 flex items-center justify-center text-xs font-black">{sidx + 1}</div>
+                                                        <div>
+                                                            <div className="text-sm font-black text-provider-slate-900">{slot.candidateName}</div>
+                                                            <div className="text-[10px] font-bold text-provider-slate-400">Panel: {slot.interviewerName}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-sm font-black text-provider-blue-600 bg-provider-blue-50 px-4 py-1.5 rounded-xl border border-provider-blue-100">
+                                                        {slot.timeSlot}
                                                     </div>
                                                 </div>
-                                                <div className="text-sm font-black text-provider-blue-600 bg-provider-blue-50 px-4 py-1.5 rounded-xl border border-provider-blue-100">
-                                                    {slot.timeSlot}
-                                                </div>
+                                                {scheduledData.mode === 'online' && slot.meetingLink && (
+                                                    <div className="flex items-center justify-between pl-12 pt-2 border-t border-slate-50">
+                                                        <div className="flex items-center gap-2 truncate pr-4">
+                                                            <Link className="w-3.5 h-3.5 text-provider-blue-400" />
+                                                            <span className="text-[10px] text-provider-blue-600 font-mono truncate">{slot.meetingLink}</span>
+                                                        </div>
+                                                        <a href={slot.meetingLink} target="_blank" rel="noreferrer" className="text-[10px] font-bold bg-provider-blue-600 text-white px-3 py-1 rounded-lg hover:bg-provider-blue-700 whitespace-nowrap">Join</a>
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>

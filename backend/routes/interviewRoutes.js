@@ -371,7 +371,7 @@ router.post('/auto-schedule', auth, roleGuard('recruiter'), async (req, res) => 
                 ['interview', applicationId]
             );
 
-            results.push({ ...interview, interviewId });
+            results.push({ ...interview, interviewId, meetingLink, channelName });
         }
 
         await client.query('COMMIT');
