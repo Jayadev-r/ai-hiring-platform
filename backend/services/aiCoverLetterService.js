@@ -74,10 +74,9 @@ export const generateCoverLetter = async (candidateId, jobId, tone = 'profession
         };
 
         // 3. Prompt Engineering
-        const PROMPT_VERSION = "v1.0";
+        const PROMPT_VERSION = "v1.1";
         const prompt = `
-            You are a professional executive career coach.
-            Generate a personalized, persuasive cover letter.
+            You are a professional executive career coach writing a highly persuasive and tailored cover letter.
             
             JOB DETAILS:
             Title: ${job.job_title}
@@ -86,9 +85,9 @@ export const generateCoverLetter = async (candidateId, jobId, tone = 'profession
 
             CANDIDATE PROFILE:
             Name: ${candidate.name}
-            Skills: ${candidate.skills ? candidate.skills.join(', ') : ''}
+            Skills: ${candSkills.join(', ')}
             Experience: ${candidate.experience_years} years
-            Education: ${JSON.stringify(candidate.education)}
+            Education: ${typeof candidate.education === 'object' ? JSON.stringify(candidate.education) : (candidate.education || '')}
 
             MATCH ANALYSIS (SYSTEM GENERATED):
             Matched Skills: ${analysis.matchedSkills}
@@ -96,12 +95,14 @@ export const generateCoverLetter = async (candidateId, jobId, tone = 'profession
 
             INSTRUCTIONS:
             - Tone: ${tone}
-            - Emphasize matched skills naturally.
-            - Address missing skills with a growth mindset if relevant.
-            - NO placeholders.
-            - NO markdown.
-            - NO header blocks (Date/Address), just the body + salutation + sign-off.
-            - Limit to 350 words.
+            - Tailor the letter deeply to the company and role, explaining *why* the candidate is a good fit based on the matched skills.
+            - Address missing skills lightly with a growth mindset.
+            - VERY IMPORTANT: If experience is 0 years or missing, DO NOT write "with 0 years of experience". Instead, focus strongly on academic foundations, personal projects, fast learning ability, and enthusiasm.
+            - Ensure the flow is engaging, professional, and natural.
+            - NO placeholders. Use the provided actual data.
+            - NO markdown. Do not use asterisks or bold text.
+            - NO header blocks (Date/Address), just start with the salutation and end with the sign-off.
+            - Limit to 300 words.
         `;
 
         let content = '';
@@ -148,15 +149,23 @@ export const generateCoverLetter = async (candidateId, jobId, tone = 'profession
 };
 
 const generateTemplateFallback = (candidate, job, analysis) => {
-    return `Dear Hiring Manager,
+    const expText = candidate.experience_years > 0 
+        ? `With ${candidate.experience_years} years of professional experience and a proven track record, I am confident in my ability to contribute effectively to your team.`
+        : `With a strong technical foundation and a passion for continuous learning, I am eager to bring a fresh perspective to your team.`;
 
-I am writing to express my strong interest in the ${job.job_title} position at ${job.company_name}. With ${candidate.experience_years} years of experience and a proven track record, I am confident in my ability to contribute effectively to your team.
+    const skillsText = analysis.matchedSkills 
+        ? `My background includes hands-on experience with ${analysis.matchedSkills}, which aligns well with your requirements.`
+        : `My skills and adaptability align closely with the core requirements of this role.`;
 
-Your job description highlights the need for skills such as ${job.required_skills}. My background includes ${analysis.matchedSkills || 'relevant technologies'}, which aligns well with your requirements. I am eager to bring my expertise to ${job.company_name}.
+    return \`Dear Hiring Manager,
 
-Thank you for considering my application. I look forward to the possibility of discussing how my skills align with your goals.
+I am writing to express my strong interest in the ${job.job_title} position at ${job.company_name}. \${expText}
+
+Your job description highlights the need for skills such as ${job.required_skills}. \${skillsText} I am excited about the opportunity to bring my enthusiasm and expertise to ${job.company_name}.
+
+Thank you for considering my application. I look forward to the possibility of discussing how my technical background and goals align with your team's vision.
 
 Sincerely,
 
-${candidate.name}`;
+${candidate.name}\`;
 };
