@@ -152,6 +152,9 @@ const InterviewScheduler = () => {
                     jobTitle: selectedJob?.job_title || 'Interview Campaign',
                     interviewDate: interviewDate,
                     mode: mode,
+                    duration: slotDuration,
+                    meetingLink: mode === 'online' ? meetingLink : 'N/A',
+                    status: 'Scheduled',
                     scheduledInterviews: scheduled.map(s => ({
                         candidateName: s.candidateName,
                         interviewerName: s.interviewerName || 'TBD',
@@ -528,24 +531,42 @@ const InterviewScheduler = () => {
                                     <h2 className="text-2xl font-black text-provider-slate-900 mb-2">Scheduling Successful!</h2>
                                     <p className="text-provider-slate-500 font-medium mb-8">All invites have been dispatched. The timeline has been synchronized with the team.</p>
 
-                                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                                    <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
                                         <div className="bg-white p-4 rounded-2xl border border-provider-slate-200 shadow-sm">
                                             <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest block mb-1 font-mono">Position</label>
-                                            <div className="text-sm font-black text-provider-slate-900">{scheduledData.jobTitle}</div>
+                                            <div className="text-xs font-black text-provider-slate-900 truncate">{scheduledData.jobTitle}</div>
                                         </div>
                                         <div className="bg-white p-4 rounded-2xl border border-provider-slate-200 shadow-sm">
                                             <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest block mb-1 font-mono">Window Open</label>
-                                            <div className="text-sm font-black text-provider-slate-900">{new Date(scheduledData.interviewDate).toLocaleDateString()}</div>
+                                            <div className="text-xs font-black text-provider-slate-900">{new Date(scheduledData.interviewDate).toLocaleDateString()}</div>
                                         </div>
                                         <div className="bg-white p-4 rounded-2xl border border-provider-slate-200 shadow-sm">
                                             <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest block mb-1 font-mono">Sessions</label>
-                                            <div className="text-sm font-black text-provider-slate-900">{scheduledData.scheduledInterviews.length} Booked</div>
+                                            <div className="text-xs font-black text-provider-slate-900">{scheduledData.scheduledInterviews.length} Booked</div>
                                         </div>
                                         <div className="bg-white p-4 rounded-2xl border border-provider-slate-200 shadow-sm">
                                             <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest block mb-1 font-mono">Platform</label>
-                                            <div className="text-sm font-black text-provider-slate-900 capitalize">{scheduledData.mode}</div>
+                                            <div className="text-xs font-black text-provider-slate-900 capitalize">{scheduledData.mode}</div>
+                                        </div>
+                                        <div className="bg-white p-4 rounded-2xl border border-provider-slate-200 shadow-sm">
+                                            <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest block mb-1 font-mono">Duration</label>
+                                            <div className="text-xs font-black text-provider-slate-900 capitalize">{scheduledData.duration} Min/Slot</div>
+                                        </div>
+                                        <div className="bg-white p-4 rounded-2xl border border-provider-slate-200 shadow-sm">
+                                            <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest block mb-1 font-mono">Status</label>
+                                            <div className="text-xs font-black text-green-600 capitalize">{scheduledData.status}</div>
                                         </div>
                                     </div>
+                                    
+                                    {scheduledData.mode === 'online' && scheduledData.meetingLink && (
+                                        <div className="mb-8 p-4 bg-white rounded-2xl border border-provider-slate-200 shadow-sm flex items-center justify-between">
+                                            <div>
+                                                <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest block mb-1 font-mono">Meeting Link</label>
+                                                <div className="text-sm font-medium text-provider-blue-600 truncate max-w-md">{scheduledData.meetingLink}</div>
+                                            </div>
+                                            <a href={scheduledData.meetingLink} target="_blank" rel="noreferrer" className="px-4 py-2 bg-provider-blue-50 text-provider-blue-600 rounded-xl text-xs font-bold hover:bg-provider-blue-100 transition-colors">Open Link</a>
+                                        </div>
+                                    )}
 
                                     <div className="space-y-3">
                                         <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-tighter block ml-2">Session Timeline</label>

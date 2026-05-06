@@ -16,6 +16,7 @@ import useAuthUser from '../../hooks/useAuthUser';
 import { getDashboardStats } from '../../api/users';
 import { getJobs } from '../../api/jobs';
 import { getUserApplications } from '../../api/applications';
+import { getCandidateInterviews } from '../../services/interviewService';
 
 /* ── Metric card config ──────────────────────────────────── */
 const METRICS = [
@@ -93,6 +94,7 @@ const UserDashboard = () => {
         profileViews: 0, interviewsScheduled: 0, profileCompletion: 0,
     });
     const [jobs, setJobs] = useState([]);
+    const [interviews, setInterviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedJob, setSelectedJob] = useState(null);
     const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
@@ -108,12 +110,14 @@ const UserDashboard = () => {
     useEffect(() => {
         (async () => {
             try {
-                const [statsData, jobsData] = await Promise.all([
-                    getDashboardStats(),
-                    getJobs({ status: 'Open' }),
+                const [statsData, jobsData, interviewsData] = await Promise.all([
+                    getDashboardStats().catch(() => ({})),
+                    getJobs({ status: 'Open' }).catch(() => ({})),
+                    getCandidateInterviews().catch(() => ({}))
                 ]);
-                if (statsData.success) setStats(statsData.data);
-                if (jobsData.success && Array.isArray(jobsData.data)) setJobs(jobsData.data);
+                if (statsData?.success) setStats(statsData.data);
+                if (jobsData?.success && Array.isArray(jobsData.data)) setJobs(jobsData.data);
+                if (interviewsData?.success && Array.isArray(interviewsData.data)) setInterviews(interviewsData.data);
             } catch (e) {
                 console.error('Dashboard fetch error:', e);
             } finally {
@@ -166,6 +170,52 @@ const UserDashboard = () => {
                     </motion.div>
                 ))}
             </div>
+
+            {/* ── Upcoming Interviews ────────────────── */}
+            {interviews.filter(i => i.status === 'scheduled' || i.status === 'in_progress').length > 0 && (
+                <div className="mb-8">
+                    <div className="flex items-center justify-between mb-5">
+                        <div className="flex items-center gap-2">
+                            <Calendar className="w-5 h-5 text-indigo-600" />
+                            <h2 className="font-heading font-bold text-slate-900 text-xl tracking-tight">Your Upcoming Interviews</h2>
+                        </div>
+                        <button onClick={() => navigate('/user/interviews')} className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                            View All <ArrowRight className="w-4 h-4" />
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {interviews.filter(i => i.status === 'scheduled' || i.status === 'in_progress').slice(0, 3).map((interview, idx) => (
+                            <motion.div key={interview.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.06 }}>
+                                <GlassCard hover glow="amber" padding="md" className="h-full flex flex-col">
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex items-center gap-2 max-w-[70%]">
+                                            <Briefcase className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                                            <h3 className="font-heading font-semibold text-slate-900 text-sm truncate">{interview.job_title}</h3>
+                                        </div>
+                                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-50 text-green-600 border border-green-200">
+                                            {interview.status === 'in_progress' ? 'Live Now' : 'Scheduled'}
+                                        </span>
+                                    </div>
+                                    <div className="text-xs text-slate-500 mb-4">{interview.company_name}</div>
+                                    <div className="grid grid-cols-2 gap-2 mt-auto">
+                                        <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                            <div className="text-[10px] text-slate-400 font-semibold uppercase">Date</div>
+                                            <div className="text-xs font-bold text-slate-700">{new Date(interview.interview_date).toLocaleDateString()}</div>
+                                        </div>
+                                        <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                            <div className="text-[10px] text-slate-400 font-semibold uppercase">Time</div>
+                                            <div className="text-xs font-bold text-slate-700">{interview.start_time?.substring(0,5)}</div>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => navigate('/user/interviews')} className="mt-4 w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition-colors">
+                                        Join Session
+                                    </button>
+                                </GlassCard>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* ── Profile completion + Jobs ───────────── */}
             <div className="grid lg:grid-cols-[280px_1fr] gap-6 mb-8">
