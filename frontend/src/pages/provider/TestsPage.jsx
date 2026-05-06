@@ -433,6 +433,12 @@ const TestsPage = () => {
                             <input type="date" value={testForm.endDate} onChange={e => setTestForm({ ...testForm, endDate: e.target.value })} className="provider-input text-xs font-bold" required />
                         </div>
                         <div>
+                            <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest mb-2 block">End Time</label>
+                            <input type="time" value={testForm.endTime} onChange={e => setTestForm({ ...testForm, endTime: e.target.value })} className="provider-input text-xs font-bold" required />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6">
+                        <div>
                             <label className="text-[10px] font-black text-provider-slate-400 uppercase tracking-widest mb-2 block">Duration (min)</label>
                             <input type="number" min="1" value={testForm.durationMinutes} onChange={e => setTestForm({ ...testForm, durationMinutes: e.target.value })} className="provider-input text-xs font-bold" required />
                         </div>
