@@ -574,11 +574,15 @@ router.get('/:id/attempt', auth, roleGuard('job_seeker'), async (req, res) => {
         }
         const candidateId = candidateRes.rows[0].id;
 
-        // Verify candidate is assigned this test
-        const assignmentCheck = await pool.query(
-            'SELECT ja.id FROM job_applications ja WHERE ja.test_id = $1 AND ja.candidate_id = $2',
-            [testId, candidateId]
-        );
+        // Verify candidate applied to the job associated with this test.
+        // We join on job_id (not test_id) so candidates who applied before the test
+        // was published are still granted access — matching /my-tests logic.
+        const assignmentCheck = await pool.query(`
+            SELECT ja.id FROM job_applications ja
+            JOIN tests t ON ja.job_id = t.job_id
+            WHERE t.id = $1 AND ja.candidate_id = $2 AND t.status = 'published'
+            LIMIT 1
+        `, [testId, candidateId]);
         if (assignmentCheck.rows.length === 0) {
             return res.status(403).json({ success: false, message: 'You are not assigned to this test' });
         }
