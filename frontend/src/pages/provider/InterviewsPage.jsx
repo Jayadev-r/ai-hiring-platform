@@ -44,9 +44,38 @@ const InterviewsPage = () => {
     const [loadingApplicants, setLoadingApplicants] = useState(false);
     const [selectedApplicantForSchedule, setSelectedApplicantForSchedule] = useState(null);
 
+    // Local time parser
+    const getLocalInterviewDate = (interview) => {
+        if (!interview.interview_date || !interview.start_time) return null;
+        
+        let datePart = '';
+        if (typeof interview.interview_date === 'string') {
+            datePart = interview.interview_date.split('T')[0];
+        } else {
+            const d = new Date(interview.interview_date);
+            datePart = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+        
+        const timePart = interview.start_time.substring(0, 5); // "HH:MM"
+        
+        const [year, month, day] = datePart.split('-').map(Number);
+        const [hour, minute] = timePart.split(':').map(Number);
+        
+        return new Date(year, month - 1, day, hour, minute, 0);
+    };
+
     // Filtered lists
-    const upcomingInterviews = interviews.filter(i => new Date(i.interview_date) >= new Date());
-    const pastInterviews = interviews.filter(i => new Date(i.interview_date) < new Date());
+    const upcomingInterviews = interviews.filter(i => {
+        const interviewTime = getLocalInterviewDate(i);
+        if (!interviewTime) return true; // Default to showing if missing time
+        return interviewTime >= new Date();
+    });
+    
+    const pastInterviews = interviews.filter(i => {
+        const interviewTime = getLocalInterviewDate(i);
+        if (!interviewTime) return false;
+        return interviewTime < new Date();
+    });
 
     useEffect(() => {
         fetchInitialData();
@@ -287,7 +316,7 @@ const InterviewsPage = () => {
                                                     <div className="space-y-4 mb-8">
                                                         <div className="flex items-center gap-3 text-xs font-bold text-provider-slate-600 capitalize">
                                                             <Calendar className="w-4 h-4 text-provider-blue-600" />
-                                                            {new Date(session.interview_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long' })} at {session.start_time}
+                                                            {getLocalInterviewDate(session) ? getLocalInterviewDate(session).toLocaleDateString('en-US', { day: 'numeric', month: 'long' }) : 'Date TBD'} at {session.start_time}
                                                         </div>
                                                         <div className="flex items-center gap-3 text-xs font-bold text-provider-slate-600">
                                                             <Video className="w-4 h-4 text-provider-blue-600" />
