@@ -183,8 +183,8 @@ const AuthPage = () => {
                 <div className="relative z-10 flex flex-col h-full px-12 py-10">
                     {/* Logo */}
                     <Link to="/landing" className="flex items-center gap-3 w-fit group">
-                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-transform duration-300">
-                            <Brain className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 rounded-2xl overflow-hidden bg-white flex items-center justify-center shadow-lg shadow-indigo-500/10 group-hover:scale-105 transition-transform duration-300 border border-slate-100">
+                            <img src="/logo.png" alt="HireX" className="w-full h-full object-contain p-1" />
                         </div>
                         <span className="font-heading font-black text-2xl text-slate-900 tracking-tight">
                             Hire<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-fuchsia-500">X</span>
@@ -254,8 +254,8 @@ const AuthPage = () => {
                 <div className="w-full max-w-[440px] py-10">
                     {/* Mobile logo */}
                     <div className="flex items-center gap-3 mb-8 lg:hidden justify-center">
-                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                            <Brain className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 rounded-2xl overflow-hidden bg-white flex items-center justify-center shadow-lg shadow-indigo-500/10 border border-slate-100">
+                            <img src="/logo.png" alt="HireX" className="w-full h-full object-contain p-1" />
                         </div>
                         <span className="text-slate-900 font-black text-2xl font-heading tracking-tight">
                             Hire<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-fuchsia-500">X</span>

@@ -205,8 +205,8 @@ function LandingNav() {
             <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
                 {/* Logo */}
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                        <Brain className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-2xl overflow-hidden bg-white flex items-center justify-center shadow-lg shadow-indigo-500/10 border border-slate-100">
+                        <img src="/logo.png" alt="HireX" className="w-full h-full object-contain p-1" />
                     </div>
                     <span className="font-heading font-black text-2xl text-slate-900 tracking-tight">
                         Hire<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-fuchsia-500">X</span>
@@ -551,8 +551,8 @@ const Landing = () => {
             <footer className="bg-slate-50 py-12 border-t border-slate-200">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center">
-                            <Brain className="w-4 h-4 text-white" />
+                        <div className="w-8 h-8 rounded-xl overflow-hidden bg-white flex items-center justify-center shadow-sm border border-slate-200">
+                            <img src="/logo.png" alt="HireX" className="w-full h-full object-contain p-1" />
                         </div>
                         <span className="font-heading font-black text-xl text-slate-900">HireX</span>
                     </div>

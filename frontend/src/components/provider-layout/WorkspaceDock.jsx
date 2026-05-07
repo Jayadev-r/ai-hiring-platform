@@ -76,8 +76,8 @@ const WorkspaceDock = () => {
                     style={{ backgroundColor: 'var(--theme-card-bg, rgba(255,255,255,0.7))', border: '1px solid var(--theme-border, rgba(226,232,240,0.6))' }}
                 >
                     <div className="flex items-center gap-1 pr-2 mr-1 border-r" style={{ borderColor: 'var(--theme-border, #f1f5f9)' }}>
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-black text-[10px] tracking-tighter shadow-sm" style={{ backgroundColor: 'var(--theme-primary, #2563eb)' }}>
-                            {getInitials(user?.company_name || user?.name || 'HX')}
+                        <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shadow-sm">
+                            <img src="/logo.png" alt="HireX" className="w-full h-full object-contain" />
                         </div>
                     </div>
 

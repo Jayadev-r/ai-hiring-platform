@@ -55,8 +55,8 @@ const AdminLayout = ({ children }) => {
             <header className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 shadow-sm border-b">
                 {/* Brand / Logo */}
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-indigo-600">
-                        <Shield size={16} className="text-white" />
+                    <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-white border border-slate-100 shadow-sm">
+                        <img src="/logo.png" alt="HireX" className="w-full h-full object-contain" />
                     </div>
                     <div>
                         <span className="font-bold text-[#111827] text-sm" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
