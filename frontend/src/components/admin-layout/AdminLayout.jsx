@@ -11,7 +11,7 @@ import { LogOut, Clock, Shield } from 'lucide-react';
  */
 const AdminLayout = ({ children }) => {
     const { user } = useAuth();
-    const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
 
     useEffect(() => {
         document.body.classList.add('admin-portal');
@@ -35,8 +35,8 @@ const AdminLayout = ({ children }) => {
         }
 
         const intervalId = setInterval(() => {
-            setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-        }, 1000);
+            setCurrentDate(new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+        }, 60000);
         return () => {
             document.body.classList.remove('admin-portal');
             clearInterval(intervalId);
@@ -77,9 +77,9 @@ const AdminLayout = ({ children }) => {
                 {/* Right side */}
                 <div className="flex items-center gap-4">
                     {/* Time */}
-                    <div className="hidden md:flex items-center gap-1.5 text-[#9ca3af] text-xs font-medium">
-                        <Clock size={13} />
-                        <span>{currentTime}</span>
+                    <div className="hidden lg:flex items-center gap-1.5 text-[#9ca3af] text-[10px] font-bold uppercase tracking-widest">
+                        <Clock size={13} className="text-[#4F46E5]" />
+                        <span>{currentDate}</span>
                     </div>
 
                     {/* User info */}

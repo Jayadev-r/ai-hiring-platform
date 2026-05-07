@@ -281,7 +281,7 @@ export default function ThemesSettings() {
                                     {currentTheme.applied_at && (
                                         <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--theme-text-secondary, #475569)' }}>
                                             <Clock className="w-3.5 h-3.5" />
-                                            Applied {new Date(currentTheme.applied_at).toLocaleString()}
+                                            Applied {new Date(currentTheme.applied_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                                         </div>
                                     )}
                                 </div>
