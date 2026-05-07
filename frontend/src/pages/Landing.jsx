@@ -108,6 +108,25 @@ function HeroBg() {
                     mixBlendMode: 'multiply'
                 }}
             />
+
+            {/* Massive Blended Brand Logo */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ 
+                    opacity: [0.03, 0.05, 0.03],
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 5, 0]
+                }}
+                transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] h-[100%] pointer-events-none z-0 flex items-center justify-center"
+            >
+                <img 
+                    src="/logo.png" 
+                    alt="" 
+                    className="w-[80%] h-[80%] object-contain" 
+                    style={{ filter: 'blur(60px) contrast(0.8)', mixBlendMode: 'multiply' }}
+                />
+            </motion.div>
         </div>
     );
 }
